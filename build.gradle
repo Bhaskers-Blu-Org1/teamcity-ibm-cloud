@@ -1,0 +1,33 @@
+plugins {
+    id "java"
+    id "com.github.rodm.teamcity-server" version "1.1-rc-1"
+}
+
+ext {
+    vendorName = 'IBM Strategic Customer Success'
+    teamcityVersion = findProperty('teamcityVersion') ?: '10.0'
+}
+
+teamcity {
+    version = teamcityVersion
+
+    server {
+        descriptor {
+            name = project.name
+            displayName = 'SoftLayer Plugin'
+            version = project.version
+            vendorName = project.vendorName
+            vendorUrl = 'http://ibm.com'
+            description = 'TeamCity SoftLayer Server Plugin'
+
+            downloadUrl = 
+                'https://github.ibm.com/StrategicOnboarding/teamcity-softlayer/'
+            email = 'scottwn@ibm.com'
+            useSeparateClassloader = false
+
+            parameters {
+                parameter 'param', 'value'
+            }
+        }
+    }
+}
