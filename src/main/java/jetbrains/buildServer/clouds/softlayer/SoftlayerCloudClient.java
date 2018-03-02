@@ -13,12 +13,13 @@ public class SoftlayerCloudClient extends AbstractCloudClient<
     public SoftlayerCloudInstance findInstanceByAgent(@NotNull final 
             AgentDescription agentDescription)
     {
-        return new SoftlayerCloudInstance();
+        SoftlayerCloudImageDetails imageDetails = new SoftlayerCloudImageDetails();
+        return new SoftlayerCloudInstance(checkAndCreateImage(imageDetails));
     }
 
     @Override
     protected SoftlayerCloudImage checkAndCreateImage(
-            @NotNull final VmwareCloudImageDetails imageDetails)
+            @NotNull final SoftlayerCloudImageDetails imageDetails)
     {
         return new SoftlayerCloudImage();
     }
