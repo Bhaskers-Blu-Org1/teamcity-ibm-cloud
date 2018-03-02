@@ -1,13 +1,8 @@
-package jetbrains.buildServer.clouds.softlayer
+package jetbrains.buildServer.clouds.softlayer;
 
 import jetbrains.buildServer.clouds.*
 import jetbrains.buildServer.clouds.base.AbstractCloudClientFactory
 import jetbrains.buildServer.clouds.base.errors.TypedCloudErrorInfo
-import jetbrains.buildServer.serverSide.AgentDescription
-import jetbrains.buildServer.serverSide.PropertiesProcessor
-import jetbrains.buildServer.serverSide.ServerSettings
-import jetbrains.buildServer.web.openapi.PluginDescriptor
-import java.util.*
 
 class SoftlayerCloudClientFactory 
     extends AbstractCloudClientFactory<SoftlayerCloudImageDetails,
