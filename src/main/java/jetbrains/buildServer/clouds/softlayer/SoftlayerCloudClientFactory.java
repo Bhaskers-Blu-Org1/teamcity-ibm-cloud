@@ -1,4 +1,4 @@
-package jetbrains.buildServer.clouds.azure.arm
+package jetbrains.buildServer.clouds.softlayer
 
 import jetbrains.buildServer.clouds.*
 import jetbrains.buildServer.clouds.base.AbstractCloudClientFactory
