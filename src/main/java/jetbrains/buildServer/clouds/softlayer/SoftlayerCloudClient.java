@@ -29,7 +29,6 @@ public class SoftlayerCloudClient extends AbstractCloudClient<
     protected UpdateInstancesTask<SoftlayerCloudInstance, SoftlayerCloudImage,
               SoftlayerCloudClient> createUpdateInstancesTask()
     {
-        SoftlayerUpdateTaskManager manager = new SoftlayerUpdateTaskManager();
-        return manager.createUpdateTask(new SoftlayerApiConnector(), this);
+        return new UpdateInstancesTask(new SoftlayerApiConnector(), this); 
     }
 }
