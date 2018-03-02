@@ -1,13 +1,5 @@
 package jetbrains.buildServer.clouds.softlayer;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.text.StringUtil;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-import jetbrains.buildServer.clouds.CloudImage;
-import jetbrains.buildServer.clouds.CloudProfile;
 import jetbrains.buildServer.clouds.base.AbstractCloudClient;
 import jetbrains.buildServer.clouds.base.tasks.UpdateInstancesTask;
 import jetbrains.buildServer.serverSide.AgentDescription;

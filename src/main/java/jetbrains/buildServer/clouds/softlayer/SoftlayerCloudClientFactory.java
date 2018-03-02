@@ -3,6 +3,7 @@ package jetbrains.buildServer.clouds.softlayer;
 import jetbrains.buildServer.clouds.*
 import jetbrains.buildServer.clouds.base.AbstractCloudClientFactory
 import jetbrains.buildServer.clouds.base.errors.TypedCloudErrorInfo
+import java.util.ArrayList;
 
 class SoftlayerCloudClientFactory 
     extends AbstractCloudClientFactory<SoftlayerCloudImageDetails,
