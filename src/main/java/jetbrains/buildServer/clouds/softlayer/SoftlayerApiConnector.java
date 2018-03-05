@@ -32,9 +32,55 @@ public interface SoftlayerApiConnector
     {
     }
 
+    @NotNull
+    @Override
     public String getKey()
     {
         //The key is meant "to represent the same username and server url/region/instance".
         return "key";
     }
-    //TODO: Finish writing this.
+
+    @Override
+    @NotNull
+    public <R extends AbstractInstance> Map<String, R> fetchInstances(
+            @NotNull final SoftlayerCloudImage image) 
+            throws SoftlayerCheckedCloudException
+    {
+        Map<SoftlayerCloudImage, Map<String, R>> imageMap
+            = fetchInstances(Collections.singleton(image));
+        Map<String, R> res = imageMap.get(image);
+        return res == null ? Collections.emptyMap() : res;
+    }
+
+    @Override
+    @NotNull
+    public <R extends AbstractInstance> Map<SoftlayerCloudImage, Map<String, R>>
+            fetchInstances(@NotNull final Collection<SoftlayerCloudImage> images)
+            throws SoftlayerCheckedCloudException
+    {
+        Map<SoftlayerCloudImage, Map<String, R>> result = new HashMap<>();
+        return result;
+    }
+
+    @NotNull
+    @Deprecated
+    TypedCloudErrorInfo[] checkImage(@NotNull final SoftlayerCloudImage image)
+    {
+        return new TypedCloudErrorInfo[1];
+    }
+ 
+    @Override
+    public Map<SoftlayerCloudImage, TypedCloudErrorInfo[]> checkImages(
+            @NotNull final Collection<SoftlayerCloudImage> images)
+    {
+        final Map<SoftlayerCloudImage, TypedCloudErrorInfo[]> retval 
+            = new HashMap<>();
+        return retval;
+    }
+
+    @NotNull
+    public TypedCloudErrorInfo[] checkInstance(
+            @NotNull final SoftlayerCloudInstance instance)
+    {
+        return new TypedCloudErrorInfo[1];
+    }
