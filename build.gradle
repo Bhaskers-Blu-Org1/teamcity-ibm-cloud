@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "com.github.rodm.teamcity-server" version "1.1-rc-1"
+    id "com.github.rodm.teamcity-server" version "1.0"
 }
 
 ext {
@@ -30,4 +30,10 @@ teamcity {
             }
         }
     }
+}
+
+dependencies {
+    provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
+    provided "org.jetbrains.teamcity:cloud-interface:$teamcityVersion"
+    provided "org.jetbrains.teamcity:cloud-shared:$teamcityVersion"
 }

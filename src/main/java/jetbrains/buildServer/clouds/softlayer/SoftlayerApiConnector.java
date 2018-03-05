@@ -1,37 +1,33 @@
 package jetbrains.buildServer.clouds.softlayer;
 
-import com.vmware.vim25.CustomizationSpec;
-import com.vmware.vim25.VirtualMachineSnapshotTree;
-import com.vmware.vim25.mo.ManagedEntity;
-import com.vmware.vim25.mo.Task;
-import com.vmware.vim25.mo.VirtualMachine;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import jetbrains.buildServer.clouds.CloudConstants;
-import jetbrains.buildServer.clouds.CloudInstanceUserData;
-import jetbrains.buildServer.clouds.InstanceStatus;
 import jetbrains.buildServer.clouds.base.connector.AbstractInstance;
 import jetbrains.buildServer.clouds.base.connector.CloudApiConnector;
-import jetbrains.buildServer.clouds.vmware.VmwareCloudImage;
-import jetbrains.buildServer.clouds.vmware.VmwareCloudInstance;
-import jetbrains.buildServer.clouds.vmware.connector.beans.FolderBean;
-import jetbrains.buildServer.clouds.vmware.connector.beans.ResourcePoolBean;
-import jetbrains.buildServer.clouds.vmware.errors.VmwareCheckedCloudException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import jetbrains.buildServer.clouds.base.errors.TypedCloudErrorInfo;
+import jetbrains.buildServer.clouds.InstanceStatus;
 
-public interface SoftlayerApiConnector
-    extends CloudApiConnector<SoftlayerCloudImage, SoftlayerCloudInstance>
+public class SoftlayerApiConnector
+    implements CloudApiConnector<SoftlayerCloudImage, SoftlayerCloudInstance>
 {
     public SoftlayerApiConnector()
     {
+        System.out.println("new connector");
     }
 
     public void test() throws SoftlayerCheckedCloudException;
     {
+        System.out.println("this is a test");
     }
 
+    @NotNull
+    InstanceStatus getInstanceStatus(@NotNull final SoftlayerCloudInstance)
+    {
+        return new InstanceStatus.UNKNOWN;
+    }
+/*
     @NotNull
     @Override
     public String getKey()
@@ -61,14 +57,14 @@ public interface SoftlayerApiConnector
         Map<SoftlayerCloudImage, Map<String, R>> result = new HashMap<>();
         return result;
     }
-
+*/
     @NotNull
     @Deprecated
     TypedCloudErrorInfo[] checkImage(@NotNull final SoftlayerCloudImage image)
     {
         return new TypedCloudErrorInfo[1];
     }
- 
+/* 
     @Override
     public Map<SoftlayerCloudImage, TypedCloudErrorInfo[]> checkImages(
             @NotNull final Collection<SoftlayerCloudImage> images)
@@ -77,10 +73,11 @@ public interface SoftlayerApiConnector
             = new HashMap<>();
         return retval;
     }
-
+*/
     @NotNull
     public TypedCloudErrorInfo[] checkInstance(
             @NotNull final SoftlayerCloudInstance instance)
     {
         return new TypedCloudErrorInfo[1];
     }
+}
