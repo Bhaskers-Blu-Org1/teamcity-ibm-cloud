@@ -1,57 +1,13 @@
 package jetbrains.buildServer.clouds.softlayer;
 
-import jetbrains.buildServer.clouds.*;
-import jetbrains.buildServer.clouds.base.AbstractCloudClientFactory;
-import jetbrains.buildServer.clouds.base.errors.TypedCloudErrorInfo;
+import jetbrains.buildServer.clouds.CloudClientFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-class SoftlayerCloudClientFactory 
-    extends AbstractCloudClientFactory<SoftlayerCloudImageDetails,
-                                       SoftlayerCloudClient>
+class SoftlayerCloudClientFactory extends SoftlayerCloudType 
+    implements CloudClientFactory
 {
-    @NotNull
-    @Override
-    public SoftlayerCloudClient createNewClient(@NotNull final CloudState state,
-            @NotNull final Collection<SoftlayerCloudImageDetails> images,
-            @NotNull final CloudClientParameters params)
-    {
-        return new SoftlayerCloudClient();
-    }
-
-    @NotNull
-    @Override
-    public SoftlayerCloudClient createNewClient(@NotNull final CloudState state,
-            @NotNull final CloudClientParameters params,
-            final TypedCloudErrorInfo[] profileErrors);
-    {
-        return new SoftlayerCloudClient();
-    }
-
-    @NotNull
-    @Override
-    public Collection<SoftlayerCloudImageDetails> parseImageData(
-            CloudClientParameters params)
-    {
-        Collection<SoftlayerCloudImageDetails> output
-            = new ArrayList<SoftlayerCloudImageDetails>();
-        output.add(new SoftlayerCloudImageDetails());
-        return output;
-    }
-
-    @NotNull
-    public String getDisplayName()
-    {
-        return "SoftLayer";
-    }
-
-    @Nullable
-    @Override
-    protected TypedCloudErrorInfo[] checkClientParams(
-            @NotNull final CloudClientParameters params)
-    {
-        return new TypedCloudErrorInfo[0];
-    }
+    public SoftlayerCloudClientFactory(
 }
