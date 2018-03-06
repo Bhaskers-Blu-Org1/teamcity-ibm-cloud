@@ -5,6 +5,7 @@ import jetbrains.buildServer.clouds.base.connector.AbstractInstance;
 import jetbrains.buildServer.clouds.base.AbstractCloudImage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.util.Map;
 
 public class SoftlayerCloudImage extends AbstractCloudImage<
         SoftlayerCloudInstance, SoftlayerCloudImageDetails>
@@ -41,5 +42,10 @@ public class SoftlayerCloudImage extends AbstractCloudImage<
             final AbstractInstance realInstance)
     {
         return new SoftlayerCloudInstance(image);
+    }
+
+    public void detectNewInstances(final Map<String,? extends AbstractInstance> realInstances)
+    {
+        System.out.println("detect new instances");
     }
 }

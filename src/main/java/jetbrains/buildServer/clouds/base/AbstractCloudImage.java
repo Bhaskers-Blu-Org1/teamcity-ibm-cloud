@@ -37,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
  *         Time: 1:50 PM
  */
 public abstract class AbstractCloudImage<T extends AbstractCloudInstance, G extends CloudImageDetails> implements CloudImage, UpdatableCloudErrorProvider {
-  protected final UpdatableCloudErrorProvider myErrorProvider;
+  //protected final UpdatableCloudErrorProvider myErrorProvider;
   protected final Map<String, T> myInstances;
   private final String myName;
   private final String myId;

@@ -1,6 +1,7 @@
 package jetbrains.buildServer.clouds.softlayer;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import jetbrains.buildServer.clouds.base.connector.AbstractInstance;
 import jetbrains.buildServer.clouds.base.connector.CloudApiConnector;
@@ -17,15 +18,16 @@ public class SoftlayerApiConnector
         System.out.println("new connector");
     }
 
-    public void test() throws SoftlayerCheckedCloudException;
+    public void test() throws SoftlayerCheckedCloudException
     {
         System.out.println("this is a test");
     }
 
     @NotNull
-    InstanceStatus getInstanceStatus(@NotNull final SoftlayerCloudInstance)
+    public InstanceStatus getInstanceStatus(
+            @NotNull final SoftlayerCloudInstance instance)
     {
-        return new InstanceStatus.UNKNOWN;
+        return InstanceStatus.UNKNOWN;
     }
 /*
     @NotNull
@@ -59,8 +61,7 @@ public class SoftlayerApiConnector
     }
 */
     @NotNull
-    @Deprecated
-    TypedCloudErrorInfo[] checkImage(@NotNull final SoftlayerCloudImage image)
+    public TypedCloudErrorInfo[] checkImage(@NotNull final SoftlayerCloudImage image)
     {
         return new TypedCloudErrorInfo[1];
     }
@@ -79,5 +80,13 @@ public class SoftlayerApiConnector
             @NotNull final SoftlayerCloudInstance instance)
     {
         return new TypedCloudErrorInfo[1];
+    }
+
+    @NotNull
+    public Map<String, SoftlayerInstance> listImageInstances(
+            @NotNull final SoftlayerCloudImage image)
+            throws SoftlayerCheckedCloudException
+    {
+        return Collections.singletonMap("image name", new SoftlayerInstance());
     }
 }
