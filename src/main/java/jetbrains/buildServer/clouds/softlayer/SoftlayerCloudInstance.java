@@ -1,8 +1,19 @@
 package jetbrains.buildServer.clouds.softlayer;
 
-import jetbrains.buildServer.clouds.base.AbstractCloudInstance;
+import jetbrains.buildServer.clouds.CloudInstance;
+import jetbrains.buildServer.clouds.InstanceStatus;
 
-public class SoftlayerCloudInstance extends AbstractCloudInstance<SoftlayerCloudImage>
+public class SoftlayerCloudInstance implements CloudInstance
 {
-    //No methods are declared abstract in superclass.
+    private InstanceStatus myStatus;
+
+    public SoftlayerCloudInstance()
+    {
+        myStatus = InstanceStatus.UNKNOWN;
+    }
+
+    public InstanceStatus getStatus()
+    {
+        return myStatus;
+    }
 }
