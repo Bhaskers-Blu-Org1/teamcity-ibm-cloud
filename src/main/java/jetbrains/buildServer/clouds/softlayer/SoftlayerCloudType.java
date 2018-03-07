@@ -10,9 +10,9 @@ import java.util.Collections;
 
 public class SoftlayerCloudType implements CloudType
 {
-    private String id;
-    private String displayName;
-    private String jspPath;
+    protected String id;
+    protected String displayName;
+    protected String jspPath;
 
     public SoftlayerCloudType(PluginDescriptor pluginDescriptor)
     {
@@ -57,8 +57,9 @@ public class SoftlayerCloudType implements CloudType
     {
         final Map<String, String> configParams
             = agentDescription.getConfigurationParameters();
-        return configParams.containsKey(LocalCloudConstants.IMAGE_ID_PARAM_NAME)
+        return configParams.containsKey(
+                SoftlayerCloudConstants.IMAGE_ID_PARAM_NAME)
             && configParams.containsKey(
-                LocalCloudConstants.INSTANCE_ID_PARAM_NAME);
-  }
+                SoftlayerCloudConstants.INSTANCE_ID_PARAM_NAME);
+    }
 }
