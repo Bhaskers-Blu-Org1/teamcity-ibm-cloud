@@ -7,6 +7,7 @@ import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.AgentDescription;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 public class SoftlayerCloudType implements CloudType
 {
@@ -31,7 +32,7 @@ public class SoftlayerCloudType implements CloudType
         return displayName;
     }
 
-    public getEditProfileUrl()
+    public String getEditProfileUrl()
     {
         return jspPath;
     }

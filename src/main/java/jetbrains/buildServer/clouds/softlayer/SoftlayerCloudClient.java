@@ -4,6 +4,8 @@ import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.serverSide.AgentDescription;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.util.Collection;
+import java.util.Collections;
 
 public class SoftlayerCloudClient implements CloudClientEx
 {
@@ -11,7 +13,7 @@ public class SoftlayerCloudClient implements CloudClientEx
     {
         System.out.println("new client");
     }
-
+    
     public boolean isInitialized()
     {
         return false;
@@ -51,32 +53,31 @@ public class SoftlayerCloudClient implements CloudClientEx
     public CloudInstance startNewInstance(CloudImage image,
         CloudInstanceUserData data)
     {
-        return ((LocalCloudImage)image).startNewInstance(data);
+        return ((SoftlayerCloudImage)image).startNewInstance(data);
     }
-/*
+    
     @Nullable
     public SoftlayerCloudInstance findInstanceByAgent(@NotNull final 
             AgentDescription agentDescription)
     {
-        SoftlayerCloudImageDetails imageDetails = new SoftlayerCloudImageDetails();
-        return new SoftlayerCloudInstance(checkAndCreateImage(imageDetails));
+        return null;
     }
-
+    
     public void restartInstance(@NotNull final CloudInstance instance)
     {
-        ((SoftlayerCloudInstance) instance).restart();
+        System.out.println("restart");
     }
 
     public void terminateInstance(@NotNull final CloudInstance instance)
     {
-        ((LocalCloudInstance) instance).terminate();
+        System.out.println("terminate");
     }
-
+    
     public void dispose()
     {
         System.out.println("dispose");
     }
-*/
+/* 
     @Nullable
     private SoftlayerCloudImage findImage(
             @NotNull final AgentDescription agentDescription)
@@ -94,4 +95,5 @@ public class SoftlayerCloudClient implements CloudClientEx
         return agentDescription.getConfigurationParameters().get(
                 SoftlayerCloudConstants.INSTANCE_ID_PARAM_NAME);
     }
+*/
 }

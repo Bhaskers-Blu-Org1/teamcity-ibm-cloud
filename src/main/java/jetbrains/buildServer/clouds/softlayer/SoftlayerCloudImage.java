@@ -78,7 +78,7 @@ public class SoftlayerCloudImage implements CloudImage
     @NotNull
     public Collection<? extends CloudInstance> getInstances()
     {
-        return Collections.emptyList()
+        return Collections.emptyList();
     }
 
     @Nullable
@@ -107,7 +107,7 @@ public class SoftlayerCloudImage implements CloudImage
     {
         //Create a fake instance.
         final SoftlayerCloudInstance instance = createInstance("12345678");
-        instance.start(data);
+        //instance.start(data);
         return instance;
     }
 
