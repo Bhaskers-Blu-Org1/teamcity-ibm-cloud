@@ -25,4 +25,9 @@ class SoftlayerCloudClientFactory extends SoftlayerCloudType
     {
         return new SoftlayerCloudClient(params);
     }
+
+    public String getDisplayName()
+    {
+        return "Softlayer";
+    }
 }
