@@ -7,4 +7,6 @@
     <bean id="softlayerPlugin"
           class="ibm.teamcity.softlayerPlugin.AppServer">
     </bean>
+    <bean class="jetbrains.buildServer.clouds.softlayer.SoftlayerCloudClientFactory">
+    </bean>
 </beans>
