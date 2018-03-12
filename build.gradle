@@ -32,8 +32,21 @@ teamcity {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
+
 dependencies {
     provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
     provided "org.jetbrains.teamcity:cloud-interface:$teamcityVersion"
     provided "org.jetbrains.teamcity:cloud-shared:$teamcityVersion"
+    compile 'com.squareup.okhttp3:okhttp:3.10.0'
+}
+
+jar {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    manifest {
+        attributes 'Main-Class': 'ibm.buildServer.clouds.softlayer.ImageList'
+    }
 }
