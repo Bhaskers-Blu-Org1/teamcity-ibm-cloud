@@ -3,6 +3,8 @@
        xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
        default-autowire="constructor">
-       
+       <bean class="ibm.buildServer.clouds.softlayer.API.CreateVSI"></bean>
        <bean class="ibm.buildServer.clouds.softlayer.SoftlayerCloudClientFactory"></bean>
+       <bean class="ibm.buildServer.clouds.softlayer.SoftlayerEditProfileController"></bean>
+       
 </beans>

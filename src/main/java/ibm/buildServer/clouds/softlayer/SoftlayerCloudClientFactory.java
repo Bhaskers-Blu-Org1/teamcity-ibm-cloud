@@ -25,7 +25,7 @@ class SoftlayerCloudClientFactory implements CloudClientFactory, SoftlayerCloudC
 		//Registering plugin with cloud.
 		cloudRegistrar.registerCloudFactory(this);
 		//plugin's settings page
-		settingPagePath = pluginDescriptor.getPluginResourcesPath("softlayer-cloud-settings.jsp");
+		settingPagePath = pluginDescriptor.getPluginResourcesPath("softlayer-cloud-settings.html");
 	}
 	
 	
