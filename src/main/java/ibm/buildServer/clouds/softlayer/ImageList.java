@@ -7,39 +7,27 @@
  */
 package ibm.buildServer.clouds.softlayer;
 
-//import com.squareup.okhttp.OkHttpClient;
-import java.io.IOException;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
-import org.springframework.http.client.OkHttpClientHttpRequestFactory;
+import com.softlayer.api.*;
+import com.softlayer.api.service.Account;
+import com.softlayer.api.service.virtual.guest.block.device.template.*;
 
 public class ImageList {
 	
-	
-	
-	public static void main(String[] args) {
-		System.out.println("hell");
-		try
+	public static HashMap<Long,String> getPrivateImageTemplate()
+	{
+		ApiClient client = new RestApiClient().withCredentials("vidhi.shah@ibm.com", "c0e5a3602aa6eb56bce8a575aa975d2cf2b2c40893308bfb736831b1c741beda");
+		List<Group> groupList = Account.service(client).getPrivateBlockDeviceTemplateGroups();
+		HashMap<Long,String> groupMap = new HashMap<Long, String>();
+		for(Group group: groupList)
 		{
-		OkHttpClient client = new OkHttpClient();
-
-		Request request = new Request.Builder()
-		  .url("https://vidhi.shah@ibm.com:c0e5a3602aa6eb56bce8a575aa975d2cf2b2c40893308bfb736831b1c741beda@api.softlayer.com/rest/v3/SoftLayer_Account/PrivateBlockDeviceTemplateGroups.json")
-		  .get()
-		  .addHeader("Cache-Control", "no-cache")
-		  .addHeader("Postman-Token", "ca1428a6-8b8c-4abd-9c09-bdb7f176bf95")
-		  .build();
-
-		Response response = client.newCall(request).execute();
-		System.out.println(response);
-		}
-		catch(IOException e)
-		{
-			
+			groupMap.put(group.getId(),group.getName());
 		}
 		
+		return groupMap;
 	}
-
 }
