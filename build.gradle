@@ -32,18 +32,20 @@ teamcity {
     }
 }
 repositories {
-mavenCentral()
+    flatDir { dirs 'lib' }
 }
+
+
 dependencies {
 	
-	compile 'com.squareup.okhttp3:okhttp:3.10.0'
     provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
     provided "org.jetbrains.teamcity:cloud-interface:$teamcityVersion"
     provided "org.jetbrains.teamcity:cloud-shared:$teamcityVersion"
-    compile "com.softlayer.api:softlayer-api-client:0.2.5"
+    compile 'com.squareup.okhttp3:okhttp:3.10.0'
 }
 
 jar {
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest {
         attributes 'Main-Class': 'ibm.buildServer.clouds.softlayer.ImageList'
     }
