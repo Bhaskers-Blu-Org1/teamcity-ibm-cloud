@@ -31,13 +31,13 @@ teamcity {
         }
     }
 }
+
 repositories {
-    flatDir { dirs 'lib' }
+    mavenCentral()
 }
 
 
 dependencies {
-	
     provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
     provided "org.jetbrains.teamcity:cloud-interface:$teamcityVersion"
     provided "org.jetbrains.teamcity:cloud-shared:$teamcityVersion"
@@ -45,7 +45,7 @@ dependencies {
 }
 
 jar {
-	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest {
         attributes 'Main-Class': 'ibm.buildServer.clouds.softlayer.ImageList'
     }
