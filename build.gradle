@@ -40,6 +40,7 @@ dependencies {
     provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
     provided "org.jetbrains.teamcity:cloud-interface:$teamcityVersion"
     provided "org.jetbrains.teamcity:cloud-shared:$teamcityVersion"
+    compile "com.softlayer.api:softlayer-api-client:0.2.5"
 }
 
 jar {
