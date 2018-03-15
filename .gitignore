@@ -1,6 +1,3 @@
 *.class
-<<<<<<< Updated upstream
-=======
 *.gradle
->>>>>>> Stashed changes
 /build/
