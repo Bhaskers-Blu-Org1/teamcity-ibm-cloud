@@ -45,9 +45,11 @@ dependencies {
     compile 'com.softlayer.api:softlayer-api-client:0.2.5'
 }
 
-jar {
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    manifest {
-        attributes 'Main-Class': 'ibm.buildServer.clouds.softlayer.ImageList'
-    }
-}
+ jar {
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+     manifest {
+         attributes 'Main-Class': 'ibm.buildServer.clouds.softlayer.API.ImageList'
+     
+     }
+     
+ }
