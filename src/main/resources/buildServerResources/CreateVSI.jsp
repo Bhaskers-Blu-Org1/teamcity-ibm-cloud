@@ -9,8 +9,9 @@
 -> Datacenter: ${datacenterName}<br/>
 -> Agent name: ${agentName}<br/>
 -> Number of Instances: ${instanceNumber}<br/>
--> Machine Type: ${machineType}<br/>
--> Disk Type: ${diskType}<br/>
+-> Max Memory: ${MaxMemory}<br/>
+-> Max CPU: ${MaxCores}<br/>
+-> Disk Type: ${DiskType}<br/>
 -> Network: ${network}<br/>
 
 

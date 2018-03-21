@@ -51,7 +51,7 @@
 		    <td>
 			     <select name="datacenterName">
 			    		<option  value="dal10">DALLAS 10</option>
-			    		<option  value="dal12">"DALLAS 12"</option>
+			    		<option  value="dal12">DALLAS 12</option>
 			    		<option  value="dal13">DALLAS 13</option>
 			    		
 			    </select>
@@ -71,33 +71,53 @@
 			   <input type="text" name="instanceNumber" value="" />
 		     </td>
 		   </tr>
-		    <!-- Machine type: RAM, CORES, DISK -->
+		    <!-- Machine type: RAM, CORES -->
 		   <tr>
-		   <th>
-		   <label for="">Machine Type:</label>
-		   </th>
+		   <th><label for="">RAM:</label></th>
 		    <td>
-			   <select name="machineType">
-			    		<option  value="203977,204145,PRESET215">B1.1x2x25  [vcpu:1 	ram:2 GB 	first disk:25 GB (SAN)]</option>	
-			   </select>
-		     </td>
-		   </tr>
-		   <!-- Disk Type -->
-		   <tr>
-		   <th><label for="">Disk Type:</label></th>
+			     <select name="MaxMemory">
+			    		<option  value="1024">1 GB</option>
+			    		<option  value="2048">2 GB</option>
+			    		<option  value="4096">4 GB</option>
+			    		<option  value="8192">8 GB</option>
+			    		<option  value="16384">16 GB</option>
+			    		<option  value="32768">32 GB</option>
+			    		<option  value="65536">64 GB</option>
+			      </select>
+		      </td>
+		     </tr>
+		    <tr>
+		    <th><label for="">CPU:</label></th>
 		    <td>
-			   <select name="diskType">
-			    		<option  value="SAN">SAN</option>
-			    </select>
-		     </td>
-		   </tr>
+			     <select name="MaxCores">
+			    		<option  value="1">1 vCPU</option>
+			    		<option  value="2">2 vCPU</option>
+			    		<option  value="4">4 vCPU</option>
+			    		<option  value="8">8 vCPU</option>
+			    		<option  value="16">16 vCPU</option>
+			    		<option  value="32">32 vCPU</option>
+			    		<option  value="48">64 vCPU</option>
+			      </select>
+		      </td>
+		     </tr>
+		     <!-- Disk Type -->
+		    <tr>
+		    <th><label for="">DISK:</label></th>
+		    <td>
+			     <select name="DiskType">
+			    		<option  value="true">LOCAL</option>
+			    		<option  value="false">SAN</option>
+			      </select>
+		      </td>
+		    </tr>
 		    <!-- Network Type -->
 		   <tr>
 		   <th><label for="">Network:</label></th>
 		    <td>
 			   <select name="network">
-			    		<option  value="10">10</option>
-			    		<option  value="100">100</option>
+			    		<option  value="10">10 Mbps</option>
+			    		<option  value="100">100 Mbps</option>
+			    		<option  value="1000">1 Gbps</option>
 			    </select>
 		     </td>
 		   </tr>  

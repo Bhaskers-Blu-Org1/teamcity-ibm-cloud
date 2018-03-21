@@ -36,8 +36,9 @@ public class CreateVSI extends BaseController {
     		mv.getModel().put("datacenterName", httpServletRequest.getParameter("datacenterName"));
     		mv.getModel().put("agentName", httpServletRequest.getParameter("agentName"));
     		mv.getModel().put("instanceNumber", httpServletRequest.getParameter("instanceNumber"));
-    		mv.getModel().put("machineType", httpServletRequest.getParameter("machineType"));
-    		mv.getModel().put("diskType", httpServletRequest.getParameter("diskType"));
+    		mv.getModel().put("MaxMemory", httpServletRequest.getParameter("MaxMemory"));
+    		mv.getModel().put("MaxCores", httpServletRequest.getParameter("MaxCores"));
+    		mv.getModel().put("DiskType", httpServletRequest.getParameter("DiskType"));
     		mv.getModel().put("network", httpServletRequest.getParameter("network"));
     		
     		
@@ -48,11 +49,11 @@ public class CreateVSI extends BaseController {
     		Guest guest = new Guest();
     		guest.setHostname(httpServletRequest.getParameter("agentName"));
     		guest.setDomain("ibmwdtest.com");
-    		guest.setStartCpus(new Long(1));
-    		guest.setMaxMemory(new Long(1024));
+    		guest.setStartCpus(httpServletRequest.getParameter("MaxCores"));
+    		guest.setMaxMemory(httpServletRequest.getParameter("MaxMemory"));
     		guest.setHourlyBillingFlag(true);
     		guest.setOperatingSystemReferenceCode("CENTOS_7_64");
-    		guest.setLocalDiskFlag(false);
+    		guest.setLocalDiskFlag(httpServletRequest.getParameter("DiskType"));
     		guest.setDatacenter(new Location());
     		guest.getDatacenter().setName(httpServletRequest.getParameter("datacenterName"));
     		guest = Guest.service(client).createObject(guest);
