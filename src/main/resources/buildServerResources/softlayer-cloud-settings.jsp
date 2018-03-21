@@ -18,13 +18,13 @@
 </script>
 
 <!-- Add Image button -->
-<forms:addButton title="Add image" id="softlayerAddImage">Add image</forms:addButton>
+<!--<forms:addButton title="Add image" id="softlayerAddImage">Add image</forms:addButton>
 <div id="addImageContainer" class="addImageContainer">
   <div class="addImageContainer-content">
   	<div class="headerContainer">
 	  	<span class="header">Add Image</span>
 	  	<span class="close">&times;</span>
-	</div>
+	</div>-->
   	<table class="runnerFormTable addImageContainerTable">
   	<!-- Image list row -->
 		<tr>
@@ -32,7 +32,7 @@
 		     <td>
 			     <select name="imageName">
 			    		<% 
-			    			HashMap<Long,String> groupMap = ImageList.getPrivateImageTemplate(); 
+			    		TreeMap<Long,String> groupMap = ImageList.getPrivateImageTemplate(); 
 			    			for (Map.Entry<Long, String> group : groupMap.entrySet()) 
 			    			{
 				    		    Long key = group.getKey();
@@ -124,8 +124,8 @@
 	 </table> 
 	 
     
-	</div>
- </div>
+	<!--</div>
+ </div>-->
 
 <br>
 <br>

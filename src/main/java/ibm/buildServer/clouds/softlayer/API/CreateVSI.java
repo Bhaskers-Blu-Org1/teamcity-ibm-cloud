@@ -41,19 +41,17 @@ public class CreateVSI extends BaseController {
     		mv.getModel().put("DiskType", httpServletRequest.getParameter("DiskType"));
     		mv.getModel().put("network", httpServletRequest.getParameter("network"));
     		
-    		
-    		
 
     		ApiClient client = new RestApiClient().withCredentials("vidhi.shah@ibm.com", "c0e5a3602aa6eb56bce8a575aa975d2cf2b2c40893308bfb736831b1c741beda");
 
     		Guest guest = new Guest();
     		guest.setHostname(httpServletRequest.getParameter("agentName"));
     		guest.setDomain("ibmwdtest.com");
-    		guest.setStartCpus(httpServletRequest.getParameter("MaxCores"));
-    		guest.setMaxMemory(httpServletRequest.getParameter("MaxMemory"));
+    		guest.setStartCpus(Long.parseLong(httpServletRequest.getParameter("MaxCores")));
+    		guest.setMaxMemory(Long.parseLong(httpServletRequest.getParameter("MaxMemory")));
     		guest.setHourlyBillingFlag(true);
     		guest.setOperatingSystemReferenceCode("CENTOS_7_64");
-    		guest.setLocalDiskFlag(httpServletRequest.getParameter("DiskType"));
+    		guest.setLocalDiskFlag(Boolean.valueOf(httpServletRequest.getParameter("DiskType")));
     		guest.setDatacenter(new Location());
     		guest.getDatacenter().setName(httpServletRequest.getParameter("datacenterName"));
     		guest = Guest.service(client).createObject(guest);
