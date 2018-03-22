@@ -17,6 +17,7 @@ import com.softlayer.api.service.container.virtual.guest.configuration.Option;
 import com.softlayer.api.service.software.component.Password;
 import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.service.virtual.guest.block.Device;
+import com.softlayer.api.service.virtual.guest.block.device.template.Group;
 
 public class CreateVSI extends BaseController {
     private PluginDescriptor myDescriptor;
@@ -41,8 +42,9 @@ public class CreateVSI extends BaseController {
     		mv.getModel().put("DiskType", httpServletRequest.getParameter("DiskType"));
     		mv.getModel().put("network", httpServletRequest.getParameter("network"));
     		
-
-    		ApiClient client = new RestApiClient().withCredentials("vidhi.shah@ibm.com", "c0e5a3602aa6eb56bce8a575aa975d2cf2b2c40893308bfb736831b1c741beda");
+    		String username = "vidhi.shah@ibm.com";
+    		String apiKey = "c0e5a3602aa6eb56bce8a575aa975d2cf2b2c40893308bfb736831b1c741beda";
+    		ApiClient client = new RestApiClient().withCredentials(username, apiKey);
 
     		Guest guest = new Guest();
     		guest.setHostname(httpServletRequest.getParameter("agentName"));
@@ -50,11 +52,21 @@ public class CreateVSI extends BaseController {
     		guest.setStartCpus(Long.parseLong(httpServletRequest.getParameter("MaxCores")));
     		guest.setMaxMemory(Long.parseLong(httpServletRequest.getParameter("MaxMemory")));
     		guest.setHourlyBillingFlag(true);
-    		guest.setOperatingSystemReferenceCode("CENTOS_7_64");
+    		Group blockDevice = new Group();
+    		blockDevice.setGlobalIdentifier("955998a7-f5b8-43fa-be8e-75bdae5bf0f5");
+    		guest.setBlockDeviceTemplateGroup(blockDevice);
+    		//guest.setOperatingSystemReferenceCode("CENTOS_7_64");
     		guest.setLocalDiskFlag(Boolean.valueOf(httpServletRequest.getParameter("DiskType")));
     		guest.setDatacenter(new Location());
     		guest.getDatacenter().setName(httpServletRequest.getParameter("datacenterName"));
-    		guest = Guest.service(client).createObject(guest);
+    		try{
+    			guest = Guest.service(client).createObject(guest);
+    			System.out.println(guest.getId());
+    		} catch (Exception e)
+    	    {
+    	        System.out.println("Error: " + e);
+    	    }    		
+    				
     		//System.out.println("Virtual server ordered with ID: " + guest.getId());
     		mv.getModel().put("vsiId", guest.getId());
     		
