@@ -7,6 +7,12 @@ public interface SoftlayerCloudConstants
 	/** Constants arranged in ascending order.
 	 * */	
   @NotNull String DISPLAY_NAME = "IBM SoftLayer";
+  
   //IBMSL = IBM SoftLayer
   @NotNull String CLOUD_CODE = "IBMSL";
+  
+  //SETTINGS PAGE FILE NAME
+  String SETTINGS_JSP_PAGE = "softlayer-cloud-settings.jsp";
+  String SETTINGS_HTML_PAGE = "softlayer-cloud-settings.html";
+  
 }

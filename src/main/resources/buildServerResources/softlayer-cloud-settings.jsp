@@ -1,47 +1,25 @@
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ include file="/include.jsp" %>
+<%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="forms" tagdir="/WEB-INF/tags/forms" %>
+<%@ taglib prefix="util" uri="/WEB-INF/functions/util" %>
+<%@ taglib prefix="bs" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="intprop" uri="/WEB-INF/functions/intprop" %>
+<%@ taglib prefix="admin" tagdir="/WEB-INF/tags/admin" %>
+<%--@elvariable id="resPath" type="java.lang.String"--%>
 <%@ page import="ibm.buildServer.clouds.softlayer.API.ImageList" %>
 <%@ page import="java.util.*" %>
 </table>
-<script type="text/javascript">
-    BS.LoadStyleSheetDynamically("<c:url value=' ${teamcityPluginResourcesPath}softlayer-cloud-settings.css'/>");
-</script>
-<script type="text/javascript">
-    $j.ajax({
-        url: "<c:url value="${teamcityPluginResourcesPath}softlayer-cloud-settings.js"/>",
-        dataType: "script",
-        success: function () {
-        },
-        cache: true
-    });
-</script>
-
-<!-- Add Image button -->
-<!--<forms:addButton title="Add image" id="softlayerAddImage">Add image</forms:addButton>
-<div id="addImageContainer" class="addImageContainer">
-  <div class="addImageContainer-content">
-  	<div class="headerContainer">
-	  	<span class="header">Add Image</span>
-	  	<span class="close">&times;</span>
-	</div>-->
-  	<table class="runnerFormTable addImageContainerTable">
+<table class="runnerFormTable addImageContainerTable">
   	<!-- Image list row -->
 		<tr>
 			<th><label for="">Image List:</label></th>
 		     <td>
 			     <select name="imageName">
-			    		<% 
-			    		TreeMap<Long,String> groupMap = ImageList.getPrivateImageTemplate(); 
-			    			for (Map.Entry<Long, String> group : groupMap.entrySet()) 
-			    			{
-				    		    Long key = group.getKey();
-				    		    String value = group.getValue();
-			    		%>
-			    		<option  value="<%=key %>"><%=value %></option>
-			    		<%
-			    			}
-			    		%>
+			     <c:forEach var="image" items="${imageList}">
+			     <option value="${image.key}"><c:out value="${image.value}"/></option>
+			     </c:forEach> 
 			    </select>
 		     </td>
 		   </tr>
@@ -122,7 +100,6 @@
 		     </td>
 		   </tr>  
 	 </table> 
-	 
     
 	<!--</div>
  </div>-->
