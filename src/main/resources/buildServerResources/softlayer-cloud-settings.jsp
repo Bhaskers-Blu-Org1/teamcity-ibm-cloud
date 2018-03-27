@@ -6,28 +6,33 @@
 <%@ taglib prefix="util" uri="/WEB-INF/functions/util" %>
 <%@ taglib prefix="bs" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="intprop" uri="/WEB-INF/functions/intprop" %>
-<%@ taglib prefix="admin" tagdir="/WEB-INF/tags/admin" %>
-<%--@elvariable id="resPath" type="java.lang.String"--%>
-<%@ page import="ibm.buildServer.clouds.softlayer.API.ImageList" %>
-<%@ page import="java.util.*" %>
 </table>
 <table class="runnerFormTable addImageContainerTable">
+
+    <th><label for="IBMSL_name">name:<l:star/></label>
+    </th>
+    <td>
+      <props:textProperty name="IBMSL_name" className="settings longField"/>
+      
+    </td>
+  </tr>
+
   	<!-- Image list row -->
 		<tr>
-			<th><label for="">Image List:</label></th>
+			<th><label for="IBMSL_imageName">Image List:</label></th>
 		     <td>
-			     <select name="imageName">
+			     <select name="IBMSL_imageName">
 			     <c:forEach var="image" items="${imageList}">
 			     <option value="${image.key}"><c:out value="${image.value}"/></option>
 			     </c:forEach> 
 			    </select>
 		     </td>
 		   </tr>
-		   <!-- Datacenter list row -->
+		   <!-- Datacenter list row --
 		   <tr>
-		   <th><label for="">Datacenter List:</label></th>
+		   <th><label for="IBMSL_datacenterName">Datacenter List:</label></th>
 		    <td>
-			     <select name="datacenterName">
+			     <select name="IBMSL_datacenterName">
 			    		<option  value="dal10">DALLAS 10</option>
 			    		<option  value="dal12">DALLAS 12</option>
 			    		<option  value="dal13">DALLAS 13</option>
@@ -35,25 +40,25 @@
 			    </select>
 		     </td>
 		   </tr>
-		   <!-- Agent row -->
+		   <!-- Agent row --
 		   <tr>
-		   <th><label for="">Agent Name:</label></th>
+		   <th><label for="IBMSL_agentName">Agent Name:</label></th>
 		    <td>
-			   <input type="text" name="agentName" value="" />
+			   <input type="text" name="IBMSL_agentName" value="" />
 		     </td>
 		   </tr>
-		    <!-- Number of Instances -->
+		    <!-- Number of Instances --
 		   <tr>
-		   <th><label for="">Number of Instances:</label></th>
+		   <th><label for="IBMSL_instanceNumber">Number of Instances:</label></th>
 		    <td>
-			   <input type="text" name="instanceNumber" value="" />
+			   <input type="text" name="IBMSL_instanceNumber" value="" />
 		     </td>
 		   </tr>
-		    <!-- Machine type: RAM, CORES -->
+		    <!-- Machine type: RAM, CORES --
 		   <tr>
-		   <th><label for="">RAM:</label></th>
+		   <th><label for="IBMSL_MaxMemory">RAM:</label></th>
 		    <td>
-			     <select name="MaxMemory">
+			     <select name="IBMSL_MaxMemory">
 			    		<option  value="1024">1 GB</option>
 			    		<option  value="2048">2 GB</option>
 			    		<option  value="4096">4 GB</option>
@@ -65,9 +70,9 @@
 		      </td>
 		     </tr>
 		    <tr>
-		    <th><label for="">CPU:</label></th>
+		    <th><label for="IBMSL_MaxCores">CPU:</label></th>
 		    <td>
-			     <select name="MaxCores">
+			     <select name="IBMSL_MaxCores">
 			    		<option  value="1">1 vCPU</option>
 			    		<option  value="2">2 vCPU</option>
 			    		<option  value="4">4 vCPU</option>
@@ -78,31 +83,26 @@
 			      </select>
 		      </td>
 		     </tr>
-		     <!-- Disk Type -->
+		     <!-- Disk Type --
 		    <tr>
-		    <th><label for="">DISK:</label></th>
+		    <th><label for="IBMSL_DiskType">DISK:</label></th>
 		    <td>
-			     <select name="DiskType">
+			     <select name="IBMSL_DiskType">
 			    		<option  value="true">LOCAL</option>
 			    		<option  value="false">SAN</option>
 			      </select>
 		      </td>
 		    </tr>
-		    <!-- Network Type -->
+		    <!-- Network Type --
 		   <tr>
-		   <th><label for="">Network:</label></th>
+		   <th><label for="IBMSL_network">Network:</label></th>
 		    <td>
-			   <select name="network">
+			   <select name="IBMSL_network">
 			    		<option  value="10">10 Mbps</option>
 			    		<option  value="100">100 Mbps</option>
 			    		<option  value="1000">1 Gbps</option>
 			    </select>
 		     </td>
-		   </tr>  
-	 </table> 
-    
-	<!--</div>
- </div>-->
-
-<br>
-<br>
+		   </tr>-->
+</table>
+<table class="runnerFormTable">

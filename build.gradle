@@ -14,7 +14,7 @@ plugins {
 
 ext {
   vendorName = "IBM Strategic Customer Success"
-  teamcityVersion = findProperty("teamcityVersion") ?: "10.0"
+  teamcityVersion = findProperty("teamcityVersion") ?: "2017.2"
 }
 
 teamcity {
@@ -45,8 +45,11 @@ repositories {
 
 dependencies {
   provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
+  provided "org.jetbrains.teamcity:cloud-server-api:$teamcityVersion"
+   
   provided "org.jetbrains.teamcity:cloud-interface:$teamcityVersion"
   provided "org.jetbrains.teamcity:cloud-shared:$teamcityVersion"
+  
   compile "com.softlayer.api:softlayer-api-client:0.2.5"
   compile "org.apiguardian:apiguardian-api:1.0.0"
   testCompile(
