@@ -8,37 +8,40 @@ import jetbrains.buildServer.clouds.CloudState;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.clouds.CloudRegistrar;
 import jetbrains.buildServer.serverSide.*;
+import jetbrains.buildServer.clouds.server.CloudManagerBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 //imports from java api
 import java.util.*;
 
-class SoftlayerCloudClientFactory implements CloudClientFactory, SoftlayerCloudConstants
+class SoftlayerCloudClientFactory implements CloudClientFactory
 {
 
 	private PluginDescriptor pluginDescriptor;
 	private final String settingPagePath;
+	@NotNull private final CloudManagerBase myCloudManager;
 	
-	public SoftlayerCloudClientFactory(@NotNull CloudRegistrar cloudRegistrar, @NotNull final PluginDescriptor pluginDescriptor){
+	public SoftlayerCloudClientFactory(@NotNull CloudRegistrar cloudRegistrar, @NotNull final CloudManagerBase cloudManager, @NotNull final PluginDescriptor pluginDescriptor){
 		
 		//Registering plugin with cloud.
 		cloudRegistrar.registerCloudFactory(this);
 		//plugin's settings page
-		settingPagePath = pluginDescriptor.getPluginResourcesPath("softlayer-cloud-settings.html");
+		settingPagePath = pluginDescriptor.getPluginResourcesPath(SoftlayerCloudConstants.SETTINGS_HTML_PAGE);
+		myCloudManager = cloudManager;
 	}
 	
 	
 	@NotNull
 	  public CloudClientEx createNewClient(@NotNull CloudState state, @NotNull CloudClientParameters params)
 	  {
-		return null;
+		return new SoftlayerCloudClient(params);
 	  }
 	
 	 @NotNull
 	  public String getCloudCode()
 	  {
-		 return CLOUD_CODE;
+		 return SoftlayerCloudConstants.CLOUD_CODE;
 	  }
 
 	  /**
@@ -48,7 +51,7 @@ class SoftlayerCloudClientFactory implements CloudClientFactory, SoftlayerCloudC
 	  @NotNull
 	  public String getDisplayName()
 	  {
-		  return DISPLAY_NAME;
+		  return SoftlayerCloudConstants.DISPLAY_NAME;
 	  }
 
 
@@ -81,7 +84,7 @@ class SoftlayerCloudClientFactory implements CloudClientFactory, SoftlayerCloudC
 	  @NotNull
 	  public PropertiesProcessor getPropertiesProcessor()
 	  {
-		  return null;
+		  return new SoftlayerCloudPropertiesProcessor(myCloudManager);
 	  }
 
 	  /**
