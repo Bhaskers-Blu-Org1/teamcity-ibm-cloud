@@ -1,7 +1,5 @@
 import org.junit.jupiter.api.*;
 
-import ibm.buildServer.clouds.softlayer.API.ImageList;
-
 import java.util.TreeMap;
 import java.util.List;
 

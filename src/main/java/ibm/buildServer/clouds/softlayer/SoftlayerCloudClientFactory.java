@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 //imports from java api
 import java.util.*;
 
-class SoftlayerCloudClientFactory implements CloudClientFactory, SoftlayerCloudConstants
+class SoftlayerCloudClientFactory implements CloudClientFactory
 {
 
 	private PluginDescriptor pluginDescriptor;
@@ -27,7 +27,7 @@ class SoftlayerCloudClientFactory implements CloudClientFactory, SoftlayerCloudC
 		//Registering plugin with cloud.
 		cloudRegistrar.registerCloudFactory(this);
 		//plugin's settings page
-		settingPagePath = pluginDescriptor.getPluginResourcesPath("softlayer-cloud-settings.html");
+		settingPagePath = pluginDescriptor.getPluginResourcesPath(SoftlayerCloudConstants.SETTINGS_HTML_PAGE);
 		myCloudManager = cloudManager;
 	}
 	
@@ -41,7 +41,7 @@ class SoftlayerCloudClientFactory implements CloudClientFactory, SoftlayerCloudC
 	 @NotNull
 	  public String getCloudCode()
 	  {
-		 return CLOUD_CODE;
+		 return SoftlayerCloudConstants.CLOUD_CODE;
 	  }
 
 	  /**
@@ -51,7 +51,7 @@ class SoftlayerCloudClientFactory implements CloudClientFactory, SoftlayerCloudC
 	  @NotNull
 	  public String getDisplayName()
 	  {
-		  return DISPLAY_NAME;
+		  return SoftlayerCloudConstants.DISPLAY_NAME;
 	  }
 
 

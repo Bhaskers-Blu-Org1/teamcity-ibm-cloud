@@ -5,6 +5,6 @@
        default-autowire="constructor">
        <bean class="ibm.buildServer.clouds.softlayer.API.CreateVSI"></bean>
        <bean class="ibm.buildServer.clouds.softlayer.SoftlayerCloudClientFactory"></bean>
-       <bean class="ibm.buildServer.clouds.softlayer.SoftlayerEditProfileController"></bean>
+       <bean class="ibm.buildServer.clouds.softlayer.API.SoftlayerEditProfileController"></bean>
        
 </beans>

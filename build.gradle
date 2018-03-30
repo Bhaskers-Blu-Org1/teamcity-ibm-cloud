@@ -69,7 +69,7 @@ test {
  jar {
 	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
      manifest {
-         attributes 'Main-Class': 'ibm.buildServer.clouds.softlayer.API.ImageList'
+         attributes 'Main-Class': 'ibm.buildServer.clouds.softlayer.SoftlayerCloudConstants'
      }
 }
 

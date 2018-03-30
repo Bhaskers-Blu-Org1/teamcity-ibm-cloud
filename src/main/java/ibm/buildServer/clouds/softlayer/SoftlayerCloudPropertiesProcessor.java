@@ -19,7 +19,9 @@ public class SoftlayerCloudPropertiesProcessor implements PropertiesProcessor {
 	@NotNull
 	  public Collection<InvalidProperty> process(final Map<String, String> properties) {
 	    List<InvalidProperty> list = new ArrayList<InvalidProperty>();
+	    notEmpty(properties,"IBMSL_name", list);
 	    notEmpty(properties,"IBMSL_imageName", list);
+	    notEmpty(properties,"IBMSL_datacenterName", list);
 	    
 	    return list;
 	}
