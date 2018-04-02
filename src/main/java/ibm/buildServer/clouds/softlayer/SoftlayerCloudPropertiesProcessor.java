@@ -19,13 +19,22 @@ public class SoftlayerCloudPropertiesProcessor implements PropertiesProcessor {
 	@NotNull
 	  public Collection<InvalidProperty> process(final Map<String, String> properties) {
 	    List<InvalidProperty> list = new ArrayList<InvalidProperty>();
-	    notEmpty(properties,"IBMSL_name", list);
-	    notEmpty(properties,"IBMSL_imageName", list);
-	    notEmpty(properties,"IBMSL_datacenterName", list);
+	   
+	    notEmpty(properties,SoftlayerCloudConstants.IMAGE_LIST, list);
+	    notEmpty(properties,SoftlayerCloudConstants.DATACENTER_NAME, list);
+	    notEmpty(properties,SoftlayerCloudConstants.AGENT_NAME, list);
+	    notEmpty(properties,SoftlayerCloudConstants.INSTANCE_NUMBER, list);
+	    notEmpty(properties,SoftlayerCloudConstants.MAX_MEMORY, list);
+	    notEmpty(properties,SoftlayerCloudConstants.MAX_CORES, list);
+	    notEmpty(properties,SoftlayerCloudConstants.DISK_TYPE, list);
+	    notEmpty(properties,SoftlayerCloudConstants.NETWORK, list);
+	    notEmpty(properties,SoftlayerCloudConstants.DOMAIN, list);
 	    
 	    return list;
 	}
-	private void notEmpty(@NotNull final Map<String, String> props, @NotNull final String key, @NotNull final Collection<InvalidProperty> col) {
+	
+	private void notEmpty(@NotNull final Map<String, String> props, @NotNull final String key,
+			@NotNull final Collection<InvalidProperty> col) {
 		
 	}
 }

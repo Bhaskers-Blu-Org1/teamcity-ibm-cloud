@@ -14,12 +14,30 @@
 </table>
 
 <table class="runnerFormTable addImageContainerTable">
+
+    <!-- Username and API key -->
+	<tr>
+		<th><label for="${cons.username}">Username:<l:star /></label></th>
+		<td><props:textProperty name="${cons.username}"
+				className="settings longField" /></td>
+	</tr>
+
+	<tr>
+		<th><label for="secure:${cons.apiKey}">API Key:<l:star /></label></th>
+		<td><props:passwordProperty name="secure:${cons.apiKey}"
+				className="settings longField" /></td>
+	</tr>
+
+	<!-- Image List row -->
 	<tr>
 		<th><label for="${cons.imageList}">Image List:<l:star /></label></th>
-		<td><select id="${cons.imageList}" data-id="${cons.imageList}"
-			name="prop:${cons.imageList}">
+		<td><select id="${cons.imageList}" class="longField"
+			data-id="${cons.imageList}" name="prop:${cons.imageList}" required>
+				<props:option value="">Select Image...</props:option>
 				<c:forEach var="image" items="${imageList}">
-					<props:option selected="${image.key eq propertiesBean.properties[cons.imageList]}" value="${image.key}">
+					<props:option
+						selected="${image.key eq propertiesBean.properties[cons.imageList]}"
+						value="${image.key}">
 						<c:out value="${image.value}" />
 					</props:option>
 				</c:forEach>
@@ -28,65 +46,96 @@
 
 	<!-- Datacenter list row -->
 	<tr>
-		<th><label for="${cons.datacenterName}">Datacenter List:</label></th>
-		<td><select name="prop:${cons.datacenterName}">
-				<option selected="${'dal10' eq propertiesBean.properties[cons.datacenterName]}" value="dal10">DALLAS 10</option>
-				<option selected="${'dal12' eq propertiesBean.properties[cons.datacenterName]}" value="dal12">DALLAS 12</option>
-				<option selected="${'dal13' eq propertiesBean.properties[cons.datacenterName]}" value="dal13">DALLAS 13</option>
-
+		<th><label for="${cons.datacenterName}">Datacenter List:<l:star /></label></th>
+		<td><select id="${cons.datacenterName}" class="longField"
+			data-id="${cons.datacenterName}" name="prop:${cons.datacenterName}"
+			required>
+				<props:option value="">Select Datacenter...</props:option>
+				<c:forEach var="datacenter" items="${datacenterList}">
+					<props:option
+						selected="${datacenter.key eq propertiesBean.properties[cons.datacenterName]}"
+						value="${datacenter.key}">
+						<c:out value="${datacenter.value}" />
+					</props:option>
+				</c:forEach>
 		</select></td>
 	</tr>
+
 	<!-- Agent row -->
 	<tr>
-		<th><label for="IBMSL_agentName">Agent Name:</label></th>
-		<td><input type="text" name="IBMSL_agentName" value="" /></td>
+		<th><label for="${cons.agentName}">Agent Name:<l:star /></label></th>
+		<td><input name="prop:${cons.agentName}" id="${cons.agentName}"
+			value="${propertiesBean.properties[cons.agentName]}"
+			class="longField" type="text" required></td>
 	</tr>
+
 	<!-- Number of Instances -->
 	<tr>
-		<th><label for="IBMSL_instanceNumber">Number of
-				Instances:</label></th>
-		<td><input type="text" name="IBMSL_instanceNumber" value="" /></td>
+		<th><label for="${cons.instanceNumber}">Maximum Instances Count:</label></th>
+		<td><props:textProperty name="${cons.instanceNumber}" className="longField"/></td>
 	</tr>
+
 	<!-- Machine type: RAM, CORES -->
 	<tr>
-		<th><label for="IBMSL_MaxMemory">RAM:</label></th>
-		<td><select name="IBMSL_MaxMemory">
-				<option value="1024">1 GB</option>
-				<option value="2048">2 GB</option>
-				<option value="4096">4 GB</option>
-				<option value="8192">8 GB</option>
-				<option value="16384">16 GB</option>
-				<option value="32768">32 GB</option>
-				<option value="65536">64 GB</option>
+		<th><label for="${cons.maxMemory}">RAM:<l:star /></label></th>
+		<td><select id="${cons.maxMemory}" data-id="${cons.maxMemory}"
+			name="prop:${cons.maxMemory}" required>
+				<props:option value="">Select RAM...</props:option>
+				<c:forEach var="ram" items="${ramList}">
+					<props:option
+						selected="${ram.key eq propertiesBean.properties[cons.maxMemory]}"
+						value="${ram.key}">
+						<c:out value="${ram.value}" />
+					</props:option>
+				</c:forEach>
 		</select></td>
 	</tr>
+
+	<!-- CPU -->
 	<tr>
-		<th><label for="IBMSL_MaxCores">CPU:</label></th>
-		<td><select name="IBMSL_MaxCores">
-				<option value="1">1 vCPU</option>
-				<option value="2">2 vCPU</option>
-				<option value="4">4 vCPU</option>
-				<option value="8">8 vCPU</option>
-				<option value="16">16 vCPU</option>
-				<option value="32">32 vCPU</option>
-				<option value="48">64 vCPU</option>
+		<th><label for="${cons.maxCores}">CPU:<l:star /></label></th>
+		<td><select id="${cons.maxCores}" data-id="${cons.maxCores}"
+			name="prop:${cons.maxCores}" required>
+				<props:option value="">Select Cores...</props:option>
+				<c:forEach var="core" items="${coreList}">
+					<props:option
+						selected="${core.key eq propertiesBean.properties[cons.maxCores]}"
+						value="${core.key}">
+						<c:out value="${core.value}" />
+					</props:option>
+				</c:forEach>
 		</select></td>
 	</tr>
+
 	<!-- Disk Type -->
 	<tr>
-		<th><label for="IBMSL_DiskType">DISK:</label></th>
-		<td><select name="IBMSL_DiskType">
-				<option value="true">LOCAL</option>
-				<option value="false">SAN</option>
+		<th><label for="${cons.diskType}">DISK:<l:star /></label></th>
+		<td><select id="${cons.diskType}" data-id="${cons.diskType}"
+			name="prop:${cons.diskType}" required>
+				<props:option value="">Select Disk Type...</props:option>
+				<c:forEach var="diskType" items="${diskTypeList}">
+					<props:option
+						selected="${diskType.key eq propertiesBean.properties[cons.diskType]}"
+						value="${diskType.key}">
+						<c:out value="${diskType.value}" />
+					</props:option>
+				</c:forEach>
 		</select></td>
 	</tr>
+
 	<!-- Network Type -->
 	<tr>
-		<th><label for="IBMSL_network">Network:</label></th>
-		<td><select name="IBMSL_network">
-				<option value="10">10 Mbps</option>
-				<option value="100">100 Mbps</option>
-				<option value="1000">1 Gbps</option>
+		<th><label for="${cons.network}">Network:<l:star /></label></th>
+		<td><select id="${cons.network}" data-id="${cons.network}"
+			name="prop:${cons.network}" required>
+				<props:option value="">Select Network...</props:option>
+				<c:forEach var="network" items="${networkList}">
+					<props:option
+						selected="${network.key eq propertiesBean.properties[cons.network]}"
+						value="${network.key}">
+						<c:out value="${network.value}" />
+					</props:option>
+				</c:forEach>
 		</select></td>
 	</tr>
 </table>

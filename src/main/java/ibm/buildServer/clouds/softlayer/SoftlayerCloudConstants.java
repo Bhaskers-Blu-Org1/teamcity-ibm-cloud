@@ -10,6 +10,8 @@ public class SoftlayerCloudConstants {
 	public static final String SETTINGS_HTML_PAGE = "softlayer-cloud-settings.html";
 
 	// Settings page field name constants
+	public static final String USER_NAME = "IBMSL_username";
+	public static final String API_KEY = "IBMSL_apiKey";
 	public static final String IMAGE_LIST = "IBMSL_imageName";
 	public static final String DATACENTER_NAME = "IBMSL_datacenterName";
 	public static final String AGENT_NAME = "IBMSL_agentName";
@@ -19,6 +21,15 @@ public class SoftlayerCloudConstants {
 	public static final String DISK_TYPE = "IBMSL_DiskType";
 	public static final String NETWORK = "IBMSL_network";
 	public static final String DOMAIN = "IBMSL_Domain";
+
+	
+	public String getUsername() {
+		return USER_NAME;
+	}
+
+	public String getApiKey() {
+		return API_KEY;
+	}
 
 	public String getImageList() {
 		return IMAGE_LIST;
