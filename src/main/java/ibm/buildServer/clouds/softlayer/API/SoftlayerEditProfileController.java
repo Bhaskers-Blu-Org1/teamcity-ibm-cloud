@@ -72,12 +72,12 @@ public class SoftlayerEditProfileController extends BaseFormXmlController {
 	 * 
 	 */
 	// Get softlayer image template list.
-	public TreeMap<Long, String> getPrivateImageTemplate() {
+	public TreeMap<String, String> getPrivateImageTemplate() {
 
 		List<Group> imageList = Account.service(client).getPrivateBlockDeviceTemplateGroups();
-		TreeMap<Long, String> imageMap = new TreeMap<Long, String>();
+		TreeMap<String, String> imageMap = new TreeMap<String, String>();
 		for (Group group : imageList) {
-			imageMap.put(group.getId(), group.getName());
+			imageMap.put(group.getGlobalIdentifier(), group.getName());
 		}
 		return imageMap;
 	}

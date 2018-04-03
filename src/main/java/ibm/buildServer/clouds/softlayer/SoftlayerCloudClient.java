@@ -32,7 +32,7 @@ public class SoftlayerCloudClient implements CloudClientEx
 
     public CloudErrorInfo getErrorInfo()
     {
-        return new CloudErrorInfo("test");
+        return null;
     }
 
     public boolean canStartNewInstance(CloudImage image)
