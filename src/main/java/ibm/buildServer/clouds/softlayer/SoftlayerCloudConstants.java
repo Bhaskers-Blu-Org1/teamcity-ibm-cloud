@@ -8,12 +8,13 @@ public class SoftlayerCloudConstants {
 	// Settings page html/js file name constants
 	public static final String SETTINGS_JSP_PAGE = "softlayer-cloud-settings.jsp";
 	public static final String SETTINGS_HTML_PAGE = "softlayer-cloud-settings.html";
+	public static final String CHECK_CONNECTION_HTML_PAGE = "softlayer-check-connection.html";
 
 	// Settings page field name constants
 	public static final String USER_NAME = "IBMSL_username";
 	public static final String API_KEY = "IBMSL_apiKey";
-	public static final String IMAGE_LIST = "IBMSL_imageName";
-	public static final String DATACENTER_NAME = "IBMSL_datacenterName";
+	public static final String VSI_TEMPLATE_LIST = "IBMSL_vsiTemplate";
+	public static final String DATACENTER_LIST = "IBMSL_datacenter";
 	public static final String AGENT_NAME = "IBMSL_agentName";
 	public static final String INSTANCE_NUMBER = "IBMSL_instanceNumber";
 	public static final String MAX_MEMORY = "IBMSL_MaxMemory";
@@ -21,6 +22,8 @@ public class SoftlayerCloudConstants {
 	public static final String DISK_TYPE = "IBMSL_DiskType";
 	public static final String NETWORK = "IBMSL_network";
 	public static final String DOMAIN = "IBMSL_Domain";
+	
+	public static final String SECURE_API_KEY = "secure:"+API_KEY;
 
 	
 	public String getUsername() {
@@ -31,12 +34,12 @@ public class SoftlayerCloudConstants {
 		return API_KEY;
 	}
 
-	public String getImageList() {
-		return IMAGE_LIST;
+	public String getVsiTemplateList() {
+		return VSI_TEMPLATE_LIST;
 	}
 
-	public String getDatacenterName() {
-		return DATACENTER_NAME;
+	public String getDatacenterList() {
+		return DATACENTER_LIST;
 	}
 
 	public String getAgentName() {
