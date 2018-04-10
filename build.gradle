@@ -1,39 +1,73 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "org.junit.platform:junit-platform-gradle-plugin:1.0.1"
+  }
+}
+
 plugins {
-    id "java"
-    id "com.github.rodm.teamcity-server" version "1.0"
+  id "java"
+  id "com.github.rodm.teamcity-server" version "1.0"
 }
 
 ext {
-    vendorName = 'IBM Strategic Customer Success'
-    teamcityVersion = findProperty('teamcityVersion') ?: '10.0'
+  vendorName = "IBM Strategic Customer Success"
+  teamcityVersion = findProperty("teamcityVersion") ?: "2017.2"
 }
 
 teamcity {
-    version = teamcityVersion
+  version = teamcityVersion
 
-    server {
-        descriptor {
-            name = project.name
-            displayName = 'SoftLayer Plugin'
-            version = project.version
-            vendorName = project.vendorName
-            vendorUrl = 'http://ibm.com'
-            description = 'TeamCity SoftLayer Server Plugin'
+  server {
+    descriptor {
+      name = project.name
+      displayName = "SoftLayer Plugin"
+      version = project.version
+      vendorName = project.vendorName
+      vendorUrl = "http://ibm.com"
+      description = "TeamCity SoftLayer Server Plugin"
+      downloadUrl = "https://github.ibm.com/StrategicOnboarding/teamcity-softlayer/"
+      email = "scottwn@ibm.com"
+      useSeparateClassloader = false
 
-            downloadUrl = 
-                'https://github.ibm.com/StrategicOnboarding/teamcity-softlayer/'
-            email = 'scottwn@ibm.com'
-            useSeparateClassloader = false
-
-            parameters {
-                parameter 'param', 'value'
-            }
-        }
+      parameters {
+        parameter "param", "value"
+      }
     }
+  }
+}
+
+repositories {
+  mavenCentral()
 }
 
 dependencies {
-    provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
-    provided "org.jetbrains.teamcity:cloud-interface:$teamcityVersion"
-    provided "org.jetbrains.teamcity:cloud-shared:$teamcityVersion"
+  provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
+  provided "org.jetbrains.teamcity:cloud-server-api:$teamcityVersion"
+   
+  provided "org.jetbrains.teamcity:cloud-interface:$teamcityVersion"
+  provided "org.jetbrains.teamcity:cloud-shared:$teamcityVersion"
+  
+  compile "com.softlayer.api:softlayer-api-client:0.2.5"
+  compile "org.apiguardian:apiguardian-api:1.0.0"
+  testCompile(
+    "org.junit.jupiter:junit-jupiter-api:5.0.1"
+  )
+  testRuntime(
+    "org.junit.jupiter:junit-jupiter-engine:5.0.1"
+  )
 }
+
+test {
+  testLogging {
+	showStandardStreams = true
+  }
+}
+
+ jar {
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+apply plugin: "org.junit.platform.gradle.plugin"
