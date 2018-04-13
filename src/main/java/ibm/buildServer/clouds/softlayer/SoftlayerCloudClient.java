@@ -30,7 +30,7 @@ public class SoftlayerCloudClient implements CloudClientEx {
   }
 
   public Collection<? extends CloudImage> getImages() throws CloudException {
-    return Collections.emptyList();
+    return images;
   }
 
   public CloudErrorInfo getErrorInfo() {
@@ -94,5 +94,18 @@ public class SoftlayerCloudClient implements CloudClientEx {
         }
       }
     });
+  }
+
+  public void dispose() {
+    executor.dispose();
+  }
+
+  public void restartInstance(SoftlayerCloudInstance instance) {
+    LOG.warn("SoftLayer does not support restarting instances.");
+    if(instance.status = InstanceStatus.RUNNING) {
+      LOG.warn(instance.getName() + " is already running.");
+    } else {
+      terminateInstance(instance);
+    }
   }
 }
