@@ -26,7 +26,7 @@ public class SoftlayerCloudClient implements CloudClientEx {
 
   public SoftlayerCloudImage findImageById(String imageId)
       throws CloudException {
-    return null;
+    return images.get(imageId);
   }
 
   public Collection<? extends CloudImage> getImages() throws CloudException {
@@ -42,11 +42,9 @@ public class SoftlayerCloudClient implements CloudClientEx {
   }
 
   public String generateAgentName(AgentDescription agentDescription) {
-    return "agent name";
-  }
-
-  public String generateAgentName(SoftlayerCloudImage image, String instanceId) {
-    return "name for " + instanceId;
+    //TODO: Check with Kavita to make sure the "name" field is in the agent
+    //configuration file.
+    return agentDescription.getDefinedParameters().get("name");
   }
 
   public CloudInstance startNewInstance(CloudImage image,
