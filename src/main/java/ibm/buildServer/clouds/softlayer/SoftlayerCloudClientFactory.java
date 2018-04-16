@@ -15,9 +15,16 @@ import org.jetbrains.annotations.Nullable;
 //imports from java api
 import java.util.*;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+import jetbrains.buildServer.clouds.*;
+import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.log.Loggers;
+
 class SoftlayerCloudClientFactory implements CloudClientFactory
 {
 
+	private static final Logger LOG = Loggers.SERVER;
 	private PluginDescriptor pluginDescriptor;
 	private final String settingPagePath;
 	@NotNull private final CloudManagerBase myCloudManager;
@@ -35,8 +42,21 @@ class SoftlayerCloudClientFactory implements CloudClientFactory
 	@NotNull
 	  public CloudClientEx createNewClient(@NotNull CloudState state, @NotNull CloudClientParameters params)
 	  {
+	        final String username = params.getParameter(SoftlayerCloudConstants.USER_NAME);
+ 	    	final String apikey = params.getParameter(SoftlayerCloudConstants.API_KEY);
+ 	    
+		final Collection<SoftlayerCloudImageDetails> imageDetailsList = parseImageData(params);
+ 	    
+ 	    	for(SoftlayerCloudImageDetails img : imageDetailsList) {
+ 			 LOG.info("Image details:"+img.toString());
+ 		 }
 		return new SoftlayerCloudClient(params);
 	  }
+	  
+	  public Collection<SoftlayerCloudImageDetails> parseImageData(@NotNull final CloudClientParameters params) {
+ 		LOG.info("IBM plugin inside SoftlayerCloudClientFactory:parseImageData...");
+ 		 return params.getCloudImages().stream().map(SoftlayerCloudImageDetails::new).collect(Collectors.toList());
+ 	  }
 	
 	 @NotNull
 	  public String getCloudCode()
