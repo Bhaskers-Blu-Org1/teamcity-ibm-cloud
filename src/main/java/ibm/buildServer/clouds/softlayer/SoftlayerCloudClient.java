@@ -71,7 +71,7 @@ public class SoftlayerCloudClient implements CloudClientEx {
   }
 
   public void terminateInstance(@NotNull final CloudInstance instance) {
-    instance.getImage().terminateInstance(instance); 
+    instance.terminate(); 
   }
 
   public void start() {
