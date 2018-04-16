@@ -13,7 +13,6 @@ import jetbrains.buildServer.controllers.BasePropertiesBean;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
-import jetbrains.buildServer.controllers.BasePropertiesBean;
 import jetbrains.buildServer.controllers.admin.projects.PluginPropertiesUtil;
 import jetbrains.buildServer.controllers.ActionErrors;
 
