@@ -79,6 +79,7 @@ public class SoftlayerCloudImage implements CloudImage
 
   protected SoftlayerCloudInstance createInstance(CloudInstanceUserData data) {
     instance = new SoftlayerCloudInstance(details, data);
+    instance.setImage(this);
     instance.start();
     instances.put(instance.getInstanceId(), instance);
     return instance;
