@@ -38,6 +38,9 @@ class SoftlayerCloudClientFactory implements CloudClientFactory {
     SoftLayerCloudClient client = new SoftlayerCloudClient(params);
     SoftlayerCloudImage image = new SoftlayerCloudImage(
         new SoftlayerCloudImageDetails(params));
+    image.setCredentials(
+        params.getParameter(SoftlayerCloudConstants.USER_NAME),
+        params.getParameter(SoftlayerCloudConstants.API_KEY));
     client.getImages().put(image.getName(), image);
     client.start();
     return client;
