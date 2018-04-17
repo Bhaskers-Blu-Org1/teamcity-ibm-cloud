@@ -42,7 +42,7 @@ public class SoftlayerCloudClient implements CloudClientEx {
   }
 
   public String generateAgentName(AgentDescription agentDescription) {
-    return agentDescription.getDefinedParameters().get("name");
+    return agentDescription.getConfigurationParameters().get("name");
   }
 
   public CloudInstance startNewInstance(CloudImage image,
