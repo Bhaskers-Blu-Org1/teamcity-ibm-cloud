@@ -42,8 +42,6 @@ public class SoftlayerCloudClient implements CloudClientEx {
   }
 
   public String generateAgentName(AgentDescription agentDescription) {
-    //TODO: Check with Kavita to make sure the "name" field is in the agent
-    //configuration file.
     return agentDescription.getDefinedParameters().get("name");
   }
 
