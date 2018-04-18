@@ -20,7 +20,7 @@ public class SoftlayerCloudInstance implements CloudInstance
   // id is set in the start() method.
   private String id;
   private SoftlayerCloudImage image; // Set when SoftlayerCloudImage calls setImage
-  private Guest guest;
+  public Guest guest;
   private Date startedTime;
   private SoftlayerCloudImageDetails imageDetails;
   private CloudInstanceUserData userData;
@@ -112,6 +112,7 @@ public class SoftlayerCloudInstance implements CloudInstance
       status = InstanceStatus.SCHEDULED_TO_START;
     } catch (Exception e) {
       LOG.warn("Error: " + e);
+      status = InstanceStatus.ERROR;
     }
   }
 
@@ -119,7 +120,7 @@ public class SoftlayerCloudInstance implements CloudInstance
     LOG.info("Cancelling SoftLayer VSI " + getName());
     try {
       guest.asService(softlayerClient).deleteObject();
-      status = InstanceStatus.STOPPED;
+      status = InstanceStatus.SCHEDULED_TO_STOP;
     } catch (Exception e) {
       LOG.warn("Error: " + e);
       status = InstanceStatus.ERROR_CANNOT_STOP;

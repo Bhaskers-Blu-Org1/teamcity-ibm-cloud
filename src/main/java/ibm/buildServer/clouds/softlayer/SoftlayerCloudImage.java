@@ -38,7 +38,11 @@ public class SoftlayerCloudImage implements CloudImage
 
   @NotNull
   public Collection<? extends CloudInstance> getInstances() {
-    return instances;
+    return Collections.unmodifiableCollection(instances.values());
+  }
+
+  public void removeInstance(String instanceId) {
+    instances.remove(instanceId);
   }
 
   @Nullable

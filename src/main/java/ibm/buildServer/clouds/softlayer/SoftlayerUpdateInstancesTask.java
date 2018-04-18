@@ -18,8 +18,48 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
 
   public void run() {
     Logger LOG = Loggers.SERVER;
-    Map<InstanceStatus, List<String>> instancesByStatus =
-      = new HashMap<InstancesStatus, List<String>>();
+    InstanceStatus newStatus;
+    InstanceStatus currentStatus;
+    String vsiStatus;
+    String vsiState;
+    Guest guest;
     try {
-      Collection<SoftlayerCloudImage> images = client.getImages();
+      for(image : client.getImages()) {
+        for(instanceId : image.getInstances()) {
+          guest = image.findInstanceById(instanceId).guest;
+          currentStatus = image.findInstanceById(instanceId).getStatus();
+          vsiStatus = guest.asService(softlayerClient).getStatus().getName();
+          vsiState = guest.asService(softlayerClient).getPowerState().getName();
+          newStatus = teamcityStatus(vsiStatus, vsiState, currentStatus);
+          if(newStatus != currentStatus) {
+            image.findInstanceById(instanceId).setStatus(newStatus);
+          }
+          if(removable(image.findInstanceById(instanceId).getStatus())) {
+            image.removeInstance(instanceId);
+          }
+        }
+      }
+    } catch (Exception e) {
+      LOG.warn("Error: " + e);
+    }
+  }
 
+  private InstanceStatus teamcityStatus(vsiStatus, vsiState, currentStatus) {
+    if(currentStatus == InstanceStatus.ERROR_CANNOT_STOP) {
+      return currentStatus;
+    }
+    if(vsiStatus.equals("Terminating")) {
+      return InstanceStatus.STOPPING;
+    }
+    if(vsiStatus.equals("Disconnected")) {
+      return InstanceStatus.STOPPED;
+    }
+    if(vsiState.equals("Halted")) {
+      return InstanceStatus.STARTING;
+    }
+    if(vsiState.equals("Running")) {
+      return InstanceStatus.RUNNING;
+    }
+    return currentStatus;
+  }
+}
