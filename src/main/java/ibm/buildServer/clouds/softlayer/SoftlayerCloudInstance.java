@@ -17,7 +17,7 @@ public class SoftlayerCloudInstance implements CloudInstance
 {
   private InstanceStatus myStatus;
   private ScheduledExecutorService executor;
-  // id and name are set in the start() method.
+  // id is set in the start() method.
   private String id;
   private SoftlayerCloudImage image; // Set when SoftlayerCloudImage calls setImage
   private Guest guest;

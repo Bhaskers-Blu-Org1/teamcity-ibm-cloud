@@ -1,5 +1,6 @@
 package ibm.buildServer.clouds.softlayer;
 
+import com.softlayer.api.ApiClient;
 import jetbrains.buildServer.clouds.CloudInstanceUserData;
 import jetbrains.buildServer.clouds.CloudImage;
 import jetbrains.buildServer.clouds.CloudInstance;
@@ -16,9 +17,10 @@ import java.io.File;
 
 public class SoftlayerCloudImage implements CloudImage
 {
-  SoftlayerCloudImageDetails details;
+  private SoftlayerCloudImageDetails details;
   private final Map<String, SoftlayerCloudInstance> instances =
     new ConcurrentHashMap<>();
+  public final ApiClient softlayerClient;
   
   public SoftlayerCloudImage(SoftlayerCloudImageDetails details) {
       this.details = details;
@@ -42,7 +44,7 @@ public class SoftlayerCloudImage implements CloudImage
   @Nullable
   public SoftlayerCloudInstance findInstanceById(
       @NotNull final String instanceId) {
-        return instances.get(instanceId);
+    return instances.get(instanceId);
   }
 
   @Nullable
@@ -78,10 +80,14 @@ public class SoftlayerCloudImage implements CloudImage
   }
 
   protected SoftlayerCloudInstance createInstance(CloudInstanceUserData data) {
-    instance = new SoftlayerCloudInstance(details, data);
+    instance = new SoftlayerCloudInstance(details, data, softlayerClient);
     instance.setImage(this);
     instance.start();
     instances.put(instance.getInstanceId(), instance);
     return instance;
+  }
+
+  public void setCredentials(String username, String apiKey) {
+    softlayerClient = new RestApiClient().withCredentials(username, apiKey);
   }
 }

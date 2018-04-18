@@ -21,6 +21,5 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
     Map<InstanceStatus, List<String>> instancesByStatus =
       = new HashMap<InstancesStatus, List<String>>();
     try {
-      List<SoftlayerCloudImage> goodImages = new ArrayList<>();
       Collection<SoftlayerCloudImage> images = client.getImages();
 
