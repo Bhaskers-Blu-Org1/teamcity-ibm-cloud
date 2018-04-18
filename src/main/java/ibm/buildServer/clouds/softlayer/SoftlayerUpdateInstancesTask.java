@@ -1,5 +1,7 @@
 package ibm.buildServer.clouds.softlayer;
 
+import com.softlayer.exception.ObjectNotFound;
+
 import jetbrains.buildServer.log.Loggers;
 import com.intellij.openapi.diagnostic.Logger;
 
@@ -23,28 +25,36 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
     String vsiStatus;
     String vsiState;
     Guest guest;
-    try {
-      for(image : client.getImages()) {
-        for(instanceId : image.getInstances()) {
-          guest = image.findInstanceById(instanceId).guest;
-          currentStatus = image.findInstanceById(instanceId).getStatus();
+    for(image : client.getImages()) {
+      for(instanceId : image.getInstances()) {
+        guest = image.findInstanceById(instanceId).guest;
+        currentStatus = image.findInstanceById(instanceId).getStatus();
+        try {
           vsiStatus = guest.asService(softlayerClient).getStatus().getName();
           vsiState = guest.asService(softlayerClient).getPowerState().getName();
           newStatus = teamcityStatus(vsiStatus, vsiState, currentStatus);
-          if(newStatus != currentStatus) {
-            image.findInstanceById(instanceId).setStatus(newStatus);
-          }
-          if(removable(image.findInstanceById(instanceId).getStatus())) {
-            image.removeInstance(instanceId);
-          }
+        } catch(ObjectNotFound e) {
+          LOG.warn("Error: " + e);
+          newStatus = IntanceStatus.ERROR;
+        }
+        if(newStatus != currentStatus) {
+          image.findInstanceById(instanceId).setStatus(newStatus);
+        }
+        if(removable(image.findInstanceById(instanceId).getStatus())) {
+          image.removeInstance(instanceId);
         }
       }
-    } catch (Exception e) {
-      LOG.warn("Error: " + e);
     }
   }
 
-  private InstanceStatus teamcityStatus(vsiStatus, vsiState, currentStatus) {
+  public boolean removable(InstanceStatus status) {
+    return status == InstanceStatus.ERROR || status == InstanceStatus.STOPPED;
+  }
+
+  private InstanceStatus teamcityStatus(
+      String vsiStatus,
+      String vsiState,
+      InstanceStatus currentStatus) {
     if(currentStatus == InstanceStatus.ERROR_CANNOT_STOP) {
       return currentStatus;
     }
