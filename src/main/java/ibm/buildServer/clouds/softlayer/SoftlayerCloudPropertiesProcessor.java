@@ -18,23 +18,19 @@ public class SoftlayerCloudPropertiesProcessor implements PropertiesProcessor {
 
 	@NotNull
 	  public Collection<InvalidProperty> process(final Map<String, String> properties) {
+		
 	    List<InvalidProperty> list = new ArrayList<InvalidProperty>();
-	   
-	    notEmpty(properties,SoftlayerCloudConstants.VSI_TEMPLATE_LIST, list);
-	    notEmpty(properties,SoftlayerCloudConstants.DATACENTER_NAME, list);
-	    notEmpty(properties,SoftlayerCloudConstants.AGENT_NAME, list);
-	    notEmpty(properties,SoftlayerCloudConstants.INSTANCE_NUMBER, list);
-	    notEmpty(properties,SoftlayerCloudConstants.MAX_MEMORY, list);
-	    notEmpty(properties,SoftlayerCloudConstants.MAX_CORES, list);
-	    notEmpty(properties,SoftlayerCloudConstants.DISK_TYPE, list);
-	    notEmpty(properties,SoftlayerCloudConstants.NETWORK, list);
-	    notEmpty(properties,SoftlayerCloudConstants.DOMAIN, list);
+	    notEmpty(properties,SoftlayerCloudConstants.USER_NAME, list);
+	    notEmpty(properties,SoftlayerCloudConstants.SECURE_API_KEY, list);
 	    
 	    return list;
 	}
 	
-	private void notEmpty(@NotNull final Map<String, String> props, @NotNull final String key,
-			@NotNull final Collection<InvalidProperty> col) {
+	private void notEmpty(@NotNull final Map<String, String> props, @NotNull final String key, @NotNull final Collection<InvalidProperty> col) {
 		
+		// null check exception
+		 if (!props.containsKey(key) || StringUtil.isEmptyOrSpaces(props.get(key))) {
+		      col.add(new InvalidProperty(key, "Value should be set"));
+		 }
 	}
 }
