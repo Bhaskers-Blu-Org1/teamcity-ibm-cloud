@@ -1,27 +1,26 @@
 package ibm.buildServer.clouds.softlayer;
 
-import com.softlayer.api.ApiClient;
-import jetbrains.buildServer.clouds.CloudInstanceUserData;
-import jetbrains.buildServer.clouds.CloudImage;
-import jetbrains.buildServer.clouds.CloudInstance;
-import jetbrains.buildServer.clouds.CloudInstanceUserData;
-import jetbrains.buildServer.clouds.CloudErrorInfo;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.intellij.openapi.diagnostic.Logger;
+import com.softlayer.api.*;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
-import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import jetbrains.buildServer.clouds.*;
+import jetbrains.buildServer.log.Loggers;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SoftlayerCloudImage implements CloudImage
 {
   private SoftlayerCloudImageDetails details;
   private final Map<String, SoftlayerCloudInstance> instances =
     new ConcurrentHashMap<>();
-  public final ApiClient softlayerClient;
-  
+  public ApiClient softlayerClient;
+  private final static Logger LOG = Loggers.SERVER;
+
   public SoftlayerCloudImage(SoftlayerCloudImageDetails details) {
       this.details = details;
   }
@@ -37,7 +36,7 @@ public class SoftlayerCloudImage implements CloudImage
   }
 
   @NotNull
-  public Collection<? extends CloudInstance> getInstances() {
+  public Collection<SoftlayerCloudInstance> getInstances() {
     return Collections.unmodifiableCollection(instances.values());
   }
 
@@ -72,19 +71,20 @@ public class SoftlayerCloudImage implements CloudImage
     }  
     LOG.info(
         "Can not start new instance becuause " 
-        + details.getProfileID()
+        + details.getProfileId()
         + " has reached the maximum number of running instances.");
     return null;
   }
 
-  private boolean canStartNewInstance() {
+  protected boolean canStartNewInstance() {
     //TODO: Implement max instances. Only start new instance if limit has not been
     //reached.
     return true;
   }
 
   protected SoftlayerCloudInstance createInstance(CloudInstanceUserData data) {
-    instance = new SoftlayerCloudInstance(details, data, softlayerClient);
+    SoftlayerCloudInstance instance
+      = new SoftlayerCloudInstance(details, data, softlayerClient);
     instance.setImage(this);
     instance.start();
     instances.put(instance.getInstanceId(), instance);

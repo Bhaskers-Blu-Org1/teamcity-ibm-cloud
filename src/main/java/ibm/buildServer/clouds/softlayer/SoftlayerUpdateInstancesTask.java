@@ -1,15 +1,10 @@
 package ibm.buildServer.clouds.softlayer;
 
-import com.softlayer.exception.ObjectNotFound;
-
-import jetbrains.buildServer.log.Loggers;
 import com.intellij.openapi.diagnostic.Logger;
-
+import com.softlayer.api.service.virtual.Guest;
 import java.util.*;
-
-import ibm.buildServer.clouds.softlayer.SoftlayerCloudClient;
-import ibm.buildServer.clouds.softlayer.SoftlayerCloudImage;
-import jetbrains.buildServer.clouds.InstanceStatus;
+import jetbrains.buildServer.clouds.*;
+import jetbrains.buildServer.log.Loggers;
 
 public class SoftlayerUpdateInstancesTask implements Runnable {
   private SoftlayerCloudClient client;
@@ -25,23 +20,23 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
     String vsiStatus;
     String vsiState;
     Guest guest;
-    for(image : client.getImages()) {
-      for(instanceId : image.getInstances()) {
-        guest = image.findInstanceById(instanceId).guest;
-        currentStatus = image.findInstanceById(instanceId).getStatus();
+    for(SoftlayerCloudImage image : client.getImages()) {
+      for(SoftlayerCloudInstance instance : image.getInstances()) {
+        currentStatus = instance.getStatus();
         try {
-          vsiStatus = guest.asService(softlayerClient).getStatus().getName();
-          vsiState = guest.asService(softlayerClient).getPowerState().getName();
+          vsiStatus = instance.guest.getStatus().getName();
+          vsiState = instance.guest.getPowerState().getName();
           newStatus = teamcityStatus(vsiStatus, vsiState, currentStatus);
-        } catch(ObjectNotFound e) {
+        // This catch block is only meant to catch "object not found" errors
+        // returned by SoftLayer but at this time it's unkown if this exception
+        // is available as a Java class.
+        } catch(Exception e) {
           LOG.warn("Error: " + e);
-          newStatus = IntanceStatus.ERROR;
+          newStatus = InstanceStatus.ERROR;
         }
-        if(newStatus != currentStatus) {
-          image.findInstanceById(instanceId).setStatus(newStatus);
-        }
-        if(removable(image.findInstanceById(instanceId).getStatus())) {
-          image.removeInstance(instanceId);
+        instance.setStatus(newStatus);
+        if(removable(instance.getStatus())) {
+          image.removeInstance(instance.getInstanceId());
         }
       }
     }

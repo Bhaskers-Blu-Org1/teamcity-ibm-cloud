@@ -1,18 +1,23 @@
 package ibm.buildServer.clouds.softlayer;
 
+import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.log.Loggers;
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.HashMap;
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.base.connector.CloudAsyncTaskExecutor;
 import jetbrains.buildServer.serverSide.AgentDescription;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.Collection;
-import java.util.Collections;
 
 public class SoftlayerCloudClient implements CloudClientEx {
   boolean initialized = false;
   private final CloudAsyncTaskExecutor executor;
   int taskDelayTime = 60 * 1000; // Time in milliseconds.
   private final Map<String, SoftlayerCloudImage> images;
+  private Logger LOG = Loggers.SERVER;
 
   public SoftlayerCloudClient(CloudClientParameters params) {
     executor = new CloudAsyncTaskExecutor(
@@ -29,15 +34,16 @@ public class SoftlayerCloudClient implements CloudClientEx {
     return images.get(imageId);
   }
 
-  public Collection<? extends CloudImage> getImages() throws CloudException {
-    return images;
+  public Collection<SoftlayerCloudImage> getImages() throws CloudException {
+    return images.values();
   }
 
   public CloudErrorInfo getErrorInfo() {
     return null;
   }
 
-  public boolean canStartNewInstance(CloudImage image) {
+  public boolean canStartNewInstance(@NotNull final CloudImage baseImage) {
+    SoftlayerCloudImage image = (SoftlayerCloudImage) baseImage;
     return image.canStartNewInstance();
   }
 
@@ -53,7 +59,7 @@ public class SoftlayerCloudClient implements CloudClientEx {
   @Nullable
   public SoftlayerCloudInstance findInstanceByAgent(
       @NotNull final AgentDescription agentDescription) {
-    final String instanceName = agent.getConfigurationParameters()
+    final String instanceName = agentDescription.getConfigurationParameters()
       .get("softlayer.instance.name");
     if(instanceName == null) {
       return null;
@@ -65,10 +71,11 @@ public class SoftlayerCloudClient implements CloudClientEx {
         return instance;
       }
     }
-    return null
+    return null;
   }
 
-  public void terminateInstance(@NotNull final CloudInstance instance) {
+  public void terminateInstance(@NotNull final CloudInstance baseInstance) {
+    SoftlayerCloudInstance instance = (SoftlayerCloudInstance) baseInstance;
     instance.terminate(); 
   }
 
@@ -96,12 +103,13 @@ public class SoftlayerCloudClient implements CloudClientEx {
     executor.dispose();
   }
 
-  public void restartInstance(SoftlayerCloudInstance instance) {
+  @Override
+  public void restartInstance(@NotNull final CloudInstance baseInstance) {
     LOG.warn("SoftLayer does not support restarting instances.");
-    if(instance.status = InstanceStatus.RUNNING) {
-      LOG.warn(instance.getName() + " is already running.");
+    if(baseInstance.getStatus() == InstanceStatus.RUNNING) {
+      LOG.warn(baseInstance.getName() + " is already running.");
     } else {
-      terminateInstance(instance);
+      terminateInstance(baseInstance);
     }
   }
 }

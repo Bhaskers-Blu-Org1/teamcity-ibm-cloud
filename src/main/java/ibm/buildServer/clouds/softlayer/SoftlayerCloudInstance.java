@@ -1,13 +1,11 @@
 package ibm.buildServer.clouds.softlayer;
 
 import com.softlayer.api.ApiClient;
-import com.softlayer.api.Location;
+import com.softlayer.api.service.Location;
 import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.service.virtual.guest.block.device.template.Group;
 
-import jetbrains.buildServer.clouds.CloudInstance;
-import jetbrains.buildServer.clouds.CloudErrorInfo;
-import jetbrains.buildServer.clouds.InstanceStatus;
+import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.serverSide.AgentDescription;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Executors;
