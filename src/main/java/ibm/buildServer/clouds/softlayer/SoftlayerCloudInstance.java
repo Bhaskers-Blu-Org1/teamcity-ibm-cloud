@@ -7,9 +7,13 @@ import com.softlayer.api.service.virtual.guest.block.device.template.Group;
 
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.serverSide.AgentDescription;
+import jetbrains.buildServer.log.Loggers;
+
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Executors;
 import java.util.Date;
+
+import com.intellij.openapi.diagnostic.Logger;
 
 public class SoftlayerCloudInstance implements CloudInstance
 {
@@ -23,6 +27,7 @@ public class SoftlayerCloudInstance implements CloudInstance
   private SoftlayerCloudImageDetails imageDetails;
   private CloudInstanceUserData userData;
   private ApiClient softlayerClient;
+  private final static Logger LOG = Loggers.SERVER;
 
   public SoftlayerCloudInstance(
       SoftlayerCloudImageDetails details,
@@ -32,7 +37,7 @@ public class SoftlayerCloudInstance implements CloudInstance
     executor = Executors.newSingleThreadScheduledExecutor();
     guest = new Guest();
     guest.setHostname(details.getAgentName());
-    guest.setDomain(details.getDomain());
+    guest.setDomain(details.getDomainName());
     guest.setStartCpus(details.getMaxCores());
     guest.setMaxMemory(details.getMaxMemory());
     // Hardcode hourly billing for now. Once the UI allows the user to select
@@ -43,7 +48,7 @@ public class SoftlayerCloudInstance implements CloudInstance
     Group blockDevice = new Group();
     blockDevice.setGlobalIdentifier("aaad7259-06ff-453b-bedc-e425661fa151");
     guest.setBlockDeviceTemplateGroup(blockDevice);
-    guest.setLocalDiskFlag(details.isLocalDiskFlag());
+    guest.setLocalDiskFlag(details.getLocalDiskFlag().contains("true"));
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
     startedTime = new Date();
@@ -107,10 +112,10 @@ public class SoftlayerCloudInstance implements CloudInstance
       this.guest = Guest.service(softlayerClient).createObject(this.guest);
       id = guest.getId().toString();
       LOG.info("Softlayer ID is " + id);
-      status = InstanceStatus.SCHEDULED_TO_START;
+      myStatus = InstanceStatus.SCHEDULED_TO_START;
     } catch (Exception e) {
       LOG.warn("Error: " + e);
-      status = InstanceStatus.ERROR;
+      myStatus = InstanceStatus.ERROR;
     }
   }
 
@@ -118,10 +123,10 @@ public class SoftlayerCloudInstance implements CloudInstance
     LOG.info("Cancelling SoftLayer VSI " + getName());
     try {
       guest.asService(softlayerClient).deleteObject();
-      status = InstanceStatus.SCHEDULED_TO_STOP;
+      myStatus = InstanceStatus.SCHEDULED_TO_STOP;
     } catch (Exception e) {
       LOG.warn("Error: " + e);
-      status = InstanceStatus.ERROR_CANNOT_STOP;
+      myStatus = InstanceStatus.ERROR_CANNOT_STOP;
     }
   }
 }
