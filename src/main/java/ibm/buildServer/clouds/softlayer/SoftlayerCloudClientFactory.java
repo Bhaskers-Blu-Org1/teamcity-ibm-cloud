@@ -1,19 +1,12 @@
 package ibm.buildServer.clouds.softlayer;
 
-//imports from jetbrains teamcity api
-import jetbrains.buildServer.clouds.CloudClientEx;
-import jetbrains.buildServer.clouds.CloudClientFactory;
-import jetbrains.buildServer.clouds.CloudClientParameters;
-import jetbrains.buildServer.clouds.CloudState;
-import jetbrains.buildServer.web.openapi.PluginDescriptor;
-import jetbrains.buildServer.clouds.CloudRegistrar;
-import jetbrains.buildServer.serverSide.*;
+import java.util.*;
+import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.server.CloudManagerBase;
+import jetbrains.buildServer.serverSide.*;
+import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-//imports from java api
-import java.util.*;
 
 class SoftlayerCloudClientFactory implements CloudClientFactory {
   private PluginDescriptor pluginDescriptor;
@@ -35,9 +28,9 @@ class SoftlayerCloudClientFactory implements CloudClientFactory {
   @NotNull
   public CloudClientEx createNewClient(
       @NotNull CloudState state, @NotNull CloudClientParameters params) {
-    SoftLayerCloudClient client = new SoftlayerCloudClient(params);
+    SoftlayerCloudClient client = new SoftlayerCloudClient(params);
     SoftlayerCloudImage image = new SoftlayerCloudImage(
-        new SoftlayerCloudImageDetails(params));
+        new SoftlayerCloudImageDetails(new CloudImageParameters()));
     image.setCredentials(
         params.getParameter(SoftlayerCloudConstants.USER_NAME),
         params.getParameter(SoftlayerCloudConstants.API_KEY));
