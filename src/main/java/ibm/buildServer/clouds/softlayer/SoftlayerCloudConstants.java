@@ -26,6 +26,9 @@ public class SoftlayerCloudConstants {
 	public static final String NETWORK = "IBMSL_network";
 	public static final String DOMAIN_NAME = "IBMSL_domainName";
 	
+	public static final String PROFILE_ID = "profileId";
+	public static final String SOURCE_ID = "source-id";
+	
 	public static final String SECURE_API_KEY = "secure:"+API_KEY;
 
 	
