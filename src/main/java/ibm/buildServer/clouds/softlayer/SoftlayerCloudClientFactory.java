@@ -1,6 +1,5 @@
 package ibm.buildServer.clouds.softlayer;
 
-//imports from jetbrains teamcity api
 import jetbrains.buildServer.clouds.CloudClientEx;
 import jetbrains.buildServer.clouds.CloudClientFactory;
 import jetbrains.buildServer.clouds.CloudClientParameters;
@@ -12,7 +11,6 @@ import jetbrains.buildServer.clouds.server.CloudManagerBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-//imports from java api
 import java.util.*;
 import java.util.stream.Collectors;
 import com.intellij.openapi.diagnostic.Logger;

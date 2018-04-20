@@ -7,7 +7,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     propertiesBeanVsiTemplate: '',
     propertiesBeanDatacenter: '',
     
-    _dataKeys: [ 'IBMSL_vsiTemplate', 'IBMSL_datacenter', 'IBMSL_agentName', 'IBMSL_domainName', 'IBMSL_maxMemory', 'IBMSL_maxCores', 'IBMSL_diskType', 'IBMSL_network'],
+    _dataKeys: [ 'IBMSL_vsiTemplate', 'IBMSL_datacenter', 'IBMSL_agentName', 'IBMSL_domainName', 'IBMSL_maxMemory', 'IBMSL_maxCores', 'IBMSL_diskType', 'IBMSL_network', 'agent_pool_id'],
     
     templates: {
         imagesTableRow: $j('<tr class="imagesTableRow">\
@@ -75,6 +75,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
          this.$IBMSL_maxCores = $j('#IBMSL_maxCores');
          this.$IBMSL_diskType = $j('#IBMSL_diskType');
          this.$IBMSL_network = $j('#IBMSL_network');
+         this.$agentPoolId = $j('#agent_pool_id');
          
          this.$imagesDataElem = $j('#' + 'source_images_json');
 
@@ -188,6 +189,12 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
             this._image['IBMSL_network'] = this.$IBMSL_network.val();
             this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
+        
+        this.$agentPoolId.on('change', function (e, value) {
+        	    if(value !== undefined) this.$agentPoolId.val(value);
+        	    this._image['agent_pool_id'] = this.$agentPoolId.val();
+        	    this.validateOptions(e.target.getAttribute('data-id'));
+        	}.bind(this));
     },
     
     _renderImagesTable: function () {
@@ -310,6 +317,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         this.$IBMSL_maxCores.trigger('change', image['IBMSL_maxCores'] || '');
         this.$IBMSL_diskType.trigger('change', image['IBMSL_diskType'] || '');
         this.$IBMSL_network.trigger('change', image['IBMSL_network'] || '');
+        this.$agentPoolId.trigger('change', image['agent_pool_id'] || '');
 
         BS.IBMSoftlayer.ImageDialog.showCentered();
     },
@@ -325,6 +333,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         this.$IBMSL_maxCores.trigger('change', '');
         this.$IBMSL_diskType.trigger('change', '');
         this.$IBMSL_network.trigger('change', '');
+        this.$agentPoolId.trigger('change', '');
     },
 
     validateOptions: function (options){
@@ -399,6 +408,14 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
 	                    isValid = false;
                    }
             	   }.bind(this),
+            	   
+           agent_pool_id : function () {
+            		   var agentPoolId = this._image['agent_pool_id'];
+            		   if (!agentPoolId || agentPoolId === '' || agentPoolId === undefined) {
+            		        this.addOptionError('notSelected', 'agent_pool_id');
+            		        isValid = false;
+            		   }
+            	   }.bind(this)
 
         };
 
@@ -590,7 +607,6 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
 		            		//creating json for vsiTemplate with imageName and GlobalIdentifier values
 		            		var vsiTemplateName = $j(this).attr('name').replace(/ /g, '&nbsp;');
 		            		var vsiTemplateJson = {"name":vsiTemplateName , "value":$j(this).attr('id')};
-		            		//$vsiTemplateOptions.append('<option ' + (($j(this).attr('id') == propertiesBeanVsiTemplate)?'selected = "selected"':'') + ' value="'+$j(this).attr('id')+'"  name="'+ $j(this).attr('name')+'">'+$j(this).attr('name')+'</option>');
 		            		$vsiTemplateOptions.append('<option ' + (($j(this).attr('id') == propertiesBeanVsiTemplate)?'selected = "selected"':'') + ' value='+JSON.stringify(vsiTemplateJson)+'>'+$j(this).attr('name')+'</option>');
 		            });
 		            

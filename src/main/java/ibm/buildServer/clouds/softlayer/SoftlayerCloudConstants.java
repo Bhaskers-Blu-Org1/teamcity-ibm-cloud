@@ -1,7 +1,9 @@
 package ibm.buildServer.clouds.softlayer;
 
+import jetbrains.buildServer.clouds.CloudImageParameters;
+
 public class SoftlayerCloudConstants {
-	// SoftlayerCloudClientFactory.java file constants
+	
 	public static final String DISPLAY_NAME = "IBM SoftLayer";
 	public static final String CLOUD_CODE = "IBMSL";
 
@@ -74,6 +76,10 @@ public class SoftlayerCloudConstants {
 
 	public String getDomainName() {
 		return DOMAIN_NAME;
+	}
+	
+	public String getAgentPoolIdField() {
+		return CloudImageParameters.AGENT_POOL_ID_FIELD;
 	}
 
 }

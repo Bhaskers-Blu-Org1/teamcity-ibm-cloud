@@ -9,6 +9,7 @@
 
 <jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean" />
 <jsp:useBean id="cons" class="ibm.buildServer.clouds.softlayer.SoftlayerCloudConstants"/>
+<jsp:useBean id="agentPools" scope="request" type="java.util.Collection<jetbrains.buildServer.serverSide.agentPools.AgentPool>"/>
 </table>
 
 <script type="text/javascript">
@@ -104,6 +105,25 @@
 				<span class="error option-error option-error_${cons.datacenterList}"></span>
 			</td>
 		</tr>
+		
+		<!-- Agent pool row -->
+		<tr>
+            	<th><label for="${cons.agentPoolIdField}">Agent pool:&nbsp;<l:star/></label></th>
+            	<td>
+                	<select id="${cons.agentPoolIdField}" data-id="${cons.agentPoolIdField}" 
+                    		name="prop:${cons.agentPoolIdField}">
+                    		<props:option value=""><c:out value="<Please select agent pool>"/></props:option>
+                    		<c:forEach var="ap" items="${agentPools}">
+                        		<props:option 
+                        			selected="${ap.agentPoolId eq propertiesBean.properties['agent_pool_id']}" 
+                        			value="${ap.agentPoolId}">
+                        			<c:out value="${ap.name}"/>
+                        		</props:option>
+                    		</c:forEach>
+                	</select>
+                	<span class="error option-error option-error_${cons.agentPoolIdField}"></span>
+            	</td>
+       	</tr>
 	    		
 	    <!-- Agent row -->
 		<tr>

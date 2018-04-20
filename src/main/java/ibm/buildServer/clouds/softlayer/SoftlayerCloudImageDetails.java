@@ -19,10 +19,11 @@ public class SoftlayerCloudImageDetails{
 	public long maxCores;
 	public long maxMemory;
 	public String domainName;
-	
+	public int agentPoolId;
 	
 	
 	public SoftlayerCloudImageDetails(@NotNull final CloudImageParameters imageParameters){
+		agentPoolId = imageParameters.getAgentPoolId();
 		agentName = imageParameters.getParameter(SoftlayerCloudConstants.AGENT_NAME);
 		datacenter = imageParameters.getParameter(SoftlayerCloudConstants.DATACENTER_LIST);
 		localDiskFlag = imageParameters.getParameter(SoftlayerCloudConstants.DISK_TYPE);
@@ -35,6 +36,14 @@ public class SoftlayerCloudImageDetails{
 		sourceId = imageParameters.getParameter(SoftlayerCloudConstants.SOURCE_ID);
 	}
 
+	public int getAgentPoolId() {
+		return agentPoolId;
+	}
+
+	public void setAgentPoolId(int agentPoolId) {
+		this.agentPoolId = agentPoolId;
+	}
+	
 	String getSourceId() {
 		return sourceId;
 	}
@@ -125,6 +134,7 @@ public class SoftlayerCloudImageDetails{
 				  		",\nDiskType:"+localDiskFlag+",\nVSI Template:"+vsiTemplate+
 				  		",\nMax Cores:"+maxCores+",\nMax Memory:"+maxMemory+
 				  		",\nDomain:"+domainName+
+				  		",\nAgent Pool Id:"+Integer.toString(agentPoolId)+
 				        "\n}";
 		  return str;
 	  }

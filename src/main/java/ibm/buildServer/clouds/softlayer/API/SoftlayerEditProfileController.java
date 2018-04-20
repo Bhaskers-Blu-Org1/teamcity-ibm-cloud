@@ -10,6 +10,10 @@ import static ibm.buildServer.clouds.softlayer.SoftlayerCloudConstants.*;
 import jetbrains.buildServer.controllers.BaseFormXmlController;
 import jetbrains.buildServer.controllers.BasePropertiesBean;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.BuildProject;
+import jetbrains.buildServer.serverSide.agentPools.AgentPool;
+import jetbrains.buildServer.serverSide.agentPools.AgentPoolManager;
+import jetbrains.buildServer.serverSide.agentPools.AgentPoolUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.controllers.admin.projects.PluginPropertiesUtil;
@@ -23,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.util.TreeMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,11 +41,13 @@ public class SoftlayerEditProfileController extends BaseFormXmlController {
 
 	private PluginDescriptor myDescriptor;
 	private ApiClient client;
+	private AgentPoolManager myAgentPoolManager;
 
-	public SoftlayerEditProfileController(@NotNull final SBuildServer server, @NotNull final WebControllerManager manager, @NotNull final PluginDescriptor descriptor) {
+	public SoftlayerEditProfileController(@NotNull final SBuildServer server, @NotNull final AgentPoolManager agentPoolManager, @NotNull final WebControllerManager manager, @NotNull final PluginDescriptor descriptor) {
 		
 		super(server);
 		myDescriptor = descriptor;
+		myAgentPoolManager = agentPoolManager;
 		manager.registerController(myDescriptor.getPluginResourcesPath(SETTINGS_HTML_PAGE), this);
 	}
 
@@ -54,6 +61,15 @@ public class SoftlayerEditProfileController extends BaseFormXmlController {
 		mv.getModel().put("coreList", getMaximumCores());
 		mv.getModel().put("diskTypeList", getDiskType());
 		mv.getModel().put("networkList", getNetwork());
+		
+		String projectId = request.getParameter("projectId");
+		List<AgentPool> pools = new ArrayList<AgentPool>();
+		if (BuildProject.ROOT_PROJECT_ID != projectId) {
+			pools.add(AgentPoolUtil.DUMMY_PROJECT_POOL);
+		}
+		pools.addAll(myAgentPoolManager.getProjectOwnedAgentPools(projectId));
+		mv.getModel().put("agentPools", pools);
+		
 		return mv;
 	}
 
