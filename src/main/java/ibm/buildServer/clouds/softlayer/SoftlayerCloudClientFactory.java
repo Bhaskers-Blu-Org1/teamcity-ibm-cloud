@@ -1,6 +1,7 @@
 package ibm.buildServer.clouds.softlayer;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.server.CloudManagerBase;
 import jetbrains.buildServer.serverSide.*;
@@ -29,14 +30,20 @@ class SoftlayerCloudClientFactory implements CloudClientFactory {
   public CloudClientEx createNewClient(
       @NotNull CloudState state, @NotNull CloudClientParameters params) {
     SoftlayerCloudClient client = new SoftlayerCloudClient(params);
-    SoftlayerCloudImage image = new SoftlayerCloudImage(
-        new SoftlayerCloudImageDetails(new CloudImageParameters()));
-    image.setCredentials(
-        params.getParameter(SoftlayerCloudConstants.USER_NAME),
-        params.getParameter(SoftlayerCloudConstants.API_KEY));
-    client.getImages().put(image.getName(), image);
+    for(SoftlayerCloudImageDetails imageDetails : parseImageData(params)) {
+      SoftlayerCloudImage image = new SoftlayerCloudImage(imageDetails);
+      image.setCredentials(
+          params.getParameter(SoftlayerCloudConstants.USER_NAME),
+          params.getParameter(SoftlayerCloudConstants.API_KEY));
+      client.addImage(image);
+    }
     client.start();
     return client;
+  }
+
+  public Collection<SoftlayerCloudImageDetails> parseImageData(
+      @NotNull final CloudClientParameters params) {
+	return params.getCloudImages().stream().map(SoftlayerCloudImageDetails::new).collect(Collectors.toList());
   }
 
   @NotNull

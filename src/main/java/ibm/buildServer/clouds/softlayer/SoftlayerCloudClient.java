@@ -24,6 +24,10 @@ public class SoftlayerCloudClient implements CloudClientEx {
         "Async tasks for cloud " + params.getProfileDescription());
     images = new HashMap<String, SoftlayerCloudImage>();
   }
+
+  public void addImage(SoftlayerCloudImage image) {
+    images.put(image.getName(), image);
+  }
     
   public boolean isInitialized() {
     return initialized;
