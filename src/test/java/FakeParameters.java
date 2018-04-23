@@ -6,7 +6,8 @@ public class FakeParameters extends CloudClientParameters {
 
   public FakeParameters() {
     parameters = new HashMap<String,String>();
-    imageParameters = new List<CloudImageParameters>();
+    imageParameters = new ArrayList<CloudImageParameters>();
+    imageParameters.add(new FakeCloudImageParameters());
   }
 
   public Collection<CloudImageParameters> getCloudImages() {
