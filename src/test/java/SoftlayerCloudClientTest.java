@@ -6,18 +6,31 @@ import org.junit.jupiter.api.BeforeAll;
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudClient;
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudImage;
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudImageDetails;
+import ibm.buildServer.clouds.softlayer.SoftlayerCloudInstance;
 
 import jetbrains.buildServer.clouds.*;
+import jetbrains.buildServer.serverSide.*;
 
 class SoftlayerCloudClientTest {
   private CloudClientParameters parameters;
   private SoftlayerCloudClient client;
   private SoftlayerCloudImage image;
   private SoftlayerCloudImageDetails details;
+  private AgentDescription agentDescription;
+  private CloudInstanceUserData instanceData;
 
   @BeforeAll
   public void setUp() {
     parameters = new FakeParameters();
+    agentDescription = new FakeAgentDescription();
+    instanceData = new CloudInstanceUserData(
+        "fake-agent-name",
+        System.getenv("SOFTLAYER_API"),
+        "ibmwdtest.com",
+        Long.MAX_VALUE,
+        "fake-profile",
+        "This is a fake cloud profile for unit testing.",
+        agentDescription.getConfigurationParameters());
   }
 
   @BeforeEach
@@ -31,14 +44,17 @@ class SoftlayerCloudClientTest {
   @Test
   @DisplayName("Test if we can add & retrieve images")
   public void addImageTest() {
-    Assertions.assertTrue(client.getImages().size() == 1);
+    int size = client.getImages().size();
+    message = "There are " + size + " images, there should be 1.";
+    Assertions.assertEquals(size, 1, message);
   }
 
   @Test
   @DisplayName("Test findImageById")
   public void findImageByIdTest() {
     String sourceId = details.getSourceId();
-    Assertions.assertTrue(client.findImageById(sourceId) == image);
+    String message = "findImageById did not return the expected image.";
+    Assertions.assertSame(client.findImageById(sourceId), image, message);
   }
 
   @Test
@@ -46,3 +62,38 @@ class SoftlayerCloudClientTest {
   public void testCanStartNewInstance() {
     Assertions.assertTrue(client.canStartNewInstance(image));
   }
+
+  @Test
+  @DisplayName("Test generateAgentName")
+  public void testGenerateAgentName() {
+    String name = client.generateAgentName(agentDescription);
+    String message = "generateAgentName did not return the expected name.";
+    Assertions.assertEquals(name, "fake-agent-name", message);
+  }
+
+  @Test
+  @DisplayName("Test start and terminate.")
+  public void testStartAndTerminate() {
+    SoftlayerCloudInstance instance =
+      client.startNewInstance(image, instanceData);
+    client.start();
+    while(instance.getStatus() != InstanceStatus.RUNNING) {
+      Assertions.assertFalse(instance.getStatus().isError());
+    }
+    client.terminateInstance(instance);
+    while(
+        instance.getStatus() == InstanceStatus.SCHEDULED_TO_STOP
+        || instance.getStatus() == InstanceStatus.STOPPING) {
+      Assertions.assertFalse(instance.getStatus().isError());
+    }
+    size = image.getInstances().size();
+    message = "There are " + size + " instances, there should be 0.";
+    Assertions.assertEquals(size, 0, message);
+  }
+
+  @Test
+  @DisplayName("Test findInstanceByAgent runs and returns null.")
+  public void testFindInstanceByAgent() {
+    Assertions.assertNull(client.findInstanceByAgent(agentDescription));
+  }
+}

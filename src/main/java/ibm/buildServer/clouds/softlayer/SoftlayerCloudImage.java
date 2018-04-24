@@ -70,7 +70,7 @@ public class SoftlayerCloudImage implements CloudImage
       return createInstance(data);
     }  
     LOG.info(
-        "Can not start new instance becuause " 
+        "Cannot start new instance becuause " 
         + details.getProfileId()
         + " has reached the maximum number of running instances.");
     return null;
