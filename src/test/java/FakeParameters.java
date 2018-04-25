@@ -1,3 +1,4 @@
+import ibm.buildServer.clouds.softlayer.SoftlayerCloudConstants;
 import jetbrains.buildServer.clouds.*;
 
 public class FakeParameters extends CloudClientParameters {
@@ -6,6 +7,12 @@ public class FakeParameters extends CloudClientParameters {
 
   public FakeParameters() {
     parameters = new HashMap<String,String>();
+    parameters.add(
+        SoftlayerCloudConstants.USER_NAME,
+        System.getenv("SOFTLAYER_USER"));
+    parameters.add(
+        SoftlayerCloudConstants.API_KEY,
+        System.getenv("SOFTLAYER_API"));
     imageParameters = new ArrayList<CloudImageParameters>();
     imageParameters.add(new FakeCloudImageParameters());
   }
