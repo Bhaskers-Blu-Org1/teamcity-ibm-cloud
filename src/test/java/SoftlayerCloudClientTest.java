@@ -74,6 +74,11 @@ class SoftlayerCloudClientTest {
   @Test
   @DisplayName("Test start and terminate.")
   public void testStartAndTerminate() {
+    SoftlayerCloudClientFactory factory = new SoftlayerCloudClientFactory(
+        new FakeCloudRegistrar(),
+        new FakeCloudManager(),
+        new FakePluginDescriptor());
+    client = factory.createNewClient(new FakeCloudState(), parameters);
     SoftlayerCloudInstance instance =
       client.startNewInstance(image, instanceData);
     client.start();
