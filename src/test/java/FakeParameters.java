@@ -1,4 +1,9 @@
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudConstants;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import jetbrains.buildServer.clouds.*;
 
 public class FakeParameters extends CloudClientParameters {
@@ -7,10 +12,10 @@ public class FakeParameters extends CloudClientParameters {
 
   public FakeParameters() {
     parameters = new HashMap<String,String>();
-    parameters.add(
+    parameters.put(
         SoftlayerCloudConstants.USER_NAME,
         System.getenv("SOFTLAYER_USER"));
-    parameters.add(
+    parameters.put(
         SoftlayerCloudConstants.API_KEY,
         System.getenv("SOFTLAYER_API"));
     imageParameters = new ArrayList<CloudImageParameters>();
@@ -21,7 +26,7 @@ public class FakeParameters extends CloudClientParameters {
     return imageParameters;
   }
 
-  public getParameter(String name) {
+  public String getParameter(String name) {
     return parameters.get(name);
   }
 

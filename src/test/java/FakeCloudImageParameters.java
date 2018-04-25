@@ -1,4 +1,7 @@
-import ibm.buildServer.cloud.softlayer.SoftlayerCloudConstants;
+import ibm.buildServer.clouds.softlayer.SoftlayerCloudConstants;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import jetbrains.buildServer.clouds.*;
 
 public class FakeCloudImageParameters extends CloudImageParameters {

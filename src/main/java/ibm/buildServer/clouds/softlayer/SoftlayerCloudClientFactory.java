@@ -9,7 +9,7 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-class SoftlayerCloudClientFactory implements CloudClientFactory {
+public class SoftlayerCloudClientFactory implements CloudClientFactory {
   private PluginDescriptor pluginDescriptor;
   private final String settingPagePath;
   @NotNull private final CloudManagerBase myCloudManager;

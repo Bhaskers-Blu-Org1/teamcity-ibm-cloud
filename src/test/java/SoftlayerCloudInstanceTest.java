@@ -2,6 +2,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudClient;
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudImage;
@@ -10,6 +11,10 @@ import ibm.buildServer.clouds.softlayer.SoftlayerCloudInstance;
 
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.serverSide.*;
+
+import com.softlayer.api.*;
+
+import java.util.Date;
 
 class SoftlayerCloudInstanceTest {
   private CloudClientParameters parameters;
@@ -79,7 +84,7 @@ class SoftlayerCloudInstanceTest {
   }
 
   @Test
-  @DisplayName("Test containsAgent")
+  @DisplayName("Expect containsAgent to return false because we're using the fake agent")
   public void testContainsAgent() {
     Assertions.assertFalse(instance.containsAgent(agent));
   }

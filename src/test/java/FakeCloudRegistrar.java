@@ -3,7 +3,7 @@ import jetbrains.buildServer.clouds.*;
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudClientFactory;
 
 public class FakeCloudRegistrar implements CloudRegistrar {
-  private SoftlayerCloudClientFactory factory;
+  private CloudClientFactory factory;
 
   public FakeCloudRegistrar() {
     // Do nothing.

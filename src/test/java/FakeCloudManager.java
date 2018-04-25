@@ -1,7 +1,10 @@
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudClient;
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudClientFactory;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import jetbrains.buildServer.clouds.*;
+import jetbrains.buildServer.clouds.server.CloudManagerBase;
 import jetbrains.buildServer.clouds.server.ProjectCloudIntegrationStatus;
 
 public class FakeCloudManager implements CloudManagerBase {
@@ -52,6 +55,10 @@ public class FakeCloudManager implements CloudManagerBase {
     return profiles.get(0);
   }
 
+  CloudProfile findProfileGloballyById(String profileId) {
+    return profiles.get(0);
+  }
+
   CloudClientEx getClientIfExists(String projectId, String profileId) {
     return client;
   }
@@ -72,5 +79,9 @@ public class FakeCloudManager implements CloudManagerBase {
 
   ProjectCloudIntegrationStatus getProjectCloudIntegrationStatus(String projectId) {
     return status;
+  }
+
+  void updateProfile(String projectId, CloudProfile cloudProfile) {
+    // Do nothing.
   }
 }

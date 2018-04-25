@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import jetbrains.buildServer.serverSide.*;
 
 public class FakeAgentDescription implements AgentDescription {
@@ -6,7 +10,7 @@ public class FakeAgentDescription implements AgentDescription {
   private List<String> plugins;
 
   public FakeAgentDescription() {
-    parameters = new HashMap<String,String>;
+    parameters = new HashMap<String,String>();
     runTypes = new ArrayList<RunType>();
     plugins = new ArrayList<String>();
     parameters.put("name","fake-agent-name");
@@ -20,7 +24,7 @@ public class FakeAgentDescription implements AgentDescription {
     return runTypes;
   }
 
-  public getAvailableVcsPlugins() {
+  public List<String> getAvailableVcsPlugins() {
     return plugins;
   }
 
