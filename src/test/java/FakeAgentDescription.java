@@ -47,4 +47,8 @@ public class FakeAgentDescription implements AgentDescription {
   public boolean isCaseInsensitiveEnvironment() {
     return false;
   }
+
+  public Map<String,String> getDefinedParameters() {
+    return getConfigurationParameters();
+  }
 }

@@ -48,7 +48,8 @@ class SoftlayerCloudInstanceTest {
   @BeforeEach
   public void assignClientWithImage() {
     SoftlayerCloudClient client = new SoftlayerCloudClient(parameters);
-    details = new SoftlayerCloudImageDetails(client.getCloudImages().get(0));
+    details = new SoftlayerCloudImageDetails(
+        parameters.getCloudImages().iterator().next());
     image = new SoftlayerCloudImage(details);
     instance = new SoftlayerCloudInstance(details, instanceData, softlayerClient);
   }
@@ -59,8 +60,8 @@ class SoftlayerCloudInstanceTest {
     instance.setImage(image);
     String message = "getImage returned the wrong image.";
     Assertions.assertSame(instance.getImage(), image, message);
-    String message = "getImageId returned the wrong ID.";
-    Assertions.assertEquals(instance.getImageID(), image.getId(), message);
+    message = "getImageId returned the wrong ID.";
+    Assertions.assertEquals(instance.getImageId(), image.getId(), message);
   }
 
   @Test
@@ -86,6 +87,6 @@ class SoftlayerCloudInstanceTest {
   @Test
   @DisplayName("Expect containsAgent to return false because we're using the fake agent")
   public void testContainsAgent() {
-    Assertions.assertFalse(instance.containsAgent(agent));
+    Assertions.assertFalse(instance.containsAgent(agentDescription));
   }
 }

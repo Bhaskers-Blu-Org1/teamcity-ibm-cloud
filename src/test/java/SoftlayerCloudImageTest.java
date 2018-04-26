@@ -37,7 +37,8 @@ class SoftlayerCloudImageTest {
   @BeforeEach
   public void assignClientWithImage() {
     SoftlayerCloudClient client = new SoftlayerCloudClient(parameters);
-    details = new SoftlayerCloudImageDetails(client.getCloudImages().get(0));
+    details = new SoftlayerCloudImageDetails(
+        parameters.getCloudImages().iterator().next());
     image = new SoftlayerCloudImage(details);
   }
 

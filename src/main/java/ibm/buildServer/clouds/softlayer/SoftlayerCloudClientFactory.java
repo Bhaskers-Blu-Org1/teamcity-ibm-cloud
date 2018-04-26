@@ -27,7 +27,7 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
   }
 
   @NotNull
-  public CloudClientEx createNewClient(
+  public SoftlayerCloudClient createNewClient(
       @NotNull CloudState state, @NotNull CloudClientParameters params) {
     SoftlayerCloudClient client = new SoftlayerCloudClient(params);
     for(SoftlayerCloudImageDetails imageDetails : parseImageData(params)) {

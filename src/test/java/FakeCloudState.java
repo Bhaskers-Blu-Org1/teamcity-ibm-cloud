@@ -1,4 +1,6 @@
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudInstance;
+import java.util.ArrayList;
+import java.util.List;
 import jetbrains.buildServer.clouds.*;
 
 public class FakeCloudState implements CloudState {
@@ -26,5 +28,9 @@ public class FakeCloudState implements CloudState {
 
   public void registerTerminatedInstance(String imageId, String instanceId) {
     // Do nothing.
+  }
+
+  public List<String> getStartedInstances(String imageId) {
+    return new ArrayList<String>();
   }
 }

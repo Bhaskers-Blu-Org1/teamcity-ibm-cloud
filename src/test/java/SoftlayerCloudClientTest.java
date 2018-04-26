@@ -8,6 +8,7 @@ import ibm.buildServer.clouds.softlayer.SoftlayerCloudClient;
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudImage;
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudImageDetails;
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudInstance;
+import ibm.buildServer.clouds.softlayer.SoftlayerCloudClientFactory;
 
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.serverSide.*;
@@ -37,7 +38,8 @@ class SoftlayerCloudClientTest {
   @BeforeEach
   public void assignClientWithImage() {
     SoftlayerCloudClient client = new SoftlayerCloudClient(parameters);
-    details = new SoftlayerCloudImageDetails(client.getCloudImages().get(0));
+    details = new SoftlayerCloudImageDetails(
+        parameters.getCloudImages().iterator().next());
     image = new SoftlayerCloudImage(details);
     client.addImage(image);
   }
@@ -46,7 +48,7 @@ class SoftlayerCloudClientTest {
   @DisplayName("Test if we can add & retrieve images")
   public void addImageTest() {
     int size = client.getImages().size();
-    message = "There are " + size + " images, there should be 1.";
+    String message = "There are " + size + " images, there should be 1.";
     Assertions.assertEquals(size, 1, message);
   }
 
@@ -80,20 +82,21 @@ class SoftlayerCloudClientTest {
         new FakeCloudManager(),
         new FakePluginDescriptor());
     client = factory.createNewClient(new FakeCloudState(), parameters);
-    SoftlayerCloudInstance instance =
-      client.startNewInstance(image, instanceData);
+    CloudInstance instance = client.startNewInstance(image, instanceData);
     client.start();
+    System.out.println("Started instance " + instance.getName());
     while(instance.getStatus() != InstanceStatus.RUNNING) {
       Assertions.assertFalse(instance.getStatus().isError());
     }
+    System.out.println("Terminating instance " + instance.getName());
     client.terminateInstance(instance);
     while(
         instance.getStatus() == InstanceStatus.SCHEDULED_TO_STOP
         || instance.getStatus() == InstanceStatus.STOPPING) {
       Assertions.assertFalse(instance.getStatus().isError());
     }
-    size = image.getInstances().size();
-    message = "There are " + size + " instances, there should be 0.";
+    int size = image.getInstances().size();
+    String message = "There are " + size + " instances, there should be 0.";
     Assertions.assertEquals(size, 0, message);
   }
 

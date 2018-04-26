@@ -21,67 +21,68 @@ public class FakeCloudManager implements CloudManagerBase {
           new FakeCloudRegistrar(),
           this,
           new FakePluginDescriptor());
+    cloudTypes = new ArrayList<SoftlayerCloudClientFactory>();
     cloudTypes.add(factory);
     client = new SoftlayerCloudClient(new FakeParameters());
   }
 
-  boolean isIntegrationEnabled(String projectId) {
+  public boolean isIntegrationEnabled(String projectId) {
     return true;
   }
 
-  boolean isConfigurable(String projectId) {
+  public boolean isConfigurable(String projectId) {
     return true;
   }
 
-  Collection<CloudProfile> listProfilesByProject(
+  public Collection<CloudProfile> listProfilesByProject(
       String projectId,
       boolean includeFromSubprojects) {
     return profiles;
   }
 
-  Collection<CloudProfile> listAllProfiles() {
+  public Collection<CloudProfile> listAllProfiles() {
     return profiles;
   }
 
-  Collection<SoftlayerCloudClientFactory> getCloudTypes() {
+  public Collection<SoftlayerCloudClientFactory> getCloudTypes() {
     return cloudTypes;
   }
 
-  CloudType findCloudType(String cloudName) {
+  public CloudType findCloudType(String cloudName) {
     return cloudTypes.get(0);
   }
 
-  CloudProfile findProfileById(String projectId, String profileId) {
+  public CloudProfile findProfileById(String projectId, String profileId) {
     return profiles.get(0);
   }
 
-  CloudProfile findProfileGloballyById(String profileId) {
+  public CloudProfile findProfileGloballyById(String profileId) {
     return profiles.get(0);
   }
 
-  CloudClientEx getClientIfExists(String projectId, String profileId) {
+  public CloudClientEx getClientIfExists(String projectId, String profileId) {
     return client;
   }
 
-  CloudClientEx getClientIfExistsByProjectExtId(
+  public CloudClientEx getClientIfExistsByProjectExtId(
       String ProjectExtId,
       String profileId) {
     return client;
   }
 
-  CloudClientEx getClient(String projectId, String profileId) {
+  public CloudClientEx getClient(String projectId, String profileId) {
     return client;
   }
 
-  void updateStatus(String projectId, ProjectCloudIntegrationStatus newStatus) {
+  public void updateStatus(String projectId, ProjectCloudIntegrationStatus newStatus) {
     status = newStatus;
   }
 
-  ProjectCloudIntegrationStatus getProjectCloudIntegrationStatus(String projectId) {
+  public ProjectCloudIntegrationStatus getProjectIntegrationStatus(String projectId) {
     return status;
   }
 
-  void updateProfile(String projectId, CloudProfile cloudProfile) {
+  public void updateProfile(String projectId, CloudProfile cloudProfile) {
     // Do nothing.
   }
 }

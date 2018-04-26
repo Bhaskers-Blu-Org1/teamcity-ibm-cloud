@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ public class FakeCloudProfile implements CloudProfile {
   public FakeCloudProfile() {
     profileId = "fake-profile-id";
     projectId = "fake-project-id";
+    images = new ArrayList<CloudImageParameters>();
     images.add(new FakeCloudImageParameters());
     parameters = new FakeParameters();
   }

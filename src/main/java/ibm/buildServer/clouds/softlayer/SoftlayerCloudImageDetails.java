@@ -44,7 +44,7 @@ public class SoftlayerCloudImageDetails{
 		this.agentPoolId = agentPoolId;
 	}
 	
-	String getSourceId() {
+	public String getSourceId() {
 		return sourceId;
 	}
 
