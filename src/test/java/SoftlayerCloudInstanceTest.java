@@ -27,8 +27,8 @@ class SoftlayerCloudInstanceTest {
   private SoftlayerCloudInstance instance;
   private Date startTests;
 
-  @BeforeAll
-  public void setUp() {
+  @BeforeEach
+  public void assignClientWithImage() {
     parameters = new FakeParameters();
     agentDescription = new FakeAgentDescription();
     instanceData = new CloudInstanceUserData(
@@ -43,10 +43,6 @@ class SoftlayerCloudInstanceTest {
         System.getenv("SOFTLAYER_USER"),
         System.getenv("SOFTLAYER_API"));
     startTests = new Date();
-  }
-
-  @BeforeEach
-  public void assignClientWithImage() {
     SoftlayerCloudClient client = new SoftlayerCloudClient(parameters);
     details = new SoftlayerCloudImageDetails(
         parameters.getCloudImages().iterator().next());
@@ -87,6 +83,8 @@ class SoftlayerCloudInstanceTest {
   @Test
   @DisplayName("Expect containsAgent to return false because we're using the fake agent")
   public void testContainsAgent() {
+    String message = "Agent name was "
+      + agentDescription.getConfigurationParameters().get("name");
     Assertions.assertFalse(instance.containsAgent(agentDescription));
   }
 }
