@@ -31,6 +31,7 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
       @NotNull CloudState state, @NotNull CloudClientParameters params) {
     SoftlayerCloudClient client = new SoftlayerCloudClient(params);
     for(SoftlayerCloudImageDetails imageDetails : parseImageData(params)) {
+      System.out.println("creating image for " + params.getParameter(SoftlayerCloudConstants.USER_NAME));
       SoftlayerCloudImage image = new SoftlayerCloudImage(imageDetails);
       image.setCredentials(
           params.getParameter(SoftlayerCloudConstants.USER_NAME),

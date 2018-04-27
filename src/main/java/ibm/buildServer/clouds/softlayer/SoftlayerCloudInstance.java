@@ -111,12 +111,16 @@ public class SoftlayerCloudInstance implements CloudInstance
   }
 
   public void start() {
+    if(softlayerClient != null) {
+      System.out.println(softlayerClient);
+    }
     try {
       this.guest = Guest.service(softlayerClient).createObject(this.guest);
       id = guest.getId().toString();
       LOG.info("Softlayer ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;
     } catch (Exception e) {
+      System.out.println("Error: " + e);
       LOG.warn("Error: " + e);
       myStatus = InstanceStatus.ERROR;
     }
