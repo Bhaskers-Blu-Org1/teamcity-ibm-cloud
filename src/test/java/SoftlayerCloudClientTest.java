@@ -80,21 +80,28 @@ class SoftlayerCloudClientTest {
   @Test
   @DisplayName("Test start and terminate.")
   public void testStartAndTerminate() {
+    String message;
     CloudInstance instance = client.startNewInstance(image, instanceData);
     Assertions.assertNotNull(instance, "instance is null");
-    /*
     client.start();
     System.out.println("Started instance " + instance.getName());
     Assertions.assertNotNull(instance.getStatus(), "Status is null.");
-    while(instance.getStatus() != InstanceStatus.RUNNING) {
-      Assertions.assertFalse(instance.getStatus().isError());
+    InstanceStatus status = instance.getStatus();
+    System.out.println("instance status is " + status.getName());
+    while(status != InstanceStatus.RUNNING) {
+      status = instance.getStatus();
+      message = "instance status is " + status.getName();
+      Assertions.assertFalse(status.isError(), message);
     }
     System.out.println("Terminating instance " + instance.getName());
     client.terminateInstance(instance);
+    status = instance.getStatus();
     while(
-        instance.getStatus() == InstanceStatus.SCHEDULED_TO_STOP
-        || instance.getStatus() == InstanceStatus.STOPPING) {
-      Assertions.assertFalse(instance.getStatus().isError());
+        status == InstanceStatus.SCHEDULED_TO_STOP
+        || status == InstanceStatus.STOPPING) {
+      status = instance.getStatus();
+      message = "instance status is " + status.getName();
+      Assertions.assertFalse(status.isError(), message);
     }
     /*
     int size = image.getInstances().size();

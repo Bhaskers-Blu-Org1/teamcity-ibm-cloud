@@ -2,6 +2,8 @@ package ibm.buildServer.clouds.softlayer;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.softlayer.api.service.virtual.Guest;
+import com.softlayer.api.service.virtual.guest.Status;
+import com.softlayer.api.service.virtual.guest.power.State;
 import java.util.*;
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.log.Loggers;
@@ -17,23 +19,25 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
     Logger LOG = Loggers.SERVER;
     InstanceStatus newStatus;
     InstanceStatus currentStatus;
-    String vsiStatus;
-    String vsiState;
+    Status vsiStatus;
+    State vsiState;
     Guest guest;
     for(SoftlayerCloudImage image : client.getImages()) {
       for(SoftlayerCloudInstance instance : image.getInstances()) {
         currentStatus = instance.getStatus();
         try {
-          vsiStatus = instance.guest.getStatus().getName();
-          vsiState = instance.guest.getPowerState().getName();
+          vsiStatus = instance.guest.getStatus();
+          vsiState = instance.guest.getPowerState();
           newStatus = teamcityStatus(vsiStatus, vsiState, currentStatus);
         // This catch block is only meant to catch "object not found" errors
         // returned by SoftLayer but at this time it's unkown if this exception
         // is available as a Java class.
         } catch(Exception e) {
+          System.out.println("Error: " + e);
           LOG.warn("Error: " + e);
           newStatus = InstanceStatus.ERROR;
         }
+        System.out.println("New status is " + newStatus.getName());
         instance.setStatus(newStatus);
         if(removable(instance.getStatus())) {
           image.removeInstance(instance.getInstanceId());
@@ -47,22 +51,32 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
   }
 
   private InstanceStatus teamcityStatus(
-      String vsiStatus,
-      String vsiState,
+      Status vsiStatus,
+      State vsiState,
       InstanceStatus currentStatus) {
+    if(vsiStatus == null) {
+      System.out.println("vsiStatus is null");
+    } else {
+      System.out.println("vsiStatus is " + vsiStatus.getName());
+    }
+    if(vsiState == null) {
+      System.out.println("vsiState is null");
+    } else {
+      System.out.println("vsiState is " + vsiState.getName());
+    }
     if(currentStatus == InstanceStatus.ERROR_CANNOT_STOP) {
       return currentStatus;
     }
-    if(vsiStatus.equals("Terminating")) {
+    if(vsiStatus != null && vsiStatus.getName().equals("Terminating")) {
       return InstanceStatus.STOPPING;
     }
-    if(vsiStatus.equals("Disconnected")) {
+    if(vsiStatus != null && vsiStatus.getName().equals("Disconnected")) {
       return InstanceStatus.STOPPED;
     }
-    if(vsiState.equals("Halted")) {
+    if(vsiState != null && vsiState.getName().equals("Halted")) {
       return InstanceStatus.STARTING;
     }
-    if(vsiState.equals("Running")) {
+    if(vsiState != null && vsiState.getName().equals("Running")) {
       return InstanceStatus.RUNNING;
     }
     return currentStatus;
