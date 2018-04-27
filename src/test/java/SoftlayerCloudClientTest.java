@@ -24,7 +24,10 @@ class SoftlayerCloudClientTest {
   @BeforeEach
   public void assignClientWithImage() {
     parameters = new FakeParameters();
+    //System.out.println("parameters: " + parameters.getProfileDescription());
     agentDescription = new FakeAgentDescription();
+    //System.out.println("agentDescription: "
+    //    + agentDescription.getConfigurationParameters().get("name"));
     instanceData = new CloudInstanceUserData(
         "fake-agent-name",
         System.getenv("SOFTLAYER_API"),
@@ -33,11 +36,16 @@ class SoftlayerCloudClientTest {
         "fake-profile",
         "This is a fake cloud profile for unit testing.",
         agentDescription.getConfigurationParameters());
-    SoftlayerCloudClient client = new SoftlayerCloudClient(parameters);
+    //System.out.println("instanceData: " + instanceData.getProfileDescription());
+    client = new SoftlayerCloudClient(parameters);
+    //System.out.println("client: " + client.isInitialized());
     details = new SoftlayerCloudImageDetails(
         parameters.getCloudImages().iterator().next());
+    //System.out.println("details: " + details.toString());
     image = new SoftlayerCloudImage(details);
+    //System.out.println("image: " + image.getName());
     client.addImage(image);
+    //System.out.println(client.getImages());
   }
 
   @Test
@@ -101,4 +109,5 @@ class SoftlayerCloudClientTest {
   public void testFindInstanceByAgent() {
     Assertions.assertNull(client.findInstanceByAgent(agentDescription));
   }
+
 }

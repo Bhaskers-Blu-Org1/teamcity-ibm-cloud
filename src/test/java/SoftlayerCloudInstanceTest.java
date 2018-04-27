@@ -43,7 +43,7 @@ class SoftlayerCloudInstanceTest {
         System.getenv("SOFTLAYER_USER"),
         System.getenv("SOFTLAYER_API"));
     startTests = new Date();
-    SoftlayerCloudClient client = new SoftlayerCloudClient(parameters);
+    client = new SoftlayerCloudClient(parameters);
     details = new SoftlayerCloudImageDetails(
         parameters.getCloudImages().iterator().next());
     image = new SoftlayerCloudImage(details);
@@ -76,8 +76,8 @@ class SoftlayerCloudInstanceTest {
   @DisplayName("Test getStartedTime returns the time at which the instance was created.")
   public void testGetStartedTime() {
     Date startedTime = instance.getStartedTime();
-    Assertions.assertTrue(startedTime.after(startTests));
-    Assertions.assertTrue(startedTime.before(new Date()));
+    Assertions.assertFalse(startedTime.before(startTests));
+    Assertions.assertFalse(startedTime.after(new Date()));
   }
 
   @Test

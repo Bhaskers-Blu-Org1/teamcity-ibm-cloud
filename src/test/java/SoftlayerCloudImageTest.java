@@ -32,7 +32,7 @@ class SoftlayerCloudImageTest {
         "fake-profile",
         "This is a fake cloud profile for unit testing.",
         agentDescription.getConfigurationParameters());
-    SoftlayerCloudClient client = new SoftlayerCloudClient(parameters);
+    client = new SoftlayerCloudClient(parameters);
     details = new SoftlayerCloudImageDetails(
         parameters.getCloudImages().iterator().next());
     image = new SoftlayerCloudImage(details);
