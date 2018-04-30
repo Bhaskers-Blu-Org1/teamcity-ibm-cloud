@@ -26,7 +26,7 @@ public class SoftlayerCloudInstance implements CloudInstance
   private Date startedTime;
   private SoftlayerCloudImageDetails imageDetails;
   private CloudInstanceUserData userData;
-  private ApiClient softlayerClient;
+  public ApiClient softlayerClient;
   private final static Logger LOG = Loggers.SERVER;
 
   public SoftlayerCloudInstance(
@@ -115,7 +115,7 @@ public class SoftlayerCloudInstance implements CloudInstance
       System.out.println(softlayerClient);
     }
     try {
-      this.guest = Guest.service(softlayerClient).createObject(this.guest);
+      guest = Guest.service(softlayerClient).createObject(guest);
       id = guest.getId().toString();
       LOG.info("Softlayer ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;

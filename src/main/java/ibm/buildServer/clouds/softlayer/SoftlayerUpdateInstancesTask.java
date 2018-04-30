@@ -21,13 +21,19 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
     InstanceStatus currentStatus;
     Status vsiStatus;
     State vsiState;
+    Guest.Service service;
     Guest guest;
     for(SoftlayerCloudImage image : client.getImages()) {
       for(SoftlayerCloudInstance instance : image.getInstances()) {
         currentStatus = instance.getStatus();
         try {
-          vsiStatus = instance.guest.getStatus();
-          vsiState = instance.guest.getPowerState();
+          // This logic is modeled on https://github.com/softlayer/softlayer-java/blob/master/examples/src/main/java/com/softlayer/api/example/OrderVirtualServer.java
+          service = instance.guest.asService(instance.softlayerClient);
+          service.withMask().status().name();
+          service.withMask().powerState().name();
+          guest = service.getObject();
+          vsiStatus = guest.getStatus();
+          vsiState = guest.getPowerState();
           newStatus = teamcityStatus(vsiStatus, vsiState, currentStatus);
         // This catch block is only meant to catch "object not found" errors
         // returned by SoftLayer but at this time it's unkown if this exception
