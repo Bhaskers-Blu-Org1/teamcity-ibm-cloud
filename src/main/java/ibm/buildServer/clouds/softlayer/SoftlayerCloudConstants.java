@@ -3,7 +3,7 @@ package ibm.buildServer.clouds.softlayer;
 import jetbrains.buildServer.clouds.CloudImageParameters;
 
 public class SoftlayerCloudConstants {
-	// SoftlayerCloudClientFactory.java file constants
+	
 	public static final String DISPLAY_NAME = "IBM SoftLayer";
 	public static final String CLOUD_CODE = "IBMSL";
 
