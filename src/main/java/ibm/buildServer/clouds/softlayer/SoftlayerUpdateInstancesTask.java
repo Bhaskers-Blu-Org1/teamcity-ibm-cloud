@@ -1,6 +1,7 @@
 package ibm.buildServer.clouds.softlayer;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.softlayer.api.service.provisioning.version1.Transaction;
 import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.service.virtual.guest.Status;
 import com.softlayer.api.service.virtual.guest.power.State;
@@ -21,6 +22,7 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
     InstanceStatus currentStatus;
     Status vsiStatus;
     State vsiState;
+    Transaction vsiTransaction;
     Guest.Service service;
     Guest guest;
     for(SoftlayerCloudImage image : client.getImages()) {
@@ -31,10 +33,17 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
           service = instance.guest.asService(instance.softlayerClient);
           service.withMask().status().name();
           service.withMask().powerState().name();
+          service.withMask().activeTransaction();
+          service.withMask().activeTransaction().transactionStatus().friendlyName();
           guest = service.getObject();
           vsiStatus = guest.getStatus();
           vsiState = guest.getPowerState();
-          newStatus = teamcityStatus(vsiStatus, vsiState, currentStatus);
+          vsiTransaction = guest.getActiveTransaction();
+          newStatus = teamcityStatus(
+              vsiStatus,
+              vsiState,
+              vsiTransaction,
+              currentStatus);
         // This catch block is only meant to catch "object not found" errors
         // returned by SoftLayer but at this time it's unkown if this exception
         // is available as a Java class.
@@ -59,6 +68,7 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
   private InstanceStatus teamcityStatus(
       Status vsiStatus,
       State vsiState,
+      Transaction vsiTransaction,
       InstanceStatus currentStatus) {
     if(vsiStatus == null) {
       System.out.println("vsiStatus is null");
@@ -69,6 +79,12 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
       System.out.println("vsiState is null");
     } else {
       System.out.println("vsiState is " + vsiState.getName());
+    }
+    if(vsiTransaction == null) {
+      System.out.println("vsiTransaction is null");
+    } else {
+      System.out.println("vsiTransaction is "
+          + vsiTransaction.getTransactionStatus().getFriendlyName());
     }
     if(currentStatus == InstanceStatus.ERROR_CANNOT_STOP) {
       return currentStatus;
@@ -82,7 +98,9 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
     if(vsiState != null && vsiState.getName().equals("Halted")) {
       return InstanceStatus.STARTING;
     }
-    if(vsiState != null && vsiState.getName().equals("Running")) {
+    if(vsiState != null
+        && vsiState.getName().equals("Running")
+        && vsiTransaction == null) {
       return InstanceStatus.RUNNING;
     }
     return currentStatus;
