@@ -1,7 +1,13 @@
+/*
+* @author: Scott Wyman Neagle 
+* scottwn@ibm.com
+**/
+
 package ibm.buildServer.clouds.softlayer;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.server.CloudManagerBase;
 import jetbrains.buildServer.serverSide.*;
@@ -31,6 +37,8 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
       @NotNull CloudState state, @NotNull CloudClientParameters params) {
     SoftlayerCloudClient client = new SoftlayerCloudClient(params);
     for(SoftlayerCloudImageDetails imageDetails : parseImageData(params)) {
+      // Print to the screen during test; logging has not been implemented in automated
+      // unit tests.
       System.out.println("creating image for " + params.getParameter(SoftlayerCloudConstants.USER_NAME));
       SoftlayerCloudImage image = new SoftlayerCloudImage(imageDetails);
       image.setCredentials(

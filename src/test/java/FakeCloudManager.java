@@ -1,11 +1,20 @@
+/*
+* @author: Scott Wyman Neagle
+* scottwn@ibm.com
+**/
+
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudClient;
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudClientFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.server.CloudManagerBase;
 import jetbrains.buildServer.clouds.server.ProjectCloudIntegrationStatus;
+
+// This is a mock object for unit testing. It's used to construct CloudClientFactory.
 
 public class FakeCloudManager implements CloudManagerBase {
   private List<CloudProfile> profiles;

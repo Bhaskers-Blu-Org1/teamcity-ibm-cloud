@@ -1,8 +1,17 @@
+/*
+* @author: scott wyman neagle
+* scottwn@ibm.com
+**/
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import jetbrains.buildServer.serverSide.*;
+
+// This is a mock object for unit testing. It needs to be passed to containsAgent,
+// generateAgentName, and findInstanceByAgent. It's also used to construct CloudInstanceUserData.
 
 public class FakeAgentDescription implements AgentDescription {
   private Map<String,String> parameters;

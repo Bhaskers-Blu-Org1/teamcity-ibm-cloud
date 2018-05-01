@@ -1,7 +1,16 @@
+/*
+* @author: scott wyman neagle
+* scottwn@ibm.com
+**/
+
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudInstance;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import jetbrains.buildServer.clouds.*;
+
+// This is a mock object for unit testing. It needs to be passed to createNewClient.
 
 public class FakeCloudState implements CloudState {
   private SoftlayerCloudInstance instance;

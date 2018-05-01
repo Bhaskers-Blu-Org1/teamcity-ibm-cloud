@@ -1,3 +1,8 @@
+/*
+* @author: Scott Wyman Neagle 
+* scottwn@ibm.com
+**/
+
 package ibm.buildServer.clouds.softlayer;
 
 import com.softlayer.api.ApiClient;
@@ -112,6 +117,8 @@ public class SoftlayerCloudInstance implements CloudInstance
 
   public void start() {
     if(softlayerClient != null) {
+      // println statements are for printing to screen during test as logging has
+      // not been implemented in automated unit tests.
       System.out.println(softlayerClient);
     }
     try {

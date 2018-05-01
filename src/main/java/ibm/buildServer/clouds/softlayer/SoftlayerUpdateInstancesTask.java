@@ -1,13 +1,20 @@
+/*
+* @author: Scott Wyman Neagle 
+* scottwn@ibm.com
+**/
+
 package ibm.buildServer.clouds.softlayer;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.clouds.*;
+import jetbrains.buildServer.log.Loggers;
+
 import com.softlayer.api.service.provisioning.version1.Transaction;
 import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.service.virtual.guest.Status;
 import com.softlayer.api.service.virtual.guest.power.State;
+
 import java.util.*;
-import jetbrains.buildServer.clouds.*;
-import jetbrains.buildServer.log.Loggers;
 
 public class SoftlayerUpdateInstancesTask implements Runnable {
   private SoftlayerCloudClient client;
@@ -46,7 +53,9 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
               currentStatus);
         // This catch block is only meant to catch "object not found" errors
         // returned by SoftLayer but at this time it's unkown if this exception
-        // is available as a Java class.
+        // is available as a Java class. println statements are for printing to
+        // screen during test as logging has not been implemented in automated unit
+        // tests.
         } catch(Exception e) {
           System.out.println("Error: " + e);
           LOG.warn("Error: " + e);
@@ -71,6 +80,8 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
       Transaction vsiTransaction,
       InstanceStatus currentStatus) {
     if(vsiStatus == null) {
+      // println statements are for printing to screen during tests as logging has
+      // not been implemented in automated unit tests.
       System.out.println("vsiStatus is null");
     } else {
       System.out.println("vsiStatus is " + vsiStatus.getName());

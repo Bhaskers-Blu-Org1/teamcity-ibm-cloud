@@ -1,5 +1,13 @@
+/*
+* @author: scott wyman neagle
+* scottwn@ibm.com
+**/
+
 import java.io.File;
+
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
+
+// This is a mock object for unit testing. It's used to construct CloudClientFactory.
 
 public class FakePluginDescriptor implements PluginDescriptor {
   File root;

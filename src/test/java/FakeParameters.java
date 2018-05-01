@@ -1,10 +1,21 @@
+/*
+* @author: scott wyman neagle
+* scottwn@ibm.com
+**/
+
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudConstants;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import jetbrains.buildServer.clouds.*;
+
+// This is a mock object for unit testing. It's returned by CloudProfile.getParameters
+// and used to construct CloudClient and CloudImageDetails. It's also passed to
+// createNewClient.
 
 public class FakeParameters extends CloudClientParameters {
   public Map<String,String> parameters;

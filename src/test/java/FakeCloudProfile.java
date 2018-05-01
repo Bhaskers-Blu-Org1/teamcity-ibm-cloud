@@ -1,8 +1,16 @@
+/*
+* @author: scott wyman neagle
+* scottwn@ibm.com
+**/
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 import jetbrains.buildServer.clouds.*;
+
+// This is a mock object for unit testing. It needs to be added to CloudManager.
 
 public class FakeCloudProfile implements CloudProfile {
   private String profileId;

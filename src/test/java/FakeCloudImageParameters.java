@@ -1,8 +1,18 @@
+/*
+* @author: Scott Wyman Neagle
+* scottwn@ibm.com
+**/
+
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudConstants;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
 import jetbrains.buildServer.clouds.*;
+
+// This is a mock object for unit testing. It needs to be added to CloudClientParameters
+// and CloudProfile.
 
 public class FakeCloudImageParameters extends CloudImageParameters {
   public Map<String,String> parameters;

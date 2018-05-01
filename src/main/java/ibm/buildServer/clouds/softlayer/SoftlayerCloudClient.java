@@ -1,16 +1,22 @@
+/*
+* @author: Scott Wyman Neagle 
+* scottwn@ibm.com
+**/
+
 package ibm.buildServer.clouds.softlayer;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.log.Loggers;
-import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-import java.util.Map;
-import java.util.HashMap;
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.base.connector.CloudAsyncTaskExecutor;
 import jetbrains.buildServer.serverSide.AgentDescription;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.HashMap;
 
 public class SoftlayerCloudClient implements CloudClientEx {
   boolean initialized = false;

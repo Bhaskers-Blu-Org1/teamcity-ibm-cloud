@@ -1,6 +1,13 @@
+/*
+* @author: scott wyman neagle
+* scottwn@ibm.com
+**/
+
 import jetbrains.buildServer.clouds.*;
 
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudClientFactory;
+
+// This is a mock object for unit testing. It's used to construct CloudClientFactory.
 
 public class FakeCloudRegistrar implements CloudRegistrar {
   private CloudClientFactory factory;

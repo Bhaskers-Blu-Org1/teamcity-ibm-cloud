@@ -1,17 +1,24 @@
+/*
+* @author: Scott Wyman Neagle 
+* scottwn@ibm.com
+**/
+
 package ibm.buildServer.clouds.softlayer;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.clouds.*;
+import jetbrains.buildServer.log.Loggers;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import com.softlayer.api.*;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.HashMap;
 import java.util.Map;
-import jetbrains.buildServer.clouds.*;
-import jetbrains.buildServer.log.Loggers;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class SoftlayerCloudImage implements CloudImage
 {
@@ -69,12 +76,6 @@ public class SoftlayerCloudImage implements CloudImage
     if(canStartNewInstance()) {
       return createInstance(data);
     }  
-    /*
-    LOG.info(
-        "Cannot start new instance becuause " 
-        + details.getProfileId()
-        + " has reached the maximum number of running instances.");
-    */
     return null;
   }
 
