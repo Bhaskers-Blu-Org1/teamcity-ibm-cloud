@@ -7,7 +7,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     propertiesBeanVsiTemplate: '',
     propertiesBeanDatacenter: '',
     
-    _dataKeys: [ 'IBMSL_vsiTemplate', 'IBMSL_datacenter', 'IBMSL_agentName', 'IBMSL_domainName', 'IBMSL_maxMemory', 'IBMSL_maxCores', 'IBMSL_diskType', 'IBMSL_network', 'agent_pool_id'],
+    _dataKeys: [ 'IBMSL_vsiTemplate', 'IBMSL_datacenter', 'IBMSL_agentName', 'IBMSL_domainName', 'IBMSL_maxMemory', 'IBMSL_maxCores', 'IBMSL_diskType', 'IBMSL_network', 'IBMSL_vsiBilling', 'agent_pool_id'],
     
     templates: {
         imagesTableRow: $j('<tr class="imagesTableRow">\
@@ -19,6 +19,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         		<td class="IBMSL_maxCores highlight"></td>\
         		<td class="IBMSL_diskType highlight"></td>\
 			<td class="IBMSL_network highlight"></td>\
+        		<td class="IBMSL_vsiBilling highlight"></td>\
 			<td class="edit highlight"><a href="#" class="editVmImageLink">edit</a></td>\
 			<td class="remove"><a href="#" class="removeVmImageLink">delete</a></td>\
 			        </tr>')},
@@ -37,7 +38,8 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         		IBMSL_maxMemory: '!SHOULD_NOT_BE_EMPTY!',
         		IBMSL_maxCores: '!SHOULD_NOT_BE_EMPTY!',
         		IBMSL_diskType: '!SHOULD_NOT_BE_EMPTY!',
-        		IBMSL_network: '!SHOULD_NOT_BE_EMPTY!'
+        		IBMSL_network: '!SHOULD_NOT_BE_EMPTY!',
+        		IBMSL_vsiBilling: '!SHOULD_NOT_BE_EMPTY!'
         },
 
         _errors: {
@@ -75,6 +77,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
          this.$IBMSL_maxCores = $j('#IBMSL_maxCores');
          this.$IBMSL_diskType = $j('#IBMSL_diskType');
          this.$IBMSL_network = $j('#IBMSL_network');
+         this.$IBMSL_vsiBilling = $j('#IBMSL_vsiBilling');
          this.$agentPoolId = $j('#agent_pool_id');
          
          this.$imagesDataElem = $j('#' + 'source_images_json');
@@ -190,6 +193,13 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
             this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
         
+        this.$IBMSL_vsiBilling.on('change', function (e, value) {
+            if(value !== undefined) this.$IBMSL_vsiBilling.val(value);
+            this._image['IBMSL_vsiBilling'] = this.$IBMSL_vsiBilling.val();
+            this.validateOptions(e.target.getAttribute('data-id'));
+        }.bind(this));
+        
+        
         this.$agentPoolId.on('change', function (e, value) {
         	    if(value !== undefined) this.$agentPoolId.val(value);
         	    this._image['agent_pool_id'] = this.$agentPoolId.val();
@@ -239,10 +249,10 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         				var vsiTemplateValueJson = JSON.parse(props[className]);
         				$row.find('.' + className).text(vsiTemplateValueJson.name.replace(/&nbsp;/g,' ') || defaults[className]);
         			}
-        		else if(className == 'IBMSL_diskType')
+        		else if(className == 'IBMSL_diskType' || className == 'IBMSL_vsiBilling')
         			{
-        				var diskJson = JSON.parse(props[className]);
-        				$row.find('.' + className).text(diskJson.type || defaults[className]);
+        				var json = JSON.parse(props[className]);
+        				$row.find('.' + className).text(json.type || defaults[className]);
         			}
         		else
         			{
@@ -317,6 +327,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         this.$IBMSL_maxCores.trigger('change', image['IBMSL_maxCores'] || '');
         this.$IBMSL_diskType.trigger('change', image['IBMSL_diskType'] || '');
         this.$IBMSL_network.trigger('change', image['IBMSL_network'] || '');
+        this.$IBMSL_vsiBilling.trigger('change', image['IBMSL_vsiBilling'] || '');
         this.$agentPoolId.trigger('change', image['agent_pool_id'] || '');
 
         BS.IBMSoftlayer.ImageDialog.showCentered();
@@ -333,6 +344,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         this.$IBMSL_maxCores.trigger('change', '');
         this.$IBMSL_diskType.trigger('change', '');
         this.$IBMSL_network.trigger('change', '');
+        this.$IBMSL_vsiBilling.trigger('change', '');
         this.$agentPoolId.trigger('change', '');
     },
 
@@ -350,7 +362,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
                         this.addOptionError('notSelected', 'IBMSL_vsiTemplate');
                         isValid = false;
                     }
-                }.bind(this),
+            }.bind(this),
                 
             IBMSL_datacenter : function () {
                     var IBMSL_datacenter = this._image['IBMSL_datacenter'];
@@ -358,7 +370,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
                         this.addOptionError('notSelected', 'IBMSL_datacenter');
                         isValid = false;
                     }
-                }.bind(this),
+            }.bind(this),
                 
             IBMSL_agentName : function () {
                     var IBMSL_agentName = this._image['IBMSL_agentName'];
@@ -366,7 +378,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
                         this.addOptionError('notSelected', 'IBMSL_agentName');
                         isValid = false;
                     }
-                }.bind(this),
+            }.bind(this),
                 
             IBMSL_domainName : function () {
                     var IBMSL_domainName = this._image['IBMSL_domainName'];
@@ -383,7 +395,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
                         this.addOptionError('notSelected', 'IBMSL_maxMemory');
                         isValid = false;
                     }
-                }.bind(this),
+           }.bind(this),
                 
            IBMSL_maxCores : function () {
                     var IBMSL_maxCores = this._image['IBMSL_maxCores'];
@@ -391,7 +403,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
                         this.addOptionError('notSelected', 'IBMSL_maxCores');
                         isValid = false;
                     }
-                }.bind(this),
+           }.bind(this),
                 
            IBMSL_diskType : function () {
                     var IBMSL_diskType = this._image['IBMSL_diskType'];
@@ -399,7 +411,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
                         this.addOptionError('notSelected', 'IBMSL_diskType');
                         isValid = false;
                     }
-                }.bind(this),
+           }.bind(this),
                                      
            IBMSL_network : function () {
         			  var IBMSL_network = this._image['IBMSL_network'];
@@ -407,7 +419,16 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
 	                    this.addOptionError('notSelected', 'IBMSL_network');
 	                    isValid = false;
                    }
-            	   }.bind(this),
+           }.bind(this),
+            	   
+           IBMSL_vsiBilling : function () {
+         			  var IBMSL_vsiBilling = this._image['IBMSL_vsiBilling'];
+                    if (!IBMSL_vsiBilling || IBMSL_vsiBilling === '' || IBMSL_vsiBilling === undefined) {
+ 	                    this.addOptionError('notSelected', 'IBMSL_vsiBilling');
+ 	                    isValid = false;
+                    }
+           }.bind(this),
+             	               	   
             	   
            agent_pool_id : function () {
             		   var agentPoolId = this._image['agent_pool_id'];

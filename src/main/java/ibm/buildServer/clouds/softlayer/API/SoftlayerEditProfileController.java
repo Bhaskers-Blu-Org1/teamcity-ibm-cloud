@@ -61,6 +61,7 @@ public class SoftlayerEditProfileController extends BaseFormXmlController {
 		mv.getModel().put("coreList", getMaximumCores());
 		mv.getModel().put("diskTypeList", getDiskType());
 		mv.getModel().put("networkList", getNetwork());
+		mv.getModel().put("billingTypeList", getVsiBillingType());
 		
 		String projectId = request.getParameter("projectId");
 		List<AgentPool> pools = new ArrayList<AgentPool>();
@@ -190,6 +191,16 @@ public class SoftlayerEditProfileController extends BaseFormXmlController {
 		network.put(1000, "1 Gbps");
 
 		return network;
+	}
+	
+	// Get softlayer VSI Billing type list.
+	public TreeMap<Boolean, String> getVsiBillingType() {
+
+		TreeMap<Boolean, String> billingType = new TreeMap<Boolean, String>();
+		billingType.put(true, "Hourly");
+		billingType.put(false, "Monthly");
+
+		return billingType;
 	}
 
 }

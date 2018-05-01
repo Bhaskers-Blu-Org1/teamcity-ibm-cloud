@@ -1,0 +1,52 @@
+/*
+* @author: Scott Wyman Neagle 
+* scottwn@ibm.com
+**/
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+
+import ibm.buildServer.clouds.softlayer.SoftlayerCloudClient;
+import ibm.buildServer.clouds.softlayer.SoftlayerCloudImage;
+import ibm.buildServer.clouds.softlayer.SoftlayerCloudImageDetails;
+import ibm.buildServer.clouds.softlayer.SoftlayerCloudInstance;
+
+import jetbrains.buildServer.clouds.*;
+import jetbrains.buildServer.serverSide.*;
+
+class SoftlayerCloudImageTest {
+  private CloudClientParameters parameters;
+  private SoftlayerCloudClient client;
+  private SoftlayerCloudImage image;
+  private SoftlayerCloudImageDetails details;
+  private AgentDescription agentDescription;
+  private CloudInstanceUserData instanceData;
+
+  @BeforeEach
+  public void assignClientWithImage() {
+    parameters = new FakeParameters();
+    agentDescription = new FakeAgentDescription();
+    instanceData = new CloudInstanceUserData(
+        "fake-agent-name",
+        System.getenv("SOFTLAYER_API"),
+        "ibmwdtest.com",
+        Long.MAX_VALUE,
+        "fake-profile",
+        "This is a fake cloud profile for unit testing.",
+        agentDescription.getConfigurationParameters());
+    client = new SoftlayerCloudClient(parameters);
+    details = new SoftlayerCloudImageDetails(
+        parameters.getCloudImages().iterator().next());
+    image = new SoftlayerCloudImage(details);
+  }
+
+  @Test
+  @DisplayName("Test getId")
+  public void testGetId() {
+    String message = "Source ID does not match.";
+    Assertions.assertEquals(image.getId(), details.getSourceId(), message);
+  }
+}

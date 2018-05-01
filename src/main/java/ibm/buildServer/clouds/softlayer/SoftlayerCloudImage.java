@@ -1,126 +1,100 @@
+/*
+* @author: Scott Wyman Neagle 
+* scottwn@ibm.com
+**/
+
 package ibm.buildServer.clouds.softlayer;
 
-import jetbrains.buildServer.clouds.CloudInstanceUserData;
-import jetbrains.buildServer.clouds.CloudImage;
-import jetbrains.buildServer.clouds.CloudInstance;
-import jetbrains.buildServer.clouds.CloudInstanceUserData;
-import jetbrains.buildServer.clouds.CloudErrorInfo;
+import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.clouds.*;
+import jetbrains.buildServer.log.Loggers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import com.softlayer.api.*;
+
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
-import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SoftlayerCloudImage implements CloudImage
 {
-    private boolean myIsReusable;
-    private boolean myIsEternalStarting; 
-    private File myAgentHomeDir;
+  private SoftlayerCloudImageDetails details;
+  private final Map<String, SoftlayerCloudInstance> instances =
+    new ConcurrentHashMap<>();
+  public ApiClient softlayerClient;
+  private final static Logger LOG = Loggers.SERVER;
 
-    public SoftlayerCloudImage(String imageId, String imageName,
-        String agentHomePath, ScheduledExecutorService executor)
-    {
-        myAgentHomeDir = new File(agentHomePath);
-    }
+  public SoftlayerCloudImage(SoftlayerCloudImageDetails details) {
+      this.details = details;
+  }
 
-    public boolean isReusable() {
-        return false;
-    }
+  @NotNull
+  public String getId() {
+    return details.getSourceId();
+  }
 
-    public void setIsReusable(boolean isReusable)
-    {
-        myIsReusable = isReusable;
-    }
+  @NotNull
+  public String getName() {
+    return details.getSourceId();
+  }
 
-    public boolean isEternalStarting()
-    {
-        return false;
-    }
+  @NotNull
+  public Collection<SoftlayerCloudInstance> getInstances() {
+    return Collections.unmodifiableCollection(instances.values());
+  }
 
-    public void setIsEternalStarting(boolean isEternalStarting)
-    {
-        myIsEternalStarting = isEternalStarting;
-    }
+  public void removeInstance(String instanceId) {
+    instances.remove(instanceId);
+  }
 
-    public void addExtraProperty(@NotNull final String name,
-        @NotNull final String value)
-    {
-        
-    }
+  @Nullable
+  public SoftlayerCloudInstance findInstanceById(
+      @NotNull final String instanceId) {
+    return instances.get(instanceId);
+  }
 
-    @NotNull
-    public Map<String, String> getExtraProperties()
-    {
-        return new HashMap<String, String>();
-    }
+  @Nullable
+  @Override
+  public Integer getAgentPoolId() {
+    //TODO: Implement agent pools on the frontend making agentPoolId a field in
+    //SoftlayerCloudImageDetails.
+    return null;
+  }
 
-    @NotNull
-    public String getId()
-    {
-        return "id";
-    }
+  @Nullable
+  public CloudErrorInfo getErrorInfo() {
+    return null;
+  }
 
-    @NotNull
-    public String getName()
-    {
-        return "name";
-    }
+  @NotNull
+  public SoftlayerCloudInstance startNewInstance(
+      @NotNull final CloudInstanceUserData data) {
+    if(canStartNewInstance()) {
+      return createInstance(data);
+    }  
+    return null;
+  }
 
-    @NotNull
-    public File getAgentHomeDir()
-    {
-        return myAgentHomeDir;
-    }
+  protected boolean canStartNewInstance() {
+    //TODO: Implement max instances. Only start new instance if limit has not been
+    //reached.
+    return true;
+  }
 
-    @NotNull
-    public Collection<? extends CloudInstance> getInstances()
-    {
-        return Collections.emptyList();
-    }
+  protected SoftlayerCloudInstance createInstance(CloudInstanceUserData data) {
+    SoftlayerCloudInstance instance
+      = new SoftlayerCloudInstance(details, data, softlayerClient);
+    instance.setImage(this);
+    instance.start();
+    instances.put(instance.getInstanceId(), instance);
+    return instance;
+  }
 
-    @Nullable
-    public SoftlayerCloudInstance findInstanceById(
-        @NotNull final String instanceId)
-    {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public Integer getAgentPoolId()
-    {
-        return null;
-    }
-
-    @Nullable
-    public CloudErrorInfo getErrorInfo()
-    {
-        return null;
-    }
-
-    @NotNull
-    public synchronized SoftlayerCloudInstance startNewInstance(
-        @NotNull final CloudInstanceUserData data)
-    {
-        return new SoftlayerCloudInstance();
-    }
-
-    protected SoftlayerCloudInstance createInstance(String instanceId)
-    {
-        return null;
-    }
-
-
-    void forgetInstance(@NotNull final SoftlayerCloudInstance instance)
-    {
-        
-    }
-
-    void dispose()
-    {
-        
-    }
+  public void setCredentials(String username, String apiKey) {
+    softlayerClient = new RestApiClient().withCredentials(username, apiKey);
+  }
 }

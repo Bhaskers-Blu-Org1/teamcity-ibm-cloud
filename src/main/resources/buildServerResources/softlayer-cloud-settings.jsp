@@ -38,6 +38,7 @@
 		<th><label for="${cons.instanceNumber}">Maximum Instances Count:</label></th>
 		<td><props:textProperty name="${cons.instanceNumber}" className="longField"/></td>
 	</tr>
+	
 </table>
 
 <div class="buttonsWrapper">
@@ -63,6 +64,7 @@
             		<th class="name">CPU</th>
             		<th class="name">Disk</th>
                 <th class="name">Network</th>
+                <th class="name">Billing</th>
                 <th class="name" colspan="2"></th>
             </tr>
             </tbody>
@@ -83,8 +85,7 @@
 			<th><label for="${cons.vsiTemplateList}">Image List:<l:star /></label></th>
 			<td>
 				<div style="white-space: nowrap">
-					<select id="${cons.vsiTemplateList}" class="longField"
-						data-id="${cons.vsiTemplateList}" name="prop:${cons.vsiTemplateList}">
+					<select id="${cons.vsiTemplateList}" class="longField" data-id="${cons.vsiTemplateList}">
 							<props:option value="">Select Image...</props:option>
 					</select>
 				</div>
@@ -97,8 +98,7 @@
 			<th><label for="${cons.datacenterList}">Datacenter List:<l:star /></label></th>
 			<td>
 				<div style="white-space: nowrap">
-					<select id="${cons.datacenterList}" class="longField"
-						data-id="${cons.datacenterList}" name="prop:${cons.datacenterList}">
+					<select id="${cons.datacenterList}" class="longField" data-id="${cons.datacenterList}">
 							<props:option value="">Select Datacenter...</props:option>
 					</select>
 				</div>
@@ -110,13 +110,10 @@
 		<tr>
             	<th><label for="${cons.agentPoolIdField}">Agent pool:&nbsp;<l:star/></label></th>
             	<td>
-                	<select id="${cons.agentPoolIdField}" data-id="${cons.agentPoolIdField}" 
-                    		name="prop:${cons.agentPoolIdField}">
+                	<select id="${cons.agentPoolIdField}" data-id="${cons.agentPoolIdField}">
                     		<props:option value=""><c:out value="<Please select agent pool>"/></props:option>
                     		<c:forEach var="ap" items="${agentPools}">
-                        		<props:option 
-                        			selected="${ap.agentPoolId eq propertiesBean.properties['agent_pool_id']}" 
-                        			value="${ap.agentPoolId}">
+                        		<props:option selected="${ap.agentPoolId eq propertiesBean.properties['agent_pool_id']}"  value="${ap.agentPoolId}">
                         			<c:out value="${ap.name}"/>
                         		</props:option>
                     		</c:forEach>
@@ -130,9 +127,7 @@
 			<th><label for="${cons.agentName}">Agent Name:<l:star /></label></th>
 			<td>
 				<div style="white-space: nowrap">
-					<input name="prop:${cons.agentName}" id="${cons.agentName}"
-					value="${propertiesBean.properties[cons.agentName]}"
-					class="longField" type="text">
+					<input data-id="${cons.agentName}" id="${cons.agentName}" value="${propertiesBean.properties[cons.agentName]}" class="longField" type="text">
 				</div>
 				<div class="smallNoteAttention">Space and Special character are not allowed.</div>
 				<span class="error option-error option-error_${cons.agentName}"></span>
@@ -144,9 +139,7 @@
 			<th><label for="${cons.domainName}">Domain Name:<l:star /></label></th>
 			<td>
 				<div style="white-space: nowrap">
-					<input name="prop:${cons.domainName}" id="${cons.domainName}"
-					value="${propertiesBean.properties[cons.domainName]}"
-					class="longField" type="text">
+					<input data-id="${cons.domainName}" id="${cons.domainName}" value="${propertiesBean.properties[cons.domainName]}" class="longField" type="text">
 				</div>
 				<div class="smallNoteAttention">Space and Special character are not allowed.</div>
 				<span class="error option-error option-error_${cons.domainName}"></span>
@@ -158,13 +151,10 @@
 			<th><label for="${cons.maxMemory}">RAM:<l:star /></label></th>
 			<td>
 				<div style="white-space: nowrap">
-					<select id="${cons.maxMemory}" data-id="${cons.maxMemory}"
-						name="prop:${cons.maxMemory}">
+					<select id="${cons.maxMemory}" data-id="${cons.maxMemory}" data-id="${cons.maxMemory}">
 							<props:option value="">Select RAM...</props:option>
 							<c:forEach var="ram" items="${ramList}">
-								<props:option
-									selected="${ram.key eq propertiesBean.properties[cons.maxMemory]}"
-									value="${ram.key}">
+								<props:option selected="${ram.key eq propertiesBean.properties[cons.maxMemory]}" value="${ram.key}">
 									<c:out value="${ram.value}" />
 								</props:option>
 							</c:forEach>
@@ -179,13 +169,10 @@
 			<th><label for="${cons.maxCores}">CPU:<l:star /></label></th>
 			<td>
 				<div style="white-space: nowrap">
-					<select id="${cons.maxCores}" data-id="${cons.maxCores}"
-						name="prop:${cons.maxCores}">
+					<select id="${cons.maxCores}" data-id="${cons.maxCores}" data-id="${cons.maxCores}">
 							<props:option value="">Select Cores...</props:option>
 							<c:forEach var="core" items="${coreList}">
-								<props:option
-									selected="${core.key eq propertiesBean.properties[cons.maxCores]}"
-									value="${core.key}">
+								<props:option selected="${core.key eq propertiesBean.properties[cons.maxCores]}" value="${core.key}">
 									<c:out value="${core.value}" />
 								</props:option>
 							</c:forEach>
@@ -200,8 +187,7 @@
 			<th><label for="${cons.diskType}">Disk:<l:star /></label></th>
 			<td>
 				<div style="white-space: nowrap">
-					<select id="${cons.diskType}" data-id="${cons.diskType}"
-						name="prop:${cons.diskType}">
+					<select id="${cons.diskType}" data-id="${cons.diskType}" data-id="${cons.diskType}">
 							<option value="">Select Disk Type...</option>
 							<c:forEach var="diskType" items="${diskTypeList}">
 								<option value='{"type":"${diskType.value}", "bool":"${diskType.key}"}'>${diskType.value} </option>
@@ -226,6 +212,24 @@
                 <span class="error option-error option-error_${cons.network}"></span>
             </td>
         </tr>
+        
+        	<!-- VSI Billing Type -->
+		<tr>
+			<th><label for="${cons.vsiBillingType}">Billing:<l:star /></label></th>
+			<td>
+				<div style="white-space: nowrap">
+					<select id="${cons.vsiBillingType}" data-id="${cons.vsiBillingType}" data-id="${cons.vsiBillingType}">
+							<option value="">Select Billing Type...</option>
+							<c:forEach var="billingType" items="${billingTypeList}">
+								<option value='{"type":"${billingType.value}", "bool":"${billingType.key}"}'>${billingType.value} </option>
+							</c:forEach>
+					</select>
+				</div>
+				<span class="error option-error option-error_${cons.vsiBillingType}"></span>
+			</td>
+		</tr>	
+    		
+        
 	</table>
 
     <admin:showHideAdvancedOpts containerId="softlayerImageDialog" optsKey="softlayerImageSettings"/>

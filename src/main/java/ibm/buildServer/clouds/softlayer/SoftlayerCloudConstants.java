@@ -27,6 +27,7 @@ public class SoftlayerCloudConstants {
 	public static final String DISK_TYPE = "IBMSL_diskType";
 	public static final String NETWORK = "IBMSL_network";
 	public static final String DOMAIN_NAME = "IBMSL_domainName";
+	public static final String VSI_BILLING = "IBMSL_vsiBilling";
 	
 	public static final String PROFILE_ID = "profileId";
 	public static final String SOURCE_ID = "source-id";
@@ -78,6 +79,10 @@ public class SoftlayerCloudConstants {
 		return DOMAIN_NAME;
 	}
 	
+	public String getVsiBillingType() {
+		return VSI_BILLING;
+	}
+
 	public String getAgentPoolIdField() {
 		return CloudImageParameters.AGENT_POOL_ID_FIELD;
 	}
