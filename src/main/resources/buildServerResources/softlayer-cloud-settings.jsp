@@ -105,22 +105,6 @@
 				<span class="error option-error option-error_${cons.datacenterList}"></span>
 			</td>
 		</tr>
-		
-		<!-- Agent pool row -->
-		<tr>
-            	<th><label for="${cons.agentPoolIdField}">Agent pool:&nbsp;<l:star/></label></th>
-            	<td>
-                	<select id="${cons.agentPoolIdField}" data-id="${cons.agentPoolIdField}">
-                    		<props:option value=""><c:out value="<Please select agent pool>"/></props:option>
-                    		<c:forEach var="ap" items="${agentPools}">
-                        		<props:option selected="${ap.agentPoolId eq propertiesBean.properties['agent_pool_id']}"  value="${ap.agentPoolId}">
-                        			<c:out value="${ap.name}"/>
-                        		</props:option>
-                    		</c:forEach>
-                	</select>
-                	<span class="error option-error option-error_${cons.agentPoolIdField}"></span>
-            	</td>
-       	</tr>
 	    		
 	    <!-- Agent row -->
 		<tr>
@@ -190,7 +174,7 @@
 					<select id="${cons.diskType}" data-id="${cons.diskType}" data-id="${cons.diskType}">
 							<option value="">Select Disk Type...</option>
 							<c:forEach var="diskType" items="${diskTypeList}">
-								<option value='{"type":"${diskType.value}", "bool":"${diskType.key}"}'>${diskType.value} </option>
+								<option value='{"type":"${diskType.value}", "value":"${diskType.key}"}'>${diskType.value} </option>
 							</c:forEach>
 					</select>
 				</div>
@@ -218,17 +202,32 @@
 			<th><label for="${cons.vsiBillingType}">Billing:<l:star /></label></th>
 			<td>
 				<div style="white-space: nowrap">
-					<select id="${cons.vsiBillingType}" data-id="${cons.vsiBillingType}" data-id="${cons.vsiBillingType}">
+					<select id="${cons.vsiBillingType}" data-id="${cons.vsiBillingType}">
 							<option value="">Select Billing Type...</option>
 							<c:forEach var="billingType" items="${billingTypeList}">
-								<option value='{"type":"${billingType.value}", "bool":"${billingType.key}"}'>${billingType.value} </option>
+								<option value='{"type":"${billingType.value}", "value":"${billingType.key}"}'>${billingType.value} </option>
 							</c:forEach>
 					</select>
 				</div>
 				<span class="error option-error option-error_${cons.vsiBillingType}"></span>
 			</td>
 		</tr>	
-    		
+    	
+    		<!-- Agent pool row -->
+		<tr>
+            	<th><label for="${cons.agentPoolIdField}">Agent pool:&nbsp;<l:star/></label></th>
+            	<td>
+                	<select id="${cons.agentPoolIdField}" data-id="${cons.agentPoolIdField}">
+                    		<props:option value=""><c:out value="<Please select agent pool>"/></props:option>
+                    		<c:forEach var="ap" items="${agentPools}">
+                        		<props:option selected="${ap.agentPoolId eq propertiesBean.properties['agent_pool_id']}"  value="${ap.agentPoolId}">
+                        			<c:out value="${ap.name}"/>
+                        		</props:option>
+                    		</c:forEach>
+                	</select>
+                	<span class="error option-error option-error_${cons.agentPoolIdField}"></span>
+            	</td>
+       	</tr>	
         
 	</table>
 
