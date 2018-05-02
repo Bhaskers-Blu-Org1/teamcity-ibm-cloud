@@ -24,10 +24,10 @@ public class SoftlayerCloudClient implements CloudClientEx {
   int taskDelayTime = 60 * 1000; // Time in milliseconds.
   private final Map<String, SoftlayerCloudImage> images;
   private Logger LOG = Loggers.SERVER;
+  private CloudErrorInfo myCurrentError = null;
 
   public SoftlayerCloudClient(CloudClientParameters params) {
-    executor = new CloudAsyncTaskExecutor(
-        "Async tasks for cloud " + params.getProfileDescription());
+    executor = new CloudAsyncTaskExecutor("Async tasks for cloud " + params.getProfileDescription());
     images = new HashMap<String, SoftlayerCloudImage>();
   }
 
@@ -51,7 +51,7 @@ public class SoftlayerCloudClient implements CloudClientEx {
   }
 
   public CloudErrorInfo getErrorInfo() {
-    return null;
+    return myCurrentError;
   }
 
   public boolean canStartNewInstance(@NotNull final CloudImage baseImage) {
@@ -63,22 +63,35 @@ public class SoftlayerCloudClient implements CloudClientEx {
     return agentDescription.getConfigurationParameters().get("name");
   }
 
-  public CloudInstance startNewInstance(CloudImage image,
-      CloudInstanceUserData data) {
-    return ((SoftlayerCloudImage) image).startNewInstance(data);
+  public CloudInstance startNewInstance(CloudImage image, CloudInstanceUserData data) {
+	  
+	  CloudInstance cloudInstance = null;
+	  try
+	  {
+		  cloudInstance = ((SoftlayerCloudImage) image).startNewInstance(data);
+		  myCurrentError = null;
+	  }
+	  catch(Exception e)
+	  {
+		  /*
+		   * Catch exception from SoftlayerCloudImage and generate its stacktraces. 
+		   * On TC server UI, this exception will show up on Cloud Profile tab.
+		   * */
+		  myCurrentError = new CloudErrorInfo("Failed to start cloud client ", e.getMessage(), e);
+	  }
+	  return cloudInstance;
   }
 
   @Nullable
-  public SoftlayerCloudInstance findInstanceByAgent(
-      @NotNull final AgentDescription agentDescription) {
+  public SoftlayerCloudInstance findInstanceByAgent(@NotNull final AgentDescription agentDescription) {
     final String instanceName = agentDescription.getConfigurationParameters()
-      .get("softlayer.instance.name");
+    		.get("INSTANCE_NAME");
+    
     if(instanceName == null) {
       return null;
     }
     for(SoftlayerCloudImage image : images.values()) {
-      final SoftlayerCloudInstance instance
-        = image.findInstanceById(instanceName);
+      final SoftlayerCloudInstance instance = image.findInstanceById(instanceName);
       if(instance != null) {
         return instance;
       }
@@ -92,18 +105,14 @@ public class SoftlayerCloudClient implements CloudClientEx {
   }
 
   public void start() {
-    SoftlayerUpdateInstancesTask updateInstancesTask
-      = new SoftlayerUpdateInstancesTask(this);
+    SoftlayerUpdateInstancesTask updateInstancesTask = new SoftlayerUpdateInstancesTask(this);
     executor.submit("Client start", new Runnable() {
       public void run() {
         try {
           updateInstancesTask.run();
-          executor.scheduleWithFixedDelay(
-              "Update instances",
-              updateInstancesTask,
-              taskDelayTime,
-              taskDelayTime,
-              TimeUnit.MILLISECONDS);
+          executor.scheduleWithFixedDelay("Update instances", updateInstancesTask, taskDelayTime, 
+        		  taskDelayTime, 
+        		  TimeUnit.MILLISECONDS);
         } finally {
           initialized = true;
         }
