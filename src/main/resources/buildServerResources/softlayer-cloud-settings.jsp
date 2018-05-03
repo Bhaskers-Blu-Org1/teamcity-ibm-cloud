@@ -129,8 +129,15 @@
 				<div style="white-space: nowrap">
 					<input data-id="${cons.agentName}" id="${cons.agentName}" value="${propertiesBean.properties[cons.agentName]}" class="longField" type="text">
 				</div>
-				<div class="smallNoteAttention">Space and Special character are not allowed.</div>
 				<span class="error option-error option-error_${cons.agentName}"></span>
+				<div class="smallNoteAttention">
+					<ul class="orderedListNote">
+	 					<li>Must begin/end with an alphanumeric character.</li>
+						<li>Must contain at least one alphabetic character.</li>
+ 						<li>Can contain non-consecutive '-' dash.</li>
+	 					<li>Length between 1-63.</li>
+					</ul>
+				</div>
 			</td>
 		</tr>		
 		
@@ -141,8 +148,16 @@
 				<div style="white-space: nowrap">
 					<input data-id="${cons.domainName}" id="${cons.domainName}" value="${propertiesBean.properties[cons.domainName]}" class="longField" type="text">
 				</div>
-				<div class="smallNoteAttention">Space and Special character are not allowed.</div>
 				<span class="error option-error option-error_${cons.domainName}"></span>
+				<div class="smallNoteAttention">
+					<ul class="orderedListNote">
+	 					<li>Must contain at least 2 labels. A label is an alphanumeric string separated by a period '.'</li>
+						<li>Labels must begin/end with an alphanumeric character. Can contain non-consecutive '-' dash.</li>
+ 						<li>Last label must contain at least one alphabetic character.</li>
+	 					<li>Labels must have length between 1-63 and last label length between 2-23.</li>
+					</ul>
+				</div>
+				
 			</td>
 		</tr>		
 		

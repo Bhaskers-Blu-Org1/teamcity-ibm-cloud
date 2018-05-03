@@ -43,7 +43,8 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         },
 
         _errors: {
-            badParam: 'Bad parameter',
+        	 	agentNameBadParam: 'Not a valid Agent Name',
+        		domainNameBadParam: 'Not a valid Domain Name',
             required: 'This field cannot be blank',
             requiredForFargate: 'This field is required when using FARGATE launch type',
             notSelected: 'Something should be selected',
@@ -135,7 +136,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
             return false;
         });
         
-        
+        // On chnage of username and apikey call checkConnection()
         this.$IBMSL_username.on('change', function (e, value) {
         		this.checkConnection();
         }.bind(this));
@@ -374,7 +375,23 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
                 
             IBMSL_agentName : function () {
                     var IBMSL_agentName = this._image['IBMSL_agentName'];
-                    if (!IBMSL_agentName || IBMSL_agentName === '' || IBMSL_agentName === undefined) {
+                    
+                    /* agentRegExp1 checks: 
+                    	* 1) Must begin/end with an alphanumeric character. 
+                    	* 2) Can contain non-consecutive '-' dash.
+                    	* */
+                    	var agentRegExp1 = new RegExp(/^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$/,'g');
+                                        
+                    	/* agentRegExp2 checks:
+                    	* 1) String does not consist of only digits. Must contain at least one alphabetic character.
+                    	* */
+                    	var agentRegExp2 = new RegExp(/^[0-9]+(-[0-9]+)*$/,'g'); 
+                                       
+                    	/* agentRegExp3 checks:
+                    	* 1) String length is min:1 to max:63
+                    	* */
+                    	var agentRegExp3 = new RegExp(/^.{1,63}$/,'g'); 
+                    	if (!IBMSL_agentName || IBMSL_agentName === '' || IBMSL_agentName === undefined || !agentRegExp1.test(IBMSL_agentName) || agentRegExp2.test(IBMSL_agentName) || !agentRegExp3.test(IBMSL_agentName)) {
                         this.addOptionError('notSelected', 'IBMSL_agentName');
                         isValid = false;
                     }
@@ -382,7 +399,34 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
                 
             IBMSL_domainName : function () {
                     var IBMSL_domainName = this._image['IBMSL_domainName'];
-                    if (!IBMSL_domainName || IBMSL_domainName === '' || IBMSL_domainName === undefined) {
+                    /* domainRegExp1 checks:
+                    	* 1) Each alphanumeric string separated by a period is considered a label. The last label, the TLD (top level domain).
+                    	* 2) The domain portion must consist of least one label followed by a period '.' then ending with the TLD label.
+                    	* 3) Labels must begin and end with an alphanumeric character.
+                    	* 4) Label can use '-'. And '-' & '.' shall not be adjacent.
+                    	* */
+                    	var domainRegExp1 = new RegExp(/^([A-Za-z0-9]+(-[A-Za-z0-9]+)*)(\.[A-Za-z0-9]+(-[A-Za-z0-9]+)*)*(\.[A-Za-z0-9]+(-[A-Za-z0-9]+)*)$/,'g');
+                                       
+                    	/* domainRegExp2 checks:
+                    	* 1) TLd is not solely comprised of only digits.
+                    	* Test: True -> TLD only contains digits.
+                    	* */
+                    	var domainRegExp2 = new RegExp(/^([A-Za-z0-9]+(-[A-Za-z0-9]+)*)(\.[A-Za-z0-9]+(-[A-Za-z0-9]+)*)*(\.[0-9]+(-[0-9]+)*)$/,'g');
+                                      
+                   	/* domainRegExp2 checks:
+                    	* 1) Length of each Label is min:1 to max:63
+                    	* 2) The last label, the TLD (top level domain) must be between 2-24 alphabetic characters.
+                    	* */
+                     var domainRegExp3 = new RegExp(/^([A-Za-z0-9-]{1,63})((\.[A-Za-z0-9-]{1,63}){0,})(\.[A-Za-z0-9-]{2,23})$/,'g'); 
+                                       
+                    	/* domainRegExp3 checks:
+                    	* 1) Combining the agentname, followed by a period '.', followed by the domain gives the FQDN (fully qualified domain name), 
+                    	* which may not exceed 253 characters in total length.
+                    	* 2) String (including '.') length is min:2 to max:189 (253-63-1 = 189 [253-agentnNameLength-periodFollowedByAgentname])
+                    	* */
+                    	var domainRegExp4 = new RegExp(/^.{2,189}$/,'g'); 
+                    	
+                    	if (!IBMSL_domainName || IBMSL_domainName === '' || IBMSL_domainName === undefined || !domainRegExp1.test(IBMSL_domainName) || domainRegExp2.test(IBMSL_domainName) || !domainRegExp3.test(IBMSL_domainName) || !domainRegExp4.test(IBMSL_domainName)) {
                         this.addOptionError('notSelected', 'IBMSL_domainName');
                         isValid = false;
                     }
@@ -583,6 +627,9 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     
     checkConnection: function() {
     		
+    		//disable AddImage button
+    		this._toggleShowAddImageDialogButton(false);
+    		
     		// Check connection function will send POST ajax request to SoftlayerEditProfileController.java to authenticate user.
 	    var valid =	this.validateServerSettings();
 	    var $fetchOptions = $j('#error_fetch_options');
@@ -610,15 +657,13 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
 	            $err = $response.find('error');
 	            if ($err.length) {
 	            		
-	            		//disable AddImage button
-	            		this._toggleShowAddImageDialogButton(false);
 	            	 	$response.find('error').each(function(){
 	 	             	$fetchOptions.text($j(this).text());
 	 	            	});
 	            }
 	            else
 	            	{
-	            		// enable AddImage button
+	            		// Username and apikey are correct, hence enable AddImage button
 	            		this._toggleShowAddImageDialogButton(true); 
 	            		
 		            // load vsi template list in select option
