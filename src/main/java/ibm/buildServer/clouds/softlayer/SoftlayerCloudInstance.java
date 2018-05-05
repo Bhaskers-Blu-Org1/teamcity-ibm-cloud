@@ -47,13 +47,16 @@ public class SoftlayerCloudInstance implements CloudInstance
     guest.setMaxMemory(details.getMaxMemory());
     // Hardcode hourly billing for now. Once the UI allows the user to select
     // hourly or monthly billing we'll do something like details.getBilling()
-    guest.setHourlyBillingFlag(true);
+    //guest.setHourlyBillingFlag(true);
+    guest.setHourlyBillingFlag(details.getVsiBilling());
     // Hardcode agent using global identifier. Selecting agents is in the next
     // sprint.
     Group blockDevice = new Group();
-    blockDevice.setGlobalIdentifier("aaad7259-06ff-453b-bedc-e425661fa151");
+    //blockDevice.setGlobalIdentifier("aaad7259-06ff-453b-bedc-e425661fa151");
+    blockDevice.setGlobalIdentifier(details.getVsiTemplate());
     guest.setBlockDeviceTemplateGroup(blockDevice);
-    guest.setLocalDiskFlag(details.getLocalDiskFlag().contains("true"));
+    //guest.setLocalDiskFlag(details.getLocalDiskFlag().contains("true"));
+    guest.setLocalDiskFlag(details.getLocalDiskFlag());
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
     startedTime = new Date();
