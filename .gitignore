@@ -1,9 +1,0 @@
-*.class
-*.gradle
-*.jar
-build/descriptor/**
-build/resources/**
-build/libs/**
-build/tmp/**
-gradle/**
-/build/
