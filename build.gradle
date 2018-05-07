@@ -52,6 +52,7 @@ dependencies {
   
   compile "com.softlayer.api:softlayer-api-client:0.2.5"
   compile "org.apiguardian:apiguardian-api:1.0.0"
+  compile "org.json:json:20171018"
   testCompile(
     "org.junit.jupiter:junit-jupiter-api:5.0.1"
   )
