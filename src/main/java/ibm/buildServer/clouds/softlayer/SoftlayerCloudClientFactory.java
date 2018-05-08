@@ -23,6 +23,7 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
   private final String settingPagePath;
   @NotNull private final CloudManagerBase myCloudManager;
   private final static Logger LOG = Loggers.SERVER;
+  //use hashmap to keep track of the created clients
   private final Map<String, SoftlayerCloudClient> clients =
 		    new HashMap<>();
 
@@ -41,21 +42,17 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
   @NotNull
   public SoftlayerCloudClient createNewClient(
       @NotNull CloudState state, @NotNull CloudClientParameters params) {
-	  LOG.info("profle id: " + state.getProfileId());
-	  LOG.info("project id: " + state.getProjectId());
 	  String clientId = state.getProjectId() + state.getProfileId();
 	  SoftlayerCloudClient client;
 	  boolean createdNewClient = false;
 	  if (clients.containsKey(clientId)) {
 		  client = clients.get(clientId);
 	  } else {
-		  LOG.info("can't find client: " + clientId);
 		  client = new SoftlayerCloudClient(params);
 		  clients.put(clientId, client);
 		  createdNewClient = true;
 	  }
- 
-    LOG.info("client id: " + client.toString());
+
     for(SoftlayerCloudImageDetails imageDetails : parseImageData(params)) {
       // Print to the screen during test; logging has not been implemented in automated
       // unit tests.
@@ -65,10 +62,8 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
           params.getParameter(SoftlayerCloudConstants.USER_NAME),
           params.getParameter(SoftlayerCloudConstants.API_KEY));
       client.addImage(image);
-      LOG.info("image id: " + image.getId() + "profile:" + image.getProfileId());
     }
     if (createdNewClient) {
-    	 LOG.info("start a new client");
     	 client.start();
     }
     
