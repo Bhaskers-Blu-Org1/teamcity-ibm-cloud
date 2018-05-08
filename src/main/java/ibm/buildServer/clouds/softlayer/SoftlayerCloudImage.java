@@ -41,6 +41,11 @@ public class SoftlayerCloudImage implements CloudImage
   public String getName() {
     return details.getSourceId();
   }
+  
+  @NotNull
+  public String getProfileId() {
+    return details.getProfileId();
+  }
 
   @NotNull
   public Collection<SoftlayerCloudInstance> getInstances() {
@@ -89,8 +94,12 @@ public class SoftlayerCloudImage implements CloudImage
     SoftlayerCloudInstance instance
       = new SoftlayerCloudInstance(details, data, softlayerClient);
     instance.setImage(this);
-    instance.start();
-    instances.put(instance.getInstanceId(), instance);
+    if (!instances.isEmpty()) {
+    	instance = instances.values().iterator().next();
+    } else {
+    	instance.start();
+    	instances.put(instance.getInstanceId(), instance);
+    }
     return instance;
   }
 

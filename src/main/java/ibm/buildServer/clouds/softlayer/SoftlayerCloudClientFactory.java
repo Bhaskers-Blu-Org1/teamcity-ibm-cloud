@@ -6,6 +6,7 @@
 package ibm.buildServer.clouds.softlayer;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import jetbrains.buildServer.clouds.*;
@@ -14,11 +15,16 @@ import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import jetbrains.buildServer.log.Loggers;
+import com.intellij.openapi.diagnostic.Logger;
 
 public class SoftlayerCloudClientFactory implements CloudClientFactory {
   private PluginDescriptor pluginDescriptor;
   private final String settingPagePath;
   @NotNull private final CloudManagerBase myCloudManager;
+  private final static Logger LOG = Loggers.SERVER;
+  private final Map<String, SoftlayerCloudClient> clients =
+		    new HashMap<>();
 
   public SoftlayerCloudClientFactory(
       @NotNull CloudRegistrar cloudRegistrar,
@@ -35,7 +41,21 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
   @NotNull
   public SoftlayerCloudClient createNewClient(
       @NotNull CloudState state, @NotNull CloudClientParameters params) {
-    SoftlayerCloudClient client = new SoftlayerCloudClient(params);
+	  LOG.info("profle id: " + state.getProfileId());
+	  LOG.info("project id: " + state.getProjectId());
+	  String clientId = state.getProjectId() + state.getProfileId();
+	  SoftlayerCloudClient client;
+	  boolean createdNewClient = false;
+	  if (clients.containsKey(clientId)) {
+		  client = clients.get(clientId);
+	  } else {
+		  LOG.info("can't find client: " + clientId);
+		  client = new SoftlayerCloudClient(params);
+		  clients.put(clientId, client);
+		  createdNewClient = true;
+	  }
+ 
+    LOG.info("client id: " + client.toString());
     for(SoftlayerCloudImageDetails imageDetails : parseImageData(params)) {
       // Print to the screen during test; logging has not been implemented in automated
       // unit tests.
@@ -45,8 +65,13 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
           params.getParameter(SoftlayerCloudConstants.USER_NAME),
           params.getParameter(SoftlayerCloudConstants.API_KEY));
       client.addImage(image);
+      LOG.info("image id: " + image.getId() + "profile:" + image.getProfileId());
     }
-    client.start();
+    if (createdNewClient) {
+    	 LOG.info("start a new client");
+    	 client.start();
+    }
+    
     return client;
   }
 

@@ -32,7 +32,9 @@ public class SoftlayerCloudClient implements CloudClientEx {
   }
 
   public void addImage(SoftlayerCloudImage image) {
-    images.put(image.getName(), image);
+	  if (!images.containsKey(image.getName())) {
+		  images.put(image.getName(), image);
+	  }    
   }
     
   public boolean isInitialized() {
