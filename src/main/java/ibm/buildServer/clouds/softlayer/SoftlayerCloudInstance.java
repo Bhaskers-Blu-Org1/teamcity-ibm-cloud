@@ -112,7 +112,7 @@ public class SoftlayerCloudInstance implements CloudInstance
     if(address == null) {
       return false;
     }
-    return agent.getConfigurationParameters().get("name").contains(address);
+    return agent.getConfigurationParameters().get("INSTANCE_NAME").contains(address);
   }
 
   public CloudErrorInfo getErrorInfo() {
