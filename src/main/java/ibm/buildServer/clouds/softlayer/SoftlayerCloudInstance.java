@@ -82,7 +82,7 @@ public class SoftlayerCloudInstance implements CloudInstance
   }
 
   public String getName() {
-    return id;
+    return name;
   }
 
   public String getNetworkIdentity() {
@@ -127,7 +127,8 @@ public class SoftlayerCloudInstance implements CloudInstance
     try {
       guest = Guest.service(softlayerClient).createObject(guest);
       id = guest.getId().toString();
-      LOG.info("Softlayer ID is " + id);
+      name = guest.getHostname.toString();
+      LOG.info("Softlayer Hostame " + name " and ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;
     } catch (Exception e) {
       System.out.println("Error: " + e);
