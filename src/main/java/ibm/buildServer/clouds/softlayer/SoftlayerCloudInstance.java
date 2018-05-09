@@ -60,6 +60,7 @@ public class SoftlayerCloudInstance implements CloudInstance
     guest.setLocalDiskFlag(details.getLocalDiskFlag());
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
+    guest.setPostInstallScriptUri("http://169.60.13.41/test.sh");
     startedTime = new Date();
     imageDetails = details;
     userData = data;
