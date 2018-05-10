@@ -36,11 +36,12 @@ public class SoftlayerTerminateInstanceTask implements Runnable{
         guest = service.getObject();
         vsiTransaction = guest.getActiveTransaction();
 
-		if (vsiTransaction == null) {
+		if (vsiTransaction == null && instance.getStatus() != InstanceStatus.STOPPED) {
 			LOG.info("Cancelling SoftLayer VSI " + instance.getName());
 		    try {
 		      service.deleteObject();
-		      instance.setStatus(InstanceStatus.SCHEDULED_TO_STOP);
+		      instance.setStatus(InstanceStatus.STOPPED);
+		      instance.getImage().removeInstance(instance.getInstanceId());
 		      LOG.info("Instance already terminated");
 		    } catch (Exception e) {
 		      LOG.warn("Error: " + e);

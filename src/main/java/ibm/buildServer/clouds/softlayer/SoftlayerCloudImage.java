@@ -94,12 +94,8 @@ public class SoftlayerCloudImage implements CloudImage
     SoftlayerCloudInstance instance
       = new SoftlayerCloudInstance(details, data, softlayerClient);
     instance.setImage(this);
-    if (!instances.isEmpty()) {
-    	instance = instances.values().iterator().next();
-    } else {
-    	instance.start();
-    	instances.put(instance.getInstanceId(), instance);
-    }
+    instance.start();
+    instances.put(instance.getInstanceId(), instance);
     return instance;
   }
 

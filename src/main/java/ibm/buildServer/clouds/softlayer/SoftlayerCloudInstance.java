@@ -140,6 +140,7 @@ public class SoftlayerCloudInstance implements CloudInstance
   }
 
   public void terminate() {
+	  myStatus = InstanceStatus.SCHEDULED_TO_STOP;
 	  CloudAsyncTaskExecutor executor = new CloudAsyncTaskExecutor(
 		        "Async tasks for terminating vsi");
 	  SoftlayerTerminateInstanceTask task = new SoftlayerTerminateInstanceTask(this);
