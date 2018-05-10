@@ -27,6 +27,7 @@ public class SoftlayerCloudInstance implements CloudInstance
   // id and name is set in the start() method.
   private String id;
   private String name;
+  private String hostname;
   private SoftlayerCloudImage image; // Set when SoftlayerCloudImage calls setImage
   public Guest guest;
   private Date startedTime;
@@ -129,8 +130,8 @@ public class SoftlayerCloudInstance implements CloudInstance
     try {
       guest = Guest.service(softlayerClient).createObject(guest);
       id = guest.getId().toString();
-      name = guest.getHostname.toString();
-      LOG.info("Softlayer Hostame " + name " and ID is " + id);
+      name = guest.getHostname().toString();
+      LOG.info("Softlayer Hostame " + name +" and ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;
     } catch (Exception e) {
       System.out.println("Error: " + e);
