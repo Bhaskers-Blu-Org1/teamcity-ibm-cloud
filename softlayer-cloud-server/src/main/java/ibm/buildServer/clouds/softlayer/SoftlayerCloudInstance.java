@@ -17,6 +17,8 @@ import jetbrains.buildServer.log.Loggers;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Executors;
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 
 import com.intellij.openapi.diagnostic.Logger;
 
@@ -129,6 +131,11 @@ public class SoftlayerCloudInstance implements CloudInstance
       id = guest.getId().toString();
       LOG.info("Softlayer ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;
+      // Serialize CloudInstanceUserData and set as SoftLayer user metadata.
+      List<String> userDataList = new ArrayList<String>();
+      userDataList.add(userData.serialize());
+      Guest.Service virtualGuestService = Guest.service(softlayerClient, id);
+      virtualGuestService.setUserMetadata(userDataList);
     } catch (Exception e) {
       System.out.println("Error: " + e);
       LOG.warn("Error: " + e);
