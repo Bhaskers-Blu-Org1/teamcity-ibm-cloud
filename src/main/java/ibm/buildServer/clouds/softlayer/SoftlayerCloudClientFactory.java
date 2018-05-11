@@ -44,12 +44,18 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
 	  String clientId = state.getProjectId() + state.getProfileId();
 	  SoftlayerCloudClient client;
 	  boolean createdNewClient = false;
+	  LOG.info("client hashmap size: " + clients.size());
+	  for (SoftlayerCloudClient cli : clients.values()) {
+		  LOG.info("hashmap client: " + cli);
+	  }
 	  if (clients.containsKey(clientId)) {
 		  client = clients.get(clientId);
+		  LOG.info("same client: " + client);
 	  } else {
 		  client = new SoftlayerCloudClient(params);
 		  clients.put(clientId, client);
 		  createdNewClient = true;
+		  LOG.info("new client: " + client);
 	  }
     for(SoftlayerCloudImageDetails imageDetails : parseImageData(params)) {
       // Print to the screen during test; logging has not been implemented in automated
