@@ -26,8 +26,9 @@ public class SoftlayerCloudInstance implements CloudInstance
 {
   private InstanceStatus myStatus;
   private ScheduledExecutorService executor;
-  // id is set in the start() method.
+  // id and name is set in the start() method.
   private String id;
+  private String name;
   private SoftlayerCloudImage image; // Set when SoftlayerCloudImage calls setImage
   public Guest guest;
   private Date startedTime;
@@ -60,6 +61,7 @@ public class SoftlayerCloudInstance implements CloudInstance
     guest.setLocalDiskFlag(details.getLocalDiskFlag());
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
+    guest.setPostInstallScriptUri("http://169.60.13.41/test.sh");
     startedTime = new Date();
     imageDetails = details;
     userData = data;
@@ -83,7 +85,7 @@ public class SoftlayerCloudInstance implements CloudInstance
   }
 
   public String getName() {
-    return id;
+    return name;
   }
 
   public String getNetworkIdentity() {
@@ -112,7 +114,7 @@ public class SoftlayerCloudInstance implements CloudInstance
     if(address == null) {
       return false;
     }
-    return agent.getConfigurationParameters().get("name").contains(address);
+    return agent.getConfigurationParameters().get("INSTANCE_NAME").contains(address);
   }
 
   public CloudErrorInfo getErrorInfo() {
@@ -128,7 +130,8 @@ public class SoftlayerCloudInstance implements CloudInstance
     try {
       guest = Guest.service(softlayerClient).createObject(guest);
       id = guest.getId().toString();
-      LOG.info("Softlayer ID is " + id);
+      name = guest.getHostname().toString();
+      LOG.info("Softlayer Hostname " + name + " and ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;
       myCurrentError = null;
     } catch (Exception e) {
