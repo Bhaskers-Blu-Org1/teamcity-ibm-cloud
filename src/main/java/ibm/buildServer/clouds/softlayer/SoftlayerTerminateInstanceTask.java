@@ -46,6 +46,7 @@ public class SoftlayerTerminateInstanceTask implements Runnable{
 		    } catch (Exception e) {
 		      LOG.warn("Error: " + e);
 		      instance.setStatus(InstanceStatus.ERROR_CANNOT_STOP);
+		      throw e;
 		    }
 		} else {
 			LOG.info("Active transaction");

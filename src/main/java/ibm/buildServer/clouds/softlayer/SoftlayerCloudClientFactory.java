@@ -34,8 +34,7 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
     // Registering plugin with cloud.
     cloudRegistrar.registerCloudFactory(this);
     // Set path to plugin's settings page.
-    settingPagePath = pluginDescriptor.getPluginResourcesPath(
-        SoftlayerCloudConstants.SETTINGS_HTML_PAGE);
+    settingPagePath = pluginDescriptor.getPluginResourcesPath(SoftlayerCloudConstants.SETTINGS_HTML_PAGE);
     myCloudManager = cloudManager;
   }
 
@@ -52,15 +51,13 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
 		  clients.put(clientId, client);
 		  createdNewClient = true;
 	  }
-
     for(SoftlayerCloudImageDetails imageDetails : parseImageData(params)) {
       // Print to the screen during test; logging has not been implemented in automated
       // unit tests.
       System.out.println("creating image for " + params.getParameter(SoftlayerCloudConstants.USER_NAME));
       SoftlayerCloudImage image = new SoftlayerCloudImage(imageDetails);
-      image.setCredentials(
-          params.getParameter(SoftlayerCloudConstants.USER_NAME),
-          params.getParameter(SoftlayerCloudConstants.API_KEY));
+      image.setCredentials(params.getParameter(SoftlayerCloudConstants.USER_NAME), 
+    		  params.getParameter(SoftlayerCloudConstants.API_KEY));
       client.addImage(image);
     }
     if (createdNewClient) {
@@ -70,8 +67,7 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
     return client;
   }
 
-  public Collection<SoftlayerCloudImageDetails> parseImageData(
-      @NotNull final CloudClientParameters params) {
+  public Collection<SoftlayerCloudImageDetails> parseImageData(@NotNull final CloudClientParameters params) {
 	return params.getCloudImages().stream().map(SoftlayerCloudImageDetails::new).collect(Collectors.toList());
   }
 

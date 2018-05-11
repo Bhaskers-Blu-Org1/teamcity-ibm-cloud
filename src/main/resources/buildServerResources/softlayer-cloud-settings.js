@@ -392,7 +392,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
                     	* */
                     	var agentRegExp3 = new RegExp(/^.{1,63}$/,'g'); 
                     	if (!IBMSL_agentName || IBMSL_agentName === '' || IBMSL_agentName === undefined || !agentRegExp1.test(IBMSL_agentName) || agentRegExp2.test(IBMSL_agentName) || !agentRegExp3.test(IBMSL_agentName)) {
-                        this.addOptionError('notSelected', 'IBMSL_agentName');
+                        this.addOptionError('agentNameBadParam', 'IBMSL_agentName');
                         isValid = false;
                     }
             }.bind(this),
@@ -427,7 +427,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
                     	var domainRegExp4 = new RegExp(/^.{2,189}$/,'g'); 
                     	
                     	if (!IBMSL_domainName || IBMSL_domainName === '' || IBMSL_domainName === undefined || !domainRegExp1.test(IBMSL_domainName) || domainRegExp2.test(IBMSL_domainName) || !domainRegExp3.test(IBMSL_domainName) || !domainRegExp4.test(IBMSL_domainName)) {
-                        this.addOptionError('notSelected', 'IBMSL_domainName');
+                    	    this.addOptionError('domainNameBadParam', 'IBMSL_domainName');
                         isValid = false;
                     }
             }.bind(this),

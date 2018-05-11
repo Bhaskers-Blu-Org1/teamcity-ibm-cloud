@@ -36,11 +36,9 @@ public class SoftlayerCloudInstance implements CloudInstance
   public ApiClient softlayerClient;
   private final static Logger LOG = Loggers.SERVER;
   int taskDelayTime = 60 * 1000;
+  private CloudErrorInfo myCurrentError = null;
 
-  public SoftlayerCloudInstance(
-      SoftlayerCloudImageDetails details,
-      CloudInstanceUserData data,
-      ApiClient softlayerClient) {
+  public SoftlayerCloudInstance(SoftlayerCloudImageDetails details,CloudInstanceUserData data,ApiClient softlayerClient) {
     myStatus = InstanceStatus.UNKNOWN;
     executor = Executors.newSingleThreadScheduledExecutor();
     guest = new Guest();
@@ -118,7 +116,7 @@ public class SoftlayerCloudInstance implements CloudInstance
   }
 
   public CloudErrorInfo getErrorInfo() {
-    return null;
+	  return myCurrentError;
   }
 
   public void start() {
@@ -132,10 +130,15 @@ public class SoftlayerCloudInstance implements CloudInstance
       id = guest.getId().toString();
       LOG.info("Softlayer ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;
+      myCurrentError = null;
     } catch (Exception e) {
+    	  // Any exception related to softlayer api or start of VSI will be caught here. 
       System.out.println("Error: " + e);
-      LOG.warn("Error: " + e);
+      LOG.warn("SoftlayerCloudInstance Error: " + e);
       myStatus = InstanceStatus.ERROR;
+      // Catch exception as cloud error and throw error to softlayerCloudImage file.
+      myCurrentError = new CloudErrorInfo("Failed to start cloud instance" + e);
+      throw e;  
     }
   }
 
@@ -154,6 +157,10 @@ public class SoftlayerCloudInstance implements CloudInstance
 	              taskDelayTime,
 	              taskDelayTime,
 	              TimeUnit.MILLISECONDS);
+	        } catch (Exception e) {
+	            LOG.warn("SoftlayerCloudInstance Error: " + e);
+	            // catch exception with stacktraces message. On TC server UI, this exception will show up on Agents->Cloud tab.
+	            myCurrentError = new CloudErrorInfo("Failed to stop cloud instance with id: " + id , e.getMessage(), e);
 	        } finally {
 	          
 	        }
