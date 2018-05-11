@@ -25,7 +25,7 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
   private final static Logger LOG = Loggers.SERVER;
   //use hashmap to keep track of the created clients
   private final Map<String, SoftlayerCloudClient> clients =
-		    new HashMap<>();
+		    new ConcurrentHashMap<>();
 
   public SoftlayerCloudClientFactory(
       @NotNull CloudRegistrar cloudRegistrar,
