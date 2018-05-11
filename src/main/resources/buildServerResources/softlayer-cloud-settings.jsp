@@ -264,6 +264,7 @@
     <div class="popupSaveButtonsBlock">
         <forms:submit label="Delete" type="button" id="softlayerDeleteImageButton"/>
         <forms:button title="Cancel" id="softlayerCancelDeleteImageButton">Cancel</forms:button>
+        <span class="hidden delete-loader"><i class="icon-refresh icon-spin"></i></span>
     </div>
     
 </bs:dialog>

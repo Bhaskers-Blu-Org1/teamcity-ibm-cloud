@@ -238,10 +238,11 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     },
     
     _renderImageRow: function (props, id) {
-    		
     		//This function creates each row of cloud image table and appends.
     	
         var $row = this.templates.imagesTableRow.clone().attr('data-image-id', id);
+        $row.attr('src-id', props['source-id']);
+        
         var defaults = this.defaults;
 
         this._dataKeys.forEach(function (className) {
@@ -592,14 +593,15 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     	
     		// Opens delete image dialog box and sends GET ajax request to SoftlayerDeleteCloudImageController.java
         var imageId = $elem.parents(this.selectors.imagesTableRow).data('image-id');
+        var srcId = $elem.parents(this.selectors.imagesTableRow).attr('src-id');
 
         BS.ajaxUpdater($("softlayerDeleteImageDialogBody"), BS.IBMSoftlayer.DeleteImageDialog.url + window.location.search, {
             method: 'get',
             parameters : {
-                imageId : imageId
+                imageId : srcId
             },
             onComplete: function() {
-                BS.IBMSoftlayer.DeleteImageDialog.show(imageId);
+                BS.IBMSoftlayer.DeleteImageDialog.show(imageId, srcId);
             }
         });
     },
@@ -613,13 +615,18 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     		
     		// Confirmation on deleting cloud image and sends POST ajax request to SoftlayerDeleteCloudImageController.java
         var imageId = BS.IBMSoftlayer.DeleteImageDialog.currentImageId;
+        var srcId = BS.IBMSoftlayer.DeleteImageDialog.currentSrcId;
+        var $deleteLoader = $j('.delete-loader');
+        $deleteLoader.removeClass('hidden');
+        
         BS.ajaxRequest(BS.IBMSoftlayer.DeleteImageDialog.url + window.location.search, {
             method: 'post',
             parameters : {
-                imageId : imageId
+                imageId : srcId
             },
             onComplete: function() {
                 BS.IBMSoftlayer.ProfileSettingsForm.removeImage(imageId);
+                $deleteLoader.addClass('hidden');
                 BS.IBMSoftlayer.DeleteImageDialog.close();
             }
         });
@@ -720,13 +727,15 @@ if(!BS.IBMSoftlayer.ImageDialog) BS.IBMSoftlayer.ImageDialog = OO.extend(BS.Abst
 if(!BS.IBMSoftlayer.DeleteImageDialog) BS.IBMSoftlayer.DeleteImageDialog = OO.extend(BS.AbstractModalDialog, {
     url: '',
     currentImageId: '',
+    currentSrcId: '',
 
     getContainer: function() {
         return $('softlayerDeleteImageDialog');
     },
 
-    show: function (imageId) {
+    show: function (imageId, srcId) {
         BS.IBMSoftlayer.DeleteImageDialog.currentImageId = imageId;
+        BS.IBMSoftlayer.DeleteImageDialog.currentSrcId = srcId;
         BS.IBMSoftlayer.DeleteImageDialog.showCentered();
 }
 });
