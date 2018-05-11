@@ -8,7 +8,7 @@ buildscript {
 }
 
 plugins {
-  id "com.github.rodm.teamcity-server" version "1.0"
+  id "com.github.rodm.teamcity-agent" version "1.0"
 }
 
 teamcity {
