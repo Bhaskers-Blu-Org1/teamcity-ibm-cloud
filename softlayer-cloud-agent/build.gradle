@@ -15,13 +15,7 @@ teamcity {
   version = teamcityVersion
 
   agent {
-    descriptor {
-      useSeparateClassloader = false
-
-      parameters {
-        parameter "param", "value"
-      }
-    }
+    descriptor = project.file('teamcity-plugin.xml')
   }
 }
 
@@ -30,8 +24,7 @@ repositories {
 }
 
 dependencies {
-  provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
-  provided "org.jetbrains.teamcity.internal:web:$teamcityVersion"
+  provided "org.jetbrains.teamcity.internal:agent:$teamcityVersion"
   provided "org.jetbrains.teamcity:cloud-server-api:$teamcityVersion"
   provided "org.jetbrains.teamcity:cloud-interface:$teamcityVersion"
   provided "org.jetbrains.teamcity:cloud-shared:$teamcityVersion"
