@@ -31,6 +31,15 @@ public class SoftlayerCloudImage implements CloudImage
   public SoftlayerCloudImage(SoftlayerCloudImageDetails details) {
       this.details = details;
   }
+  
+  @NotNull
+  public SoftlayerCloudImageDetails getDetails() {
+    return details;
+  }
+  
+  public void setDetails(SoftlayerCloudImageDetails details) {
+	this.details = details;
+  }
 
   @NotNull
   public String getId() {
