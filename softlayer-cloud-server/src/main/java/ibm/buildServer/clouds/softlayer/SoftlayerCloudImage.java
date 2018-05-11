@@ -23,10 +23,10 @@ import java.util.Map;
 public class SoftlayerCloudImage implements CloudImage
 {
   private SoftlayerCloudImageDetails details;
-  private final Map<String, SoftlayerCloudInstance> instances =
-    new ConcurrentHashMap<>();
+  private final Map<String, SoftlayerCloudInstance> instances = new ConcurrentHashMap<>();
   public ApiClient softlayerClient;
   private final static Logger LOG = Loggers.SERVER;
+  private CloudErrorInfo myCurrentError = null;
 
   public SoftlayerCloudImage(SoftlayerCloudImageDetails details) {
       this.details = details;
@@ -40,6 +40,11 @@ public class SoftlayerCloudImage implements CloudImage
   @NotNull
   public String getName() {
     return details.getSourceId();
+  }
+  
+  @NotNull
+  public String getProfileId() {
+    return details.getProfileId();
   }
 
   @NotNull
@@ -62,17 +67,16 @@ public class SoftlayerCloudImage implements CloudImage
   public Integer getAgentPoolId() {
     //TODO: Implement agent pools on the frontend making agentPoolId a field in
     //SoftlayerCloudImageDetails.
-    return null;
+    return details.agentPoolId;
   }
 
   @Nullable
   public CloudErrorInfo getErrorInfo() {
-    return null;
+	  return myCurrentError;
   }
 
   @NotNull
-  public SoftlayerCloudInstance startNewInstance(
-      @NotNull final CloudInstanceUserData data) {
+  public SoftlayerCloudInstance startNewInstance(@NotNull final CloudInstanceUserData data) {
     if(canStartNewInstance()) {
       return createInstance(data);
     }  
@@ -86,11 +90,24 @@ public class SoftlayerCloudImage implements CloudImage
   }
 
   protected SoftlayerCloudInstance createInstance(CloudInstanceUserData data) {
-    SoftlayerCloudInstance instance
-      = new SoftlayerCloudInstance(details, data, softlayerClient);
-    instance.setImage(this);
-    instance.start();
-    instances.put(instance.getInstanceId(), instance);
+	SoftlayerCloudInstance instance = new SoftlayerCloudInstance(details, data, softlayerClient);
+	try
+	{
+	    instance.setImage(this);
+	    instance.start();
+	    instances.put(instance.getInstanceId(), instance);
+	    myCurrentError = null;
+	}
+	catch(Exception e)
+	{
+		/*
+		 *  Exception from SoftlayerCloudInstance and generate its stacktraces. Exception thrown to file SoftlayerCloudClient. 
+		 *  On TC server UI, this exception will show up on Agents->Cloud tab.
+		 * */
+		
+		myCurrentError = new CloudErrorInfo("Failed to start cloud image: ", e.getMessage(), e);
+		throw e;
+	}
     return instance;
   }
 

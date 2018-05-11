@@ -108,11 +108,11 @@ class SoftlayerCloudClientTest {
       message = "instance status is " + status.getName();
       Assertions.assertFalse(status.isError(), message);
     }
-    /*
+    image.removeInstance(instance.getInstanceId());
     int size = image.getInstances().size();
-    String message = "There are " + size + " instances, there should be 0.";
-    Assertions.assertEquals(size, 0, message);
-    */
+    String messages = "There are " + size + " instances, there should be 0.";
+    Assertions.assertEquals(size, 0, messages);
+    
   }
 
   @Test

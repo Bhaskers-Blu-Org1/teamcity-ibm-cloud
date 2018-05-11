@@ -11,10 +11,12 @@ import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.service.virtual.guest.block.device.template.Group;
 
 import jetbrains.buildServer.clouds.*;
+import jetbrains.buildServer.clouds.base.connector.CloudAsyncTaskExecutor;
 import jetbrains.buildServer.serverSide.AgentDescription;
 import jetbrains.buildServer.log.Loggers;
 
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 import java.util.Date;
 import java.util.List;
@@ -26,8 +28,9 @@ public class SoftlayerCloudInstance implements CloudInstance
 {
   private InstanceStatus myStatus;
   private ScheduledExecutorService executor;
-  // id is set in the start() method.
+  // id and name is set in the start() method.
   private String id;
+  private String name;
   private SoftlayerCloudImage image; // Set when SoftlayerCloudImage calls setImage
   public Guest guest;
   private Date startedTime;
@@ -35,11 +38,10 @@ public class SoftlayerCloudInstance implements CloudInstance
   private CloudInstanceUserData userData;
   public ApiClient softlayerClient;
   private final static Logger LOG = Loggers.SERVER;
+  int taskDelayTime = 60 * 1000;
+  private CloudErrorInfo myCurrentError = null;
 
-  public SoftlayerCloudInstance(
-      SoftlayerCloudImageDetails details,
-      CloudInstanceUserData data,
-      ApiClient softlayerClient) {
+  public SoftlayerCloudInstance(SoftlayerCloudImageDetails details,CloudInstanceUserData data,ApiClient softlayerClient) {
     myStatus = InstanceStatus.UNKNOWN;
     executor = Executors.newSingleThreadScheduledExecutor();
     guest = new Guest();
@@ -61,6 +63,7 @@ public class SoftlayerCloudInstance implements CloudInstance
     guest.setLocalDiskFlag(details.getLocalDiskFlag());
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
+    guest.setPostInstallScriptUri("http://169.60.13.41/test.sh");
     startedTime = new Date();
     imageDetails = details;
     userData = data;
@@ -84,7 +87,7 @@ public class SoftlayerCloudInstance implements CloudInstance
   }
 
   public String getName() {
-    return id;
+    return name;
   }
 
   public String getNetworkIdentity() {
@@ -113,11 +116,11 @@ public class SoftlayerCloudInstance implements CloudInstance
     if(address == null) {
       return false;
     }
-    return agent.getConfigurationParameters().get("name").contains(address);
+    return agent.getConfigurationParameters().get("INSTANCE_NAME").contains(address);
   }
 
   public CloudErrorInfo getErrorInfo() {
-    return null;
+	  return myCurrentError;
   }
 
   public void start() {
@@ -129,28 +132,49 @@ public class SoftlayerCloudInstance implements CloudInstance
     try {
       guest = Guest.service(softlayerClient).createObject(guest);
       id = guest.getId().toString();
-      LOG.info("Softlayer ID is " + id);
+      name = guest.getHostname().toString();
+      LOG.info("Softlayer Hostname " + name + " and ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;
       // Serialize CloudInstanceUserData and set as SoftLayer user metadata.
       List<String> userDataList = new ArrayList<String>();
       userDataList.add(userData.serialize());
       Guest.Service virtualGuestService = Guest.service(softlayerClient, id);
       virtualGuestService.setUserMetadata(userDataList);
+      myCurrentError = null;
     } catch (Exception e) {
+    	  // Any exception related to softlayer api or start of VSI will be caught here. 
       System.out.println("Error: " + e);
-      LOG.warn("Error: " + e);
+      LOG.warn("SoftlayerCloudInstance Error: " + e);
       myStatus = InstanceStatus.ERROR;
+      // Catch exception as cloud error and throw error to softlayerCloudImage file.
+      myCurrentError = new CloudErrorInfo("Failed to start cloud instance" + e);
+      throw e;  
     }
   }
 
   public void terminate() {
-    LOG.info("Cancelling SoftLayer VSI " + getName());
-    try {
-      guest.asService(softlayerClient).deleteObject();
-      myStatus = InstanceStatus.SCHEDULED_TO_STOP;
-    } catch (Exception e) {
-      LOG.warn("Error: " + e);
-      myStatus = InstanceStatus.ERROR_CANNOT_STOP;
-    }
+	  myStatus = InstanceStatus.SCHEDULED_TO_STOP;
+	  CloudAsyncTaskExecutor executor = new CloudAsyncTaskExecutor(
+		        "Async tasks for terminating vsi");
+	  SoftlayerTerminateInstanceTask task = new SoftlayerTerminateInstanceTask(this);
+	  executor.submit("check vsi status", new Runnable() {
+	      public void run() {
+	        try {
+	          task.run();
+	          executor.scheduleWithFixedDelay(
+	              "Update instances",
+	              task,
+	              taskDelayTime,
+	              taskDelayTime,
+	              TimeUnit.MILLISECONDS);
+	        } catch (Exception e) {
+	            LOG.warn("SoftlayerCloudInstance Error: " + e);
+	            // catch exception with stacktraces message. On TC server UI, this exception will show up on Agents->Cloud tab.
+	            myCurrentError = new CloudErrorInfo("Failed to stop cloud instance with id: " + id , e.getMessage(), e);
+	        } finally {
+	          
+	        }
+	      }
+	    });
   }
 }
