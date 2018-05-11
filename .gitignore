@@ -1,6 +1,7 @@
 *.class
-*.gradle
 *.jar
+.gradle
+**/.gradle
 build/descriptor/**
 build/resources/**
 build/libs/**
