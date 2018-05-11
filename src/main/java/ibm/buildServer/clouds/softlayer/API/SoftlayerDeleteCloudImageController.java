@@ -67,6 +67,7 @@ public class SoftlayerDeleteCloudImageController extends BaseController {
 				
 				client.terminateInstance(instance);
 			}
+			client.getImages().remove(image);
 		}
 		return null;
 	}

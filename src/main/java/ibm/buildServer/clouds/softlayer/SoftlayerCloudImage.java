@@ -41,6 +41,11 @@ public class SoftlayerCloudImage implements CloudImage
   public String getName() {
     return details.getSourceId();
   }
+  
+  @NotNull
+  public String getProfileId() {
+    return details.getProfileId();
+  }
 
   @NotNull
   public Collection<SoftlayerCloudInstance> getInstances() {

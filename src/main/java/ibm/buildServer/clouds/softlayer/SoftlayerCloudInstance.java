@@ -11,10 +11,12 @@ import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.service.virtual.guest.block.device.template.Group;
 
 import jetbrains.buildServer.clouds.*;
+import jetbrains.buildServer.clouds.base.connector.CloudAsyncTaskExecutor;
 import jetbrains.buildServer.serverSide.AgentDescription;
 import jetbrains.buildServer.log.Loggers;
 
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 import java.util.Date;
 
@@ -33,6 +35,7 @@ public class SoftlayerCloudInstance implements CloudInstance
   private CloudInstanceUserData userData;
   public ApiClient softlayerClient;
   private final static Logger LOG = Loggers.SERVER;
+  int taskDelayTime = 60 * 1000;
 
   public SoftlayerCloudInstance(
       SoftlayerCloudImageDetails details,
@@ -137,13 +140,24 @@ public class SoftlayerCloudInstance implements CloudInstance
   }
 
   public void terminate() {
-    LOG.info("Cancelling SoftLayer VSI " + getName());
-    try {
-      guest.asService(softlayerClient).deleteObject();
-      myStatus = InstanceStatus.SCHEDULED_TO_STOP;
-    } catch (Exception e) {
-      LOG.warn("Error: " + e);
-      myStatus = InstanceStatus.ERROR_CANNOT_STOP;
-    }
+	  myStatus = InstanceStatus.SCHEDULED_TO_STOP;
+	  CloudAsyncTaskExecutor executor = new CloudAsyncTaskExecutor(
+		        "Async tasks for terminating vsi");
+	  SoftlayerTerminateInstanceTask task = new SoftlayerTerminateInstanceTask(this);
+	  executor.submit("check vsi status", new Runnable() {
+	      public void run() {
+	        try {
+	          task.run();
+	          executor.scheduleWithFixedDelay(
+	              "Update instances",
+	              task,
+	              taskDelayTime,
+	              taskDelayTime,
+	              TimeUnit.MILLISECONDS);
+	        } finally {
+	          
+	        }
+	      }
+	    });
   }
 }
