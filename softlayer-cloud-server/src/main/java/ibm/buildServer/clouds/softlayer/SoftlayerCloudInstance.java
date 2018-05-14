@@ -40,8 +40,11 @@ public class SoftlayerCloudInstance implements CloudInstance
   private final static Logger LOG = Loggers.SERVER;
   int taskDelayTime = 60 * 1000;
   private CloudErrorInfo myCurrentError = null;
+  private boolean metadataSet = false;
 
-  public SoftlayerCloudInstance(SoftlayerCloudImageDetails details,CloudInstanceUserData data,ApiClient softlayerClient) {
+  public SoftlayerCloudInstance(SoftlayerCloudImageDetails details,
+      CloudInstanceUserData data,
+      ApiClient softlayerClient) {
     myStatus = InstanceStatus.UNKNOWN;
     executor = Executors.newSingleThreadScheduledExecutor();
     guest = new Guest();
@@ -134,12 +137,8 @@ public class SoftlayerCloudInstance implements CloudInstance
       id = guest.getId().toString();
       name = guest.getHostname().toString();
       LOG.info("Softlayer Hostname " + name + " and ID is " + id);
+      System.out.println("Softlayer Hostname " + name + " and ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;
-      // Serialize CloudInstanceUserData and set as SoftLayer user metadata.
-      List<String> userDataList = new ArrayList<String>();
-      userDataList.add(userData.serialize());
-      Guest.Service virtualGuestService = Guest.service(softlayerClient, id);
-      virtualGuestService.setUserMetadata(userDataList);
       myCurrentError = null;
     } catch (Exception e) {
     	  // Any exception related to softlayer api or start of VSI will be caught here. 
@@ -176,5 +175,28 @@ public class SoftlayerCloudInstance implements CloudInstance
 	        }
 	      }
 	    });
+  }
+
+  public boolean metadataIsSet() {
+    return metadataSet;
+  }
+
+  public void setMetadata() {
+    try {
+      // Serialize CloudInstanceUserData and set as SoftLayer user metadata.
+      List<String> userDataList = new ArrayList<String>();
+      userDataList.add(userData.serialize());
+      Long virtualGuestId = new Long(getInstanceId());
+      Guest.Service virtualGuestService = Guest.service(softlayerClient,
+          virtualGuestId);
+      virtualGuestService.setUserMetadata(userDataList);
+      metadataSet = true;
+    } catch (Exception e) {
+      String message = "Error trying to set metadata: " + e;
+      LOG.warn(message);
+      System.out.println(message);
+      myCurrentError = new CloudErrorInfo(message);
+      metadataSet = false;
+    }
   }
 }

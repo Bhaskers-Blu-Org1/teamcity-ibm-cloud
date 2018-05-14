@@ -19,17 +19,19 @@ import com.softlayer.api.service.resource.Metadata;
 
 public class SoftlayerMetadataReader {
   private Logger LOG = Loggers.AGENT;
+  private BuildAgentConfigurationEx configuration;
 
   public SoftlayerMetadataReader(EventDispatcher<AgentLifeCycleListener> events,
       BuildAgentConfigurationEx configuration) {
     LOG.info("SoftLayer plugin initializing... via MetadataReader");
+    this.configuration = configuration;
     events.addListener(new AgentLifeCycleAdapter() {
       @Override
       public void afterAgentConfigurationLoaded(BuildAgent agent) {
-        LOG.info("Softlayer loading configuration");
+        LOG.info("SoftLayer loading configuration");
         fetchConfiguration();
       }
-    })
+    });
   }
 
   private void fetchConfiguration() {
@@ -56,7 +58,7 @@ public class SoftlayerMetadataReader {
           + data.getAgentName()
           + " on server URL "
           + data.getServerAddress());
-      configuration.serverUrl = data.getServerAddress();
+      configuration.setServerUrl(data.getServerAddress());
     } catch (Exception e) {
       LOG.warn("SoftlayerMetadataReader error: " + e);
     }

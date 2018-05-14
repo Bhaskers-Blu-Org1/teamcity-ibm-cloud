@@ -2,9 +2,6 @@ buildscript {
   repositories {
     mavenCentral()
   }
-  dependencies {
-    classpath "org.junit.platform:junit-platform-gradle-plugin:1.0.1"
-  }
 }
 
 plugins {
@@ -32,22 +29,8 @@ dependencies {
   compile "com.softlayer.api:softlayer-api-client:0.2.5"
   compile "org.apiguardian:apiguardian-api:1.0.0"
   compile "org.json:json:20171018"
-  testCompile(
-    "org.junit.jupiter:junit-jupiter-api:5.0.1"
-  )
-  testRuntime(
-    "org.junit.jupiter:junit-jupiter-engine:5.0.1"
-  )
-}
-
-test {
-  testLogging {
-	showStandardStreams = true
-  }
 }
 
  jar {
 	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
-
-apply plugin: "org.junit.platform.gradle.plugin"

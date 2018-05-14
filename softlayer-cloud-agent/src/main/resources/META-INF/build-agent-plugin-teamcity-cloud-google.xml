@@ -3,5 +3,5 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans default-autowire="constructor">
-  <bean class="jetbrains.buildServer.clouds.google.SoftlayerMetadataReader"/>
+  <bean class="ibm.buildServer.clouds.softlayer.SoftlayerMetadataReader"/>
 </beans>
