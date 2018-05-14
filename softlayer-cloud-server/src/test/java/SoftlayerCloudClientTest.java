@@ -98,6 +98,7 @@ class SoftlayerCloudClientTest {
       message = "instance status is " + status.getName();
       Assertions.assertFalse(status.isError(), message);
     }
+    Assertions.assertTrue(((SoftlayerCloudInstance) instance).metadataIsSet());
     System.out.println("Terminating instance " + instance.getName());
     client.terminateInstance(instance);
     status = instance.getStatus();
@@ -112,7 +113,6 @@ class SoftlayerCloudClientTest {
     int size = image.getInstances().size();
     String messages = "There are " + size + " instances, there should be 0.";
     Assertions.assertEquals(size, 0, messages);
-    
   }
 
   @Test
