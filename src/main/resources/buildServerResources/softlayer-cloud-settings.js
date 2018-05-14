@@ -495,7 +495,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
            IBMSL_maximumInstances : function () {
         	   var IBMSL_maximumInstances = this._image['IBMSL_maximumInstances'];
         	// RegExp checks positive integer or whitespace
-        	   var maximumInstancesRegExp = new RegExp(/^(\s*|[1-9]\d*)$$/,'g');
+        	   var maximumInstancesRegExp = new RegExp(/^(\s*|[1-9]\d*)$/,'g');
         	   if (IBMSL_maximumInstances && IBMSL_maximumInstances != undefined
         			   && !maximumInstancesRegExp.test(IBMSL_maximumInstances)) {
         		   this.addOptionError('maximumInstances', 'IBMSL_maximumInstances');

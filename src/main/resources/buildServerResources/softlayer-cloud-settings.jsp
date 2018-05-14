@@ -227,6 +227,18 @@
 				<span class="error option-error option-error_${cons.vsiBillingType}"></span>
 			</td>
 		</tr>	
+		
+				<!-- Maximum Instances row -->
+		<tr>
+			<th><label for="${cons.maximumInstances}">Maximum Instances:</label></th>
+			<td>
+				<div style="white-space: nowrap">
+					<input data-id="${cons.maximumInstances}" id="${cons.maximumInstances}" value="${propertiesBean.properties[cons.maximumInstances]}" type="text">
+				</div>
+				<span class="error option-error option-error_${cons.maximumInstances}"></span>
+				
+			</td>
+		</tr>
     	
     		<!-- Agent pool row -->
 		<tr>
@@ -242,20 +254,8 @@
                 	</select>
                 	<span class="error option-error option-error_${cons.agentPoolIdField}"></span>
             	</td>
-       	</tr>
-       	
-       		<!-- Maximum Instances row -->
-		<tr>
-			<th><label for="${cons.maximumInstances}">Maximum Instances:</label></th>
-			<td>
-				<div style="white-space: nowrap">
-					<input data-id="${cons.maximumInstances}" id="${cons.maximumInstances}" value="${propertiesBean.properties[cons.maximumInstances]}" class="longField" type="text">
-				</div>
-				<span class="error option-error option-error_${cons.maximumInstances}"></span>
-				
-			</td>
-		</tr>		
-        
+       	</tr>    	
+          
 	</table>
 
     <admin:showHideAdvancedOpts containerId="softlayerImageDialog" optsKey="softlayerImageSettings"/>
