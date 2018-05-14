@@ -49,7 +49,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
             requiredForFargate: 'This field is required when using FARGATE launch type',
             notSelected: 'Something should be selected',
             nonNegative: 'Must be non-negative number',
-            nonPercentile: 'Must be a number from range 1..100'
+            nonPercentile: 'Must be a number from range 1..100',
             maximumInstances: 'Must be a positive integer or leave blank'
         },
         
