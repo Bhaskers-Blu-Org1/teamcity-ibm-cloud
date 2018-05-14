@@ -41,7 +41,6 @@ public class SoftlayerCloudImageDetails{
 		localDiskFlag = Boolean.parseBoolean(getValueFromJSON(imageParameters.getParameter(SoftlayerCloudConstants.DISK_TYPE)));
 	    vsiTemplate = getValueFromJSON(imageParameters.getParameter(SoftlayerCloudConstants.VSI_TEMPLATE_LIST));
 	    vsiBilling = Boolean.parseBoolean(getValueFromJSON(imageParameters.getParameter(SoftlayerCloudConstants.VSI_BILLING)));
-	    
 	    try {
 	    	maxInstances = Long.parseLong(imageParameters.getParameter(SoftlayerCloudConstants.MAXIMUM_INSTANCES));
 	    } catch(Exception e) {

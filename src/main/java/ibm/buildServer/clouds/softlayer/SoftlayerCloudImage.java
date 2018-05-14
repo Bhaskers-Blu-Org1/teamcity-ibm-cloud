@@ -31,7 +31,6 @@ public class SoftlayerCloudImage implements CloudImage
   public SoftlayerCloudImage(SoftlayerCloudImageDetails details) {
       this.details = details;
   }
-  
   @NotNull
   public SoftlayerCloudImageDetails getDetails() {
     return details;
@@ -40,7 +39,6 @@ public class SoftlayerCloudImage implements CloudImage
   public void setDetails(SoftlayerCloudImageDetails details) {
 	this.details = details;
   }
-
   @NotNull
   public String getId() {
     return details.getSourceId();
@@ -99,7 +97,7 @@ public class SoftlayerCloudImage implements CloudImage
 
   protected boolean canStartNewInstance() {
 	//maxInstances == 0 means infinite instances.
-    return getMaxInstances() == 0 || instances.size() < getMaxInstances();
+	return getMaxInstances() == 0 || instances.size() < getMaxInstances();
   }
 
   protected SoftlayerCloudInstance createInstance(CloudInstanceUserData data) {
