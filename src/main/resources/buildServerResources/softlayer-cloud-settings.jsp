@@ -244,7 +244,7 @@
             	</td>
        	</tr>
        	
-       	<!-- Maximum Instances row -->
+       		<!-- Maximum Instances row -->
 		<tr>
 			<th><label for="${cons.maximumInstances}">Maximum Instances:</label></th>
 			<td>
@@ -254,7 +254,7 @@
 				<span class="error option-error option-error_${cons.maximumInstances}"></span>
 				
 			</td>
-		</tr>			
+		</tr>		
         
 	</table>
 

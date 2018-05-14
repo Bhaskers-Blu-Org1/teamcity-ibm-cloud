@@ -6,8 +6,8 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudClient;
 import ibm.buildServer.clouds.softlayer.SoftlayerCloudImage;
@@ -22,6 +22,7 @@ import java.util.List;
 
 class SoftlayerCloudImageTest {
   private CloudClientParameters parameters;
+  private SoftlayerCloudClient client;
   private SoftlayerCloudImage image;
   private SoftlayerCloudImageDetails details;
   private AgentDescription agentDescription;
@@ -40,11 +41,12 @@ class SoftlayerCloudImageTest {
         "fake-profile",
         "This is a fake cloud profile for unit testing.",
         agentDescription.getConfigurationParameters());
+    client = new SoftlayerCloudClient(parameters);
     details = new SoftlayerCloudImageDetails(
         parameters.getCloudImages().iterator().next());
     image = new SoftlayerCloudImage(details);
     image.setCredentials(
-            System.getenv("SOFTLAYER_USER"), System.getenv("SOFTLAYER_API"));
+    		System.getenv("SOFTLAYER_USER"), System.getenv("SOFTLAYER_API"));
     instances = new ArrayList<>();
   }
   
