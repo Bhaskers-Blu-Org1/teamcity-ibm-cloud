@@ -28,6 +28,7 @@ public class SoftlayerCloudConstants {
 	public static final String NETWORK = "IBMSL_network";
 	public static final String DOMAIN_NAME = "IBMSL_domainName";
 	public static final String VSI_BILLING = "IBMSL_vsiBilling";
+	public static final String MAXIMUM_INSTANCES = "IBMSL_maximumInstances";
 	
 	public static final String PROFILE_ID = "profileId";
 	public static final String SOURCE_ID = "source-id";
@@ -85,6 +86,10 @@ public class SoftlayerCloudConstants {
 
 	public String getAgentPoolIdField() {
 		return CloudImageParameters.AGENT_POOL_ID_FIELD;
+	}
+	
+	public String getMaximumInstances() {
+		return MAXIMUM_INSTANCES;
 	}
 
 }

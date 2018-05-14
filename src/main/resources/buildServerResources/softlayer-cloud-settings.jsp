@@ -242,7 +242,19 @@
                 	</select>
                 	<span class="error option-error option-error_${cons.agentPoolIdField}"></span>
             	</td>
-       	</tr>	
+       	</tr>
+       	
+       	<!-- Maximum Instances row -->
+		<tr>
+			<th><label for="${cons.maximumInstances}">Maximum Instances:</label></th>
+			<td>
+				<div style="white-space: nowrap">
+					<input data-id="${cons.maximumInstances}" id="${cons.maximumInstances}" value="${propertiesBean.properties[cons.maximumInstances]}" class="longField" type="text">
+				</div>
+				<span class="error option-error option-error_${cons.maximumInstances}"></span>
+				
+			</td>
+		</tr>			
         
 	</table>
 
