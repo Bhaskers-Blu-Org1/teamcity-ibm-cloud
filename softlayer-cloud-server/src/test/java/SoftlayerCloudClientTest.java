@@ -18,6 +18,12 @@ import ibm.buildServer.clouds.softlayer.SoftlayerCloudClientFactory;
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.serverSide.*;
 
+import com.softlayer.api.ApiClient;
+import com.softlayer.api.RestApiClient;
+import com.softlayer.api.service.Account;
+
+import com.google.gson.Gson;
+
 class SoftlayerCloudClientTest {
   private CloudClientParameters parameters;
   private SoftlayerCloudClient client;
@@ -99,6 +105,7 @@ class SoftlayerCloudClientTest {
       Assertions.assertFalse(status.isError(), message);
     }
     Assertions.assertTrue(((SoftlayerCloudInstance) instance).metadataIsSet());
+    System.out.println(retrieveMetadata());
     System.out.println("Terminating instance " + instance.getName());
     client.terminateInstance(instance);
     status = instance.getStatus();
@@ -119,5 +126,20 @@ class SoftlayerCloudClientTest {
   @DisplayName("Test findInstanceByAgent runs and returns null.")
   public void testFindInstanceByAgent() {
     Assertions.assertNull(client.findInstanceByAgent(agentDescription));
+  }
+
+  public String retrieveMetadata() {
+    ApiClient softlayerClient = new RestApiClient().
+      withCredentials(System.getenv("SOFTLAYER_USER"), System.getenv("SOFTLAYER_API"));
+    Account.Service accountService = Account.service(softlayerClient);
+    accountService.setMask("mask[userData]");
+    String output = "";
+    try {
+      Gson gson = new Gson();
+      output = gson.toJson(accountService.getVirtualGuests());
+    } catch (Exception e) {
+      output = "Unable to retrieve metadata unformation. " + e.getMessage();
+    }
+    return output;
   }
 }
