@@ -37,12 +37,8 @@ public class SoftlayerCloudClient implements CloudClientEx {
 		  LOG.info("new image: " + image.getName());
 	  } else {
 		  images.get(image.getName()).setDetails(image.getDetails());
-		  LOG.info("same image: " + image.getName() + ",image size:" + image.getInstances().size());
+		  LOG.info("same image: " + image.getName());
 	  }
-  }
-  
-  public void removeImage(String imageId) {
-	  images.remove(imageId);
   }
     
   public boolean isInitialized() {
