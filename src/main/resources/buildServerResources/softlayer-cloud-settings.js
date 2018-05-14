@@ -213,7 +213,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         	if(value !== undefined) this.$IBMSL_maximumInstances.val(value);
         	this._image['IBMSL_maximumInstances'] = this.$IBMSL_maximumInstances.val();
         	this.validateOptions(e.target.getAttribute('data-id'));
-        }
+        }.bind(this));
     },
     
     _renderImagesTable: function () {
@@ -498,6 +498,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         	   var maximumInstancesRegExp = new RegExp(/^(\s*|[1-9]\d*)$$/,'g');
         	   if (IBMSL_maximumInstances && IBMSL_maximumInstances != undefined
         			   && !maximumInstancesRegExp.test(IBMSL_maximumInstances)) {
+        		   this.addOptionError('maximumInstances', 'IBMSL_maximumInstances');
         		   isValid = false;
         	   }
            }.bind(this)
