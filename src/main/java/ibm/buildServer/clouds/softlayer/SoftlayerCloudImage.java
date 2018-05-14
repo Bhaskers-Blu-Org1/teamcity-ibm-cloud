@@ -29,7 +29,7 @@ public class SoftlayerCloudImage implements CloudImage
   private CloudErrorInfo myCurrentError = null;
 
   public SoftlayerCloudImage(SoftlayerCloudImageDetails details) {
-      this.details = details;
+    this.details = details;
   }
   @NotNull
   public SoftlayerCloudImageDetails getDetails() {

@@ -85,12 +85,12 @@ class SoftlayerCloudImageTest {
   @Test
   @DisplayName("Test setting max instances.")
   public void testSetMaxInstances() {
-	String message = "Instance should not be null";
-	details.setMaxInstances(1);
-	SoftlayerCloudInstance instance = image.startNewInstance(instanceData);
+    String message = "Instance should not be null";
+    details.setMaxInstances(1);
+    SoftlayerCloudInstance instance = image.startNewInstance(instanceData);
     Assertions.assertNotNull(instance, message);
     instances.add(instance);
-	instance = image.startNewInstance(instanceData);
+    instance = image.startNewInstance(instanceData);
     Assertions.assertNull(instance, "Max instance should be 1.");
     details.setMaxInstances(2);
     instance = image.startNewInstance(instanceData);
