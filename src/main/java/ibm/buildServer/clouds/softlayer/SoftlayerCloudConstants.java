@@ -91,4 +91,5 @@ public class SoftlayerCloudConstants {
 	public String getMaximumInstances() {
 		return MAXIMUM_INSTANCES;
 	}
+	
 }
