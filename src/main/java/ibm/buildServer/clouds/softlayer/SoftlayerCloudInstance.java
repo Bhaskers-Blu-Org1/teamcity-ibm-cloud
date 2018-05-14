@@ -110,11 +110,7 @@ public class SoftlayerCloudInstance implements CloudInstance
   }
 
   public boolean containsAgent(AgentDescription agent) {
-    String address = getNetworkIdentity();
-    if(address == null) {
-      return false;
-    }
-    return agent.getConfigurationParameters().get("INSTANCE_NAME").contains(address);
+    return agent.getConfigurationParameters().get("INSTANCE_NAME").contains(getName());
   }
 
   public CloudErrorInfo getErrorInfo() {
