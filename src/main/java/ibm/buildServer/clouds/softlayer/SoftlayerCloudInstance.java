@@ -110,6 +110,10 @@ public class SoftlayerCloudInstance implements CloudInstance
   }
 
   public boolean containsAgent(AgentDescription agent) {
+    if(getName() == null) {
+      LOG.warn("SoftLayer instance name has not been set.");
+      return false;
+    }
     return agent.getConfigurationParameters().get("INSTANCE_NAME").contains(getName());
   }
 

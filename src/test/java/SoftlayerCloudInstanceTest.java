@@ -88,8 +88,6 @@ class SoftlayerCloudInstanceTest {
   @Test
   @DisplayName("Expect containsAgent to return false because we're using the fake agent")
   public void testContainsAgent() {
-    String message = "Agent name was "
-      + agentDescription.getConfigurationParameters().get("name");
     Assertions.assertFalse(instance.containsAgent(agentDescription));
   }
 }
