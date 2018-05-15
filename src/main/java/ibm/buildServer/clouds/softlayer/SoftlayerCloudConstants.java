@@ -13,7 +13,6 @@ public class SoftlayerCloudConstants {
 	public static final String CHECK_CONNECTION_HTML_PAGE = "softlayer-check-connection.html";
 	public static final String DELETE_IMAGE_HTML_PAGE = "softlayer-delete-image.html";
 	public static final String DELETE_IMAGE_JSP_PAGE = "softlayer-delete-image.jsp";
-	
 
 	// Settings page field name constants
 	public static final String USER_NAME = "IBMSL_username";
@@ -28,6 +27,7 @@ public class SoftlayerCloudConstants {
 	public static final String NETWORK = "IBMSL_network";
 	public static final String DOMAIN_NAME = "IBMSL_domainName";
 	public static final String VSI_BILLING = "IBMSL_vsiBilling";
+	public static final String MAXIMUM_INSTANCES = "IBMSL_maximumInstances";
 	
 	public static final String PROFILE_ID = "profileId";
 	public static final String SOURCE_ID = "source-id";
@@ -86,5 +86,7 @@ public class SoftlayerCloudConstants {
 	public String getAgentPoolIdField() {
 		return CloudImageParameters.AGENT_POOL_ID_FIELD;
 	}
-
+	public String getMaximumInstances() {
+		return MAXIMUM_INSTANCES;
+	}
 }

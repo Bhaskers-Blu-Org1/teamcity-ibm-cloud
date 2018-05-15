@@ -32,6 +32,7 @@ public class FakeCloudImageParameters extends CloudImageParameters {
             "{\"type\":\"TC-buildAgent-autoAuth-Apr9\", \"value\":\"aaad7259-06ff-453b-bedc-e425661fa151\"}");
     parameters.put(SoftlayerCloudConstants.PROFILE_ID, "fake-profile");
     parameters.put(SoftlayerCloudConstants.SOURCE_ID, "fake-source-id");
+    parameters.put(SoftlayerCloudConstants.MAXIMUM_INSTANCES, "");
   }
 
   public Integer getAgentPoolId() {

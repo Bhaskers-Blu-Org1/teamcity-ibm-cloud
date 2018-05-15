@@ -25,7 +25,7 @@ public class SoftlayerCloudImageDetails{
 	public String domainName;
 	public int agentPoolId;
 	public boolean vsiBilling;
-	
+	public long maxInstances;
 	
 	public SoftlayerCloudImageDetails(@NotNull final CloudImageParameters imageParameters) {
 		agentPoolId = imageParameters.getAgentPoolId();
@@ -41,7 +41,11 @@ public class SoftlayerCloudImageDetails{
 		localDiskFlag = Boolean.parseBoolean(getValueFromJSON(imageParameters.getParameter(SoftlayerCloudConstants.DISK_TYPE)));
 	    vsiTemplate = getValueFromJSON(imageParameters.getParameter(SoftlayerCloudConstants.VSI_TEMPLATE_LIST));
 	    vsiBilling = Boolean.parseBoolean(getValueFromJSON(imageParameters.getParameter(SoftlayerCloudConstants.VSI_BILLING)));
-
+	    try {
+	    	maxInstances = Long.parseLong(imageParameters.getParameter(SoftlayerCloudConstants.MAXIMUM_INSTANCES));
+	    } catch(Exception e) {
+	    	maxInstances = 0;
+	    }
 	}
 	
 	private String getValueFromJSON(String jsonString) {
@@ -146,7 +150,13 @@ public class SoftlayerCloudImageDetails{
 		this.vsiBilling = vsiBilling;
 	}
 	
-	//int getMaxInstances();
+	public long getMaxInstances() {
+		return maxInstances;
+	};
+	
+	public void setMaxInstances(long maxInstances) {
+		this.maxInstances = maxInstances;
+	}
 	
 	 @Override
 	  public String toString() {
@@ -158,6 +168,7 @@ public class SoftlayerCloudImageDetails{
 				  		",\nDomain:"+domainName+
 				  		",\nAgent Pool Id:"+Integer.toString(agentPoolId)+
 				  		",\nBilling :"+Boolean.toString(vsiBilling)+
+				  		",\nMax Instances :"+Long.toString(maxInstances)+
 				        "\n}";
 		  return str;
 	  }
