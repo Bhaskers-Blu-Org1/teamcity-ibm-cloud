@@ -255,7 +255,6 @@
                 	<span class="error option-error option-error_${cons.agentPoolIdField}"></span>
             	</td>
        	</tr>
-	
 	</table>
 
     <admin:showHideAdvancedOpts containerId="softlayerImageDialog" optsKey="softlayerImageSettings"/>
