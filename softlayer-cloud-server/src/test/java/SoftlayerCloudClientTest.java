@@ -21,8 +21,12 @@ import jetbrains.buildServer.serverSide.*;
 import com.softlayer.api.ApiClient;
 import com.softlayer.api.RestApiClient;
 import com.softlayer.api.service.Account;
+import com.softlayer.api.service.virtual.Guest;
 
 import com.google.gson.Gson;
+
+import java.util.List;
+import java.util.ArrayList;
 
 class SoftlayerCloudClientTest {
   private CloudClientParameters parameters;
@@ -105,7 +109,19 @@ class SoftlayerCloudClientTest {
       Assertions.assertFalse(status.isError(), message);
     }
     Assertions.assertTrue(((SoftlayerCloudInstance) instance).metadataIsSet());
-    System.out.println(retrieveMetadata());
+    Long vsiId;
+    Long instanceId = new Long(instance.getInstanceId());
+    System.out.println("Retrieving metadata for " + instanceId);
+    List<Guest> metadata = retrieveMetadata();
+    Gson gson = new Gson();
+    for(Guest vsi : metadata) {
+      vsiId = new Long(vsi.getId());
+      if(vsiId.equals(instanceId)) {
+        System.out.println("Found instance " + vsiId);
+        //System.out.println(gson.toJson(vsi.getUserData()));
+        System.out.println(vsi.getUserData().get(0).getValue());
+      }
+    }
     System.out.println("Terminating instance " + instance.getName());
     client.terminateInstance(instance);
     status = instance.getStatus();
@@ -128,17 +144,16 @@ class SoftlayerCloudClientTest {
     Assertions.assertNull(client.findInstanceByAgent(agentDescription));
   }
 
-  public String retrieveMetadata() {
+  public List<Guest> retrieveMetadata() {
     ApiClient softlayerClient = new RestApiClient().
       withCredentials(System.getenv("SOFTLAYER_USER"), System.getenv("SOFTLAYER_API"));
     Account.Service accountService = Account.service(softlayerClient);
     accountService.setMask("mask[userData]");
-    String output = "";
+    List<Guest> output = new ArrayList<Guest>();
     try {
-      Gson gson = new Gson();
-      output = gson.toJson(accountService.getVirtualGuests());
+      output = accountService.getVirtualGuests();
     } catch (Exception e) {
-      output = "Unable to retrieve metadata unformation. " + e.getMessage();
+      System.out.println("Unable to retrieve metadata unformation. " + e.getMessage());
     }
     return output;
   }
