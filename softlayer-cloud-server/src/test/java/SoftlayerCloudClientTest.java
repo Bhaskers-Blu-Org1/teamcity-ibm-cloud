@@ -118,7 +118,8 @@ class SoftlayerCloudClientTest {
       vsiId = new Long(vsi.getId());
       if(vsiId.equals(instanceId)) {
         System.out.println("Found instance " + vsiId);
-        //System.out.println(gson.toJson(vsi.getUserData()));
+        // getUserData() returns a list; the first element in that list is the
+        // user data.
         System.out.println(vsi.getUserData().get(0).getValue());
       }
     }
