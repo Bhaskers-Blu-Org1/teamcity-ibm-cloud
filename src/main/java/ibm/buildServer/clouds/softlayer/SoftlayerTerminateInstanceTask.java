@@ -18,8 +18,6 @@ import com.intellij.openapi.diagnostic.Logger;
 public class SoftlayerTerminateInstanceTask implements Runnable{
 	private SoftlayerCloudInstance instance;
 	private final static Logger LOG = Loggers.SERVER;
-	//deleted: delete vsi; removedFromImage: remove instance from image
-	private boolean removedFromImage = false;
 	private boolean deleted = false;
 	
 	public SoftlayerTerminateInstanceTask(SoftlayerCloudInstance instance) {
@@ -50,15 +48,6 @@ public class SoftlayerTerminateInstanceTask implements Runnable{
 		      instance.setStatus(InstanceStatus.ERROR_CANNOT_STOP);
 		      throw e;
 		    }
-		}
-		if (instance.getStatus() != InstanceStatus.STOPPED) {
-			//This line is for: when user click stop before vsi is RUNNING, we set status STOPPING,
-			//instead of updating it to STARTING in the updateInstanceTask.
-			instance.setStatus(InstanceStatus.STOPPING);
-		} else if (!removedFromImage){
-			//When the status is STOPPED, remove it from image.
-			instance.getImage().removeInstance(instance.getInstanceId());
-			removedFromImage = true;
 		}
 	}
 
