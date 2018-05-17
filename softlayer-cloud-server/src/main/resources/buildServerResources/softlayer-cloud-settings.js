@@ -7,7 +7,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     propertiesBeanVsiTemplate: '',
     propertiesBeanDatacenter: '',
     
-    _dataKeys: [ 'IBMSL_vsiTemplate', 'IBMSL_datacenter', 'IBMSL_agentName', 'IBMSL_domainName', 'IBMSL_maxMemory', 'IBMSL_maxCores', 'IBMSL_diskType', 'IBMSL_network', 'IBMSL_vsiBilling', 'agent_pool_id'],
+    _dataKeys: [ 'IBMSL_vsiTemplate', 'IBMSL_datacenter', 'IBMSL_agentName', 'IBMSL_domainName', 'IBMSL_maxMemory', 'IBMSL_maxCores', 'IBMSL_diskType', 'IBMSL_network', 'IBMSL_vsiBilling', 'agent_pool_id', 'IBMSL_maximumInstances'],
     
     templates: {
         imagesTableRow: $j('<tr class="imagesTableRow">\
@@ -49,7 +49,8 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
             requiredForFargate: 'This field is required when using FARGATE launch type',
             notSelected: 'Something should be selected',
             nonNegative: 'Must be non-negative number',
-            nonPercentile: 'Must be a number from range 1..100'
+            nonPercentile: 'Must be a number from range 1..100',
+            maximumInstances: 'Must be a positive integer or leave blank'
         },
         
     _displayedErrors: {},
@@ -80,6 +81,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
          this.$IBMSL_network = $j('#IBMSL_network');
          this.$IBMSL_vsiBilling = $j('#IBMSL_vsiBilling');
          this.$agentPoolId = $j('#agent_pool_id');
+         this.$IBMSL_maximumInstances = $j('#IBMSL_maximumInstances');
          
          this.$imagesDataElem = $j('#' + 'source_images_json');
 
@@ -206,6 +208,12 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         	    this._image['agent_pool_id'] = this.$agentPoolId.val();
         	    this.validateOptions(e.target.getAttribute('data-id'));
         	}.bind(this));
+        
+        this.$IBMSL_maximumInstances.on('change', function (e, value) {
+        	if(value !== undefined) this.$IBMSL_maximumInstances.val(value);
+        	this._image['IBMSL_maximumInstances'] = this.$IBMSL_maximumInstances.val();
+        	this.validateOptions(e.target.getAttribute('data-id'));
+        }.bind(this));
     },
     
     _renderImagesTable: function () {
@@ -331,6 +339,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         this.$IBMSL_network.trigger('change', image['IBMSL_network'] || '');
         this.$IBMSL_vsiBilling.trigger('change', image['IBMSL_vsiBilling'] || '');
         this.$agentPoolId.trigger('change', image['agent_pool_id'] || '');
+        this.$IBMSL_maximumInstances.trigger('change', image['IBMSL_maximumInstances'] || '');
 
         BS.IBMSoftlayer.ImageDialog.showCentered();
     },
@@ -348,6 +357,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         this.$IBMSL_network.trigger('change', '');
         this.$IBMSL_vsiBilling.trigger('change', '');
         this.$agentPoolId.trigger('change', '');
+        this.$IBMSL_maximumInstances.trigger('change', '');
     },
 
     validateOptions: function (options){
@@ -481,7 +491,18 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
             		        this.addOptionError('notSelected', 'agent_pool_id');
             		        isValid = false;
             		   }
-            	   }.bind(this)
+           }.bind(this),
+            	 
+           IBMSL_maximumInstances : function () {
+        	   var IBMSL_maximumInstances = this._image['IBMSL_maximumInstances'];
+        	// RegExp checks positive integer or whitespace
+        	   var maximumInstancesRegExp = new RegExp(/^(\s*|[1-9]\d*)$/,'g');
+        	   if (IBMSL_maximumInstances && IBMSL_maximumInstances != undefined
+        			   && !maximumInstancesRegExp.test(IBMSL_maximumInstances)) {
+        		   this.addOptionError('maximumInstances', 'IBMSL_maximumInstances');
+        		   isValid = false;
+        	   }
+           }.bind(this)
 
         };
 
