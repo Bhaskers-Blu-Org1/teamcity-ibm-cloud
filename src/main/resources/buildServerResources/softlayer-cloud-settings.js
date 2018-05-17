@@ -686,9 +686,9 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
 	            if ($err.length) {
 	            		
 	            	 	$response.find('error').each(function(){
-	            	 	//$fetchOptions.text($j(this).text());
-	 	             	$fetchOptions.text("Error while connecting to SoftLayer. Try entering valid Username and API Key.");
-	 	            	});
+	 	             	//$fetchOptions.text($j(this).text());
+	            	 	$fetchOptions.text("Error while connecting to SoftLayer. Try entering valid Username and API Key.");
+	            	 	});
 	            }
 	            else
 	            	{
