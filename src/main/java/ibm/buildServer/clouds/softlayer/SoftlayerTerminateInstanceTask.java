@@ -52,9 +52,9 @@ public class SoftlayerTerminateInstanceTask implements Runnable{
 		    }
 		}
 		if (instance.getStatus() != InstanceStatus.STOPPED) {
-	        //This line is for: when user click stop before vsi is RUNNING, we set status STOPPING,
-	        //instead of updating it to STARTING in the updateInstanceTask.
-        	instance.setStatus(InstanceStatus.STOPPING);
+			//This line is for: when user click stop before vsi is RUNNING, we set status STOPPING,
+			//instead of updating it to STARTING in the updateInstanceTask.
+			instance.setStatus(InstanceStatus.STOPPING);
 		} else if (!removedFromImage){
 			//When the status is STOPPED, remove it from image.
 			instance.getImage().removeInstance(instance.getInstanceId());
