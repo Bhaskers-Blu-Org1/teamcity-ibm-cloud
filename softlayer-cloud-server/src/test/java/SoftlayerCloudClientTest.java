@@ -119,8 +119,15 @@ class SoftlayerCloudClientTest {
       if(vsiId.equals(instanceId)) {
         System.out.println("Found instance " + vsiId);
         // getUserData() returns a list; the first element in that list is the
-        // user data.
-        System.out.println(vsi.getUserData().get(0).getValue());
+        // user data. It is a UserData object, getValue() returns a string.
+        CloudInstanceUserData data = CloudInstanceUserData.
+          deserialize(vsi.getUserData().get(0).getValue());
+        //System.out.println(vsi.getUserData().get(0).getValue());
+        String fakeAgentName = instanceData.getAgentName();
+        String agentName = data.getAgentName();
+        message = "Agent name should be " + fakeAgentName + " but the server returned "
+          + agentName;
+        Assertions.assertEquals(fakeAgentName, agentName, message);
       }
     }
     System.out.println("Terminating instance " + instance.getName());
@@ -145,7 +152,7 @@ class SoftlayerCloudClientTest {
     Assertions.assertNull(client.findInstanceByAgent(agentDescription));
   }
 
-  public List<Guest> retrieveMetadata() {
+  private List<Guest> retrieveMetadata() {
     ApiClient softlayerClient = new RestApiClient().
       withCredentials(System.getenv("SOFTLAYER_USER"), System.getenv("SOFTLAYER_API"));
     Account.Service accountService = Account.service(softlayerClient);
