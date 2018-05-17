@@ -113,9 +113,9 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
     if(vsiStatus != null && vsiStatus.getName().equals("Disconnected")) {
       return InstanceStatus.STOPPED;
     }
-    //If user clicks stop, we just show the status STOPPING 
+    //If user clicks stop, we just show the status SCHEDULED_TO_STOP 
     if (clickedStopInstances.contains(currentInstanceId)) {
-      return InstanceStatus.STOPPING;
+      return InstanceStatus.SCHEDULED_TO_STOP;
     }
     if(vsiState != null && vsiState.getName().equals("Halted")) {
       return InstanceStatus.STARTING;
