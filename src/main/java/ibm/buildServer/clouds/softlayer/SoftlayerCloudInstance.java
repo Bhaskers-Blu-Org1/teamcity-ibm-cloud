@@ -150,7 +150,7 @@ public class SoftlayerCloudInstance implements CloudInstance
 	  CloudAsyncTaskExecutor executor = new CloudAsyncTaskExecutor(
 		        "Async tasks for terminating vsi");
 	  SoftlayerTerminateInstanceTask task = new SoftlayerTerminateInstanceTask(this);
-	  executor.submit("check vsi status", new Runnable() {
+	  executor.submit("terminate vsi", new Runnable() {
 	      public void run() {
 	        try {
 	          task.run();
