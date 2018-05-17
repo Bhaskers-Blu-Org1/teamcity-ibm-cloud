@@ -155,7 +155,7 @@ public class SoftlayerCloudInstance implements CloudInstance
 	        try {
 	          task.run();
 	          executor.scheduleWithFixedDelay(
-	              "Update instances",
+	              "Terminate instance",
 	              task,
 	              taskDelayTime,
 	              taskDelayTime,
