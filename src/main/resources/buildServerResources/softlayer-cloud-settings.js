@@ -6,6 +6,8 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     checkConnectionUrl: '',
     propertiesBeanVsiTemplate: '',
     propertiesBeanDatacenter: '',
+    hasCloudImageEdited: false,
+    isEditImageOrAddImageClicked: false,
     
     _dataKeys: [ 'IBMSL_vsiTemplate', 'IBMSL_datacenter', 'IBMSL_agentName', 'IBMSL_domainName', 'IBMSL_maxMemory', 'IBMSL_maxCores', 'IBMSL_diskType', 'IBMSL_network', 'IBMSL_vsiBilling', 'agent_pool_id', 'IBMSL_maximumInstances'],
     
@@ -150,58 +152,66 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         
         this.$IBMSL_vsiTemplate.on('change', function (e, value) {
             if(value !== undefined) this.$IBMSL_vsiTemplate.val(value);
+            this.checkCloudImageEdited(this._image['IBMSL_vsiTemplate'], this.$IBMSL_vsiTemplate.val());
             this._image['IBMSL_vsiTemplate'] = this.$IBMSL_vsiTemplate.val();
             this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
         
         this.$IBMSL_datacenter.on('change', function (e, value) {
             if(value !== undefined) this.$IBMSL_datacenter.val(value);
+            this.checkCloudImageEdited(this._image['IBMSL_datacenter'], this.$IBMSL_datacenter.val());
             this._image['IBMSL_datacenter'] = this.$IBMSL_datacenter.val();
             this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
         
         this.$IBMSL_agentName.on('change', function (e, value) {
             if(value !== undefined) this.$IBMSL_agentName.val(value);
+            this.checkCloudImageEdited(this._image['IBMSL_agentName'], this.$IBMSL_agentName.val());
             this._image['IBMSL_agentName'] = this.$IBMSL_agentName.val();
             this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
         
         this.$IBMSL_domainName.on('change', function (e, value) {
             if(value !== undefined) this.$IBMSL_domainName.val(value);
+            this.checkCloudImageEdited(this._image['IBMSL_domainName'], this.$IBMSL_domainName.val());
             this._image['IBMSL_domainName'] = this.$IBMSL_domainName.val();
             this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
         
         this.$IBMSL_maxMemory.on('change', function (e, value) {
             if(value !== undefined) this.$IBMSL_maxMemory.val(value);
+            this.checkCloudImageEdited(this._image['IBMSL_maxMemory'], this.$IBMSL_maxMemory.val());
             this._image['IBMSL_maxMemory'] = this.$IBMSL_maxMemory.val();
             this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
         
         this.$IBMSL_maxCores.on('change', function (e, value) {
             if(value !== undefined) this.$IBMSL_maxCores.val(value);
+            this.checkCloudImageEdited(this._image['IBMSL_maxCores'], this.$IBMSL_maxCores.val());
             this._image['IBMSL_maxCores'] = this.$IBMSL_maxCores.val();
             this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
         
         this.$IBMSL_diskType.on('change', function (e, value) {
             if(value !== undefined) this.$IBMSL_diskType.val(value);
+            this.checkCloudImageEdited(this._image['IBMSL_diskType'], this.$IBMSL_diskType.val());
             this._image['IBMSL_diskType'] = this.$IBMSL_diskType.val();
             this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
         
         this.$IBMSL_network.on('change', function (e, value) {
             if(value !== undefined) this.$IBMSL_network.val(value);
+            this.checkCloudImageEdited(this._image['IBMSL_network'], this.$IBMSL_network.val());
             this._image['IBMSL_network'] = this.$IBMSL_network.val();
             this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
         
         this.$IBMSL_vsiBilling.on('change', function (e, value) {
             if(value !== undefined) this.$IBMSL_vsiBilling.val(value);
+            this.checkCloudImageEdited(this._image['IBMSL_vsiBilling'], this.$IBMSL_vsiBilling.val());
             this._image['IBMSL_vsiBilling'] = this.$IBMSL_vsiBilling.val();
             this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
-        
         
         this.$agentPoolId.on('change', function (e, value) {
         	    if(value !== undefined) this.$agentPoolId.val(value);
@@ -281,6 +291,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         if (! this.$showAddImageDialogButton.attr('disabled')) {
         		this.checkConnection();
             this.showAddImageDialog();
+            this.clearOptionsErrors();
         }
         return false;
     },
@@ -305,6 +316,10 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     },
     
     showAddImageDialog: function () {
+    		// AddImage button is clicked, set variable isEditImageOrAddImageClicked to false. 
+    		this.isEditImageOrAddImageClicked = false;
+    		$j('#imageChangeMesssage').addClass('hidden');
+    		
         $j('#softlayerImageDialogTitle').text('Add IBM Softlayer Cloud Image');
         BS.Hider.addHideFunction('softlayerImageDialog', this._resetDataAndDialog.bind(this));
         this.$addImageButton.val('Add').data('image-id', 'undefined');
@@ -313,9 +328,15 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     },
     
     showEditImageDialog: function ($elem) {
-    		
     		//opens the edit image dialog box
+    	
+    		// EditImage button is clicked, set variable isEditImageOrAddImageClicked to true. 
+    		this.isEditImageOrAddImageClicked = true;
+    		this.hasCloudImageEdited = false;
+    		$j('#imageChangeMesssage').addClass('hidden');
+    		
         var imageId = $elem.parents(this.selectors.imagesTableRow).data('image-id');
+        var srcId = $elem.parents(this.selectors.imagesTableRow).attr('src-id');
 
         $j('#softlayerImageDialogTitle').text('Edit IBM Softlayer Cloud Image');
 
@@ -326,6 +347,23 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         if (imageId === 'undefined'){
             this.$addImageButton.removeData('image-id');
         }
+        
+        // ajax call to delete controller to get list of running VSis on image. We get HTML response in resonseText object.
+        BS.ajaxUpdater($("softlayerDeleteImageDialogBody"), BS.IBMSoftlayer.DeleteImageDialog.url + window.location.search, {
+            method: 'get',
+            parameters : {
+                imageId : srcId
+            },
+            onSuccess: function(response) {
+	            	var $response = $j(response.responseText);
+	            	if($response[2] === 'undefined' || $response[2] === undefined || Object.keys($response).length <= 2) {
+	            		$j('#imageChangeMesssage i').html("Saving the changes will provision new instance and there are no running instance on this image.");
+	            	}
+	            	else {
+	            		$j('#imageChangeMesssage i').html("Saving the changes will provision new instance and terminate following cloud instance(s):<ul> "+$response[2].innerHTML+"</ul>");
+	            	}
+            }
+        });
 
         var image = this._image;
         
@@ -579,11 +617,33 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
             return currentValue['source-id'];
         })) + 1;
     },
-
+    
+    checkCloudImageEdited: function (currentValue, newValue) {
+    		
+    		// check if value is changed and check if it was changed while 'edit' event.
+    		if(currentValue != newValue && this.isEditImageOrAddImageClicked) {
+    			$j('#imageChangeMesssage').removeClass('hidden');
+    			this.hasCloudImageEdited = true;
+    		}
+    },
+    
     editImage: function (id) {
-    	
     		// Handles edit request on cloud image row.
        // this._image['source-id'] = id;
+
+    		$j('#imageChangeMesssage').addClass('hidden');
+        if(this.hasCloudImageEdited) {
+        	
+        			var oldSrc = this._image['source-id'];
+        			BS.ajaxRequest(BS.IBMSoftlayer.DeleteImageDialog.url + window.location.search, {
+        	            method: 'post',
+        	            parameters : {
+        	                imageId : oldSrc
+        	            },
+        	            onComplete: function() {
+        	            }
+        	        });
+        }
         this.imagesData[id] = this._image;
         this.saveImagesData();
         this.$imagesTable.find(this.selectors.imagesTableRow).remove();
