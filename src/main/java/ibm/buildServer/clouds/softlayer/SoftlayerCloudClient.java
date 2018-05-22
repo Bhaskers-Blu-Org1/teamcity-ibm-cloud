@@ -139,8 +139,8 @@ public class SoftlayerCloudClient implements CloudClientEx {
   }
   
   public void restartUpdateInstancesTask(CloudClientParameters params) {
-	  dispose();
-	  executor = new CloudAsyncTaskExecutor("Async tasks for cloud " + params.getProfileDescription());
-	  start();
+    dispose();
+    executor = new CloudAsyncTaskExecutor("Async tasks for cloud " + params.getProfileDescription());
+    start();
   }
 }
