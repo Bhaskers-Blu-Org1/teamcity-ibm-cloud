@@ -61,9 +61,12 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
       client.addImage(image);
     }
     if (createdNewClient) {
-    	 client.start();
+      client.start();
+    } else {
+      //The updateInstancesTask stops working when user updates images, so needs to restart.
+      client.restartUpdateInstancesTask(params);
     }
-    
+
     return client;
   }
 
