@@ -13,16 +13,16 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     
     templates: {
         imagesTableRow: $j('<tr class="imagesTableRow">\
-        		<td class="IBMSL_vsiTemplate highlight"></td>\
-        		<td class="IBMSL_datacenter highlight"></td>\
-        		<td class="IBMSL_agentName highlight"></td>\
-        		<td class="IBMSL_domainName highlight"></td>\
-        		<td class="IBMSL_maxMemory highlight"></td>\
-        		<td class="IBMSL_maxCores highlight"></td>\
-        		<td class="IBMSL_diskType highlight"></td>\
-			<td class="IBMSL_network highlight"></td>\
-        		<td class="IBMSL_vsiBilling highlight"></td>\
-			<td class="edit highlight"><a href="#" class="editVmImageLink">edit</a></td>\
+        		<td class="IBMSL_vsiTemplate"></td>\
+        		<td class="IBMSL_datacenter"></td>\
+        		<td class="IBMSL_agentName"></td>\
+        		<td class="IBMSL_domainName"></td>\
+        		<td class="IBMSL_maxMemory"></td>\
+        		<td class="IBMSL_maxCores"></td>\
+        		<td class="IBMSL_diskType"></td>\
+			<td class="IBMSL_network"></td>\
+        		<td class="IBMSL_vsiBilling"></td>\
+			<td class="edit"><a href="#" class="editVmImageLink">edit</a></td>\
 			<td class="remove"><a href="#" class="removeVmImageLink">delete</a></td>\
 			        </tr>')},
         
@@ -104,6 +104,9 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
          this._bindHandlers();
          this._renderImagesTable();
          this._toggleShowAddImageDialogButton(false);
+         
+         // disable edit/delete buttons on cloud image table rows, until user is authenticated.
+ 		this._toggleActionImageButton(false);
 
          BS.Clouds.Admin.CreateProfileForm.checkIfModified();
          
@@ -113,6 +116,23 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         
     		// Toggling disable attribute on ShowAddImageDialogButton
     		this.$showAddImageDialogButton.attr('disabled', !enable);
+    },
+    
+    _toggleActionImageButton: function (enable) {
+    		// Toggle the edit/delete button on image table rows.
+    	
+        if(enable) {
+	        	this.$imagesTable.find('tr').each(function() {
+	    			$j(this).find('.edit .editVmImageLink').removeClass('disableActionButton');
+	    			$j(this).find('.remove .removeVmImageLink').removeClass('disableActionButton');
+	    		});
+        }
+        else {
+        		this.$imagesTable.find('tr').each(function() {
+        			$j(this).find('.edit .editVmImageLink').addClass('disableActionButton');
+        			$j(this).find('.remove .removeVmImageLink').addClass('disableActionButton');
+        		});
+        }
     },
     
     
@@ -131,7 +151,9 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         
         this.$deleteImageButton.on('click', this._submitDeleteImageDialogClickHandler.bind(this));
         this.$cancelDeleteImageButton.on('click', this._cancelDeleteImageDialogClickHandler.bind(this));
-        var editDelegates = this.selectors.imagesTableRow + ' .highlight, ' + this.selectors.editImageLink;
+        /* This is used to add edit event on all 'td' in row. Where ever on table row you click, it will call edit image function.
+         * var editDelegates = this.selectors.imagesTableRow + ' .highlight, ' + this.selectors.editImageLink;*/
+        var editDelegates = this.selectors.editImageLink;
         var that = this;
         this.$imagesTable.on('click', editDelegates, function () {
             if (!that.$addImageButton.prop('disabled')) {
@@ -718,6 +740,9 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     		//disable AddImage button
     		this._toggleShowAddImageDialogButton(false);
     		
+    		//disable edit/delete buttons on cloud image table rows.
+    		this._toggleActionImageButton(false);
+    		
     		// Check connection function will send POST ajax request to SoftlayerEditProfileController.java to authenticate user.
 	    var valid =	this.validateServerSettings();
 	    var $fetchOptions = $j('#error_fetch_options');
@@ -754,6 +779,10 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
 	            	{
 	            		// Username and apikey are correct, hence enable AddImage button
 	            		this._toggleShowAddImageDialogButton(true); 
+	            		
+	            		// Enable edit/delete buttons on cloud image table rows.
+	            		this._toggleActionImageButton(true);
+	            		
 	            		
 		            // load vsi template list in select option
 		            $response.find('VsiPrivateTemplate').each(function(){

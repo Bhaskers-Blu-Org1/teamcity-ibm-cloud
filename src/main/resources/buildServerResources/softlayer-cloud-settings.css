@@ -51,3 +51,9 @@
 	max-height:70px;
     overflow-y:auto;
 }
+
+.disableActionButton {
+	  pointer-events: none;
+	  text-decoration: none;
+	  color: grey;
+}
