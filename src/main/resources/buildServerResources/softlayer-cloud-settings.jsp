@@ -137,7 +137,7 @@
 					<ul class="orderedListNote">
 	 					<li>Must contain at least 2 labels. A label is an alphanumeric string separated by a period '.'</li>
 						<li>Labels must begin/end with an alphanumeric character. Can contain non-consecutive '-' dash.</li>
- 						<li>Last label must contain at least one alphabetic character.</li>
+ 						<li>Last label must only contain alphabets.</li>
 	 					<li>Labels must have length between 1-63 and last label length between 2-23.</li>
 					</ul>
 				</div>
