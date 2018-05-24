@@ -20,15 +20,17 @@ import java.util.HashMap;
 
 public class SoftlayerCloudClient implements CloudClientEx {
   boolean initialized = false;
-  private final CloudAsyncTaskExecutor executor;
+  private CloudAsyncTaskExecutor executor;
   int taskDelayTime = 60 * 1000; // Time in milliseconds.
   private final Map<String, SoftlayerCloudImage> images;
   private Logger LOG = Loggers.SERVER;
   private CloudErrorInfo myCurrentError = null;
+  private SoftlayerUpdateInstancesTask updateInstancesTask;
 
   public SoftlayerCloudClient(CloudClientParameters params) {
     executor = new CloudAsyncTaskExecutor("Async tasks for cloud " + params.getProfileDescription());
     images = new HashMap<String, SoftlayerCloudImage>();
+    updateInstancesTask = new SoftlayerUpdateInstancesTask(this);
   }
 
   public void addImage(SoftlayerCloudImage image) {
@@ -103,11 +105,11 @@ public class SoftlayerCloudClient implements CloudClientEx {
 
   public void terminateInstance(@NotNull final CloudInstance baseInstance) {
     SoftlayerCloudInstance instance = (SoftlayerCloudInstance) baseInstance;
+    updateInstancesTask.setClickedStop(instance.getInstanceId());
     instance.terminate(); 
   }
 
   public void start() {
-    SoftlayerUpdateInstancesTask updateInstancesTask = new SoftlayerUpdateInstancesTask(this);
     executor.submit("Client start", new Runnable() {
       public void run() {
         try {
@@ -134,5 +136,11 @@ public class SoftlayerCloudClient implements CloudClientEx {
     } else {
       terminateInstance(baseInstance);
     }
+  }
+  
+  public void restartUpdateInstancesTask(CloudClientParameters params) {
+    dispose();
+    executor = new CloudAsyncTaskExecutor("Async tasks for cloud " + params.getProfileDescription());
+    start();
   }
 }

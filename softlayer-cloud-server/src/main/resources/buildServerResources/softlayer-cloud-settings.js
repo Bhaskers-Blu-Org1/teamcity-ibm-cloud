@@ -686,8 +686,9 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
 	            if ($err.length) {
 	            		
 	            	 	$response.find('error').each(function(){
-	 	             	$fetchOptions.text($j(this).text());
-	 	            	});
+	 	             	//$fetchOptions.text($j(this).text());
+	            	 	$fetchOptions.text("Invalid Credentials: Try entering valid Username and API.");
+	            	 	});
 	            }
 	            else
 	            	{

@@ -16,11 +16,16 @@ import com.softlayer.api.service.virtual.guest.power.State;
 
 import java.util.*;
 
+
 public class SoftlayerUpdateInstancesTask implements Runnable {
   private SoftlayerCloudClient client;
+  //use a hashset to store the instanceIDs that user clicked stop
+  private Set<String> clickedStopInstances;
+  private String currentInstanceId;
 
   public SoftlayerUpdateInstancesTask(SoftlayerCloudClient client) {
     this.client = client;
+    clickedStopInstances = new HashSet<>();
   }
 
   public void run() {
@@ -35,6 +40,7 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
     for(SoftlayerCloudImage image : client.getImages()) {
       for(SoftlayerCloudInstance instance : image.getInstances()) {
         currentStatus = instance.getStatus();
+        currentInstanceId = instance.getInstanceId();
         try {
           // This logic is modeled on https://github.com/softlayer/softlayer-java/blob/master/examples/src/main/java/com/softlayer/api/example/OrderVirtualServer.java
           service = instance.guest.asService(instance.softlayerClient);
@@ -71,6 +77,7 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
         instance.setStatus(newStatus);
         if(removable(instance.getStatus())) {
           image.removeInstance(instance.getInstanceId());
+          clickedStopInstances.remove(instance.getImageId());
         }
       }
     }
@@ -112,6 +119,10 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
     if(vsiStatus != null && vsiStatus.getName().equals("Disconnected")) {
       return InstanceStatus.STOPPED;
     }
+    //If user clicks stop, we just show the status SCHEDULED_TO_STOP 
+    if (clickedStopInstances.contains(currentInstanceId)) {
+      return InstanceStatus.SCHEDULED_TO_STOP;
+    }
     if(vsiState != null && vsiState.getName().equals("Halted")) {
       return InstanceStatus.STARTING;
     }
@@ -121,5 +132,9 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
       return InstanceStatus.RUNNING;
     }
     return currentStatus;
+  }
+  
+  public void setClickedStop(String instanceId) {
+	  clickedStopInstances.add(instanceId);
   }
 }

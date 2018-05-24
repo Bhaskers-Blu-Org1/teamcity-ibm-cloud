@@ -18,6 +18,7 @@ import com.intellij.openapi.diagnostic.Logger;
 public class SoftlayerTerminateInstanceTask implements Runnable{
 	private SoftlayerCloudInstance instance;
 	private final static Logger LOG = Loggers.SERVER;
+	private boolean deleted = false;
 	
 	public SoftlayerTerminateInstanceTask(SoftlayerCloudInstance instance) {
 	    this.instance = instance;
@@ -36,20 +37,17 @@ public class SoftlayerTerminateInstanceTask implements Runnable{
         guest = service.getObject();
         vsiTransaction = guest.getActiveTransaction();
 
-		if (vsiTransaction == null && instance.getStatus() != InstanceStatus.STOPPED) {
-			LOG.info("Cancelling SoftLayer VSI " + instance.getName());
+		if (vsiTransaction == null && !deleted) {
+		    LOG.info("Cancelling SoftLayer VSI " + instance.getName());
 		    try {
 		      service.deleteObject();
-		      instance.setStatus(InstanceStatus.STOPPED);
-		      instance.getImage().removeInstance(instance.getInstanceId());
+		      deleted = true;
 		      LOG.info("Instance already terminated");
 		    } catch (Exception e) {
 		      LOG.warn("Error: " + e);
 		      instance.setStatus(InstanceStatus.ERROR_CANNOT_STOP);
 		      throw e;
 		    }
-		} else {
-			LOG.info("Active transaction");
 		}
 	}
 

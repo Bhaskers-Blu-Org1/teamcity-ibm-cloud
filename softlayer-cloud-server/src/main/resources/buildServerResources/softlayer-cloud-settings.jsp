@@ -34,7 +34,7 @@
 	</tr>
 	
 	<!-- Number of Instances -->
-	<tr>
+	<tr class="hidden">
 		<th><label for="${cons.instanceNumber}">Maximum Instances Count:</label></th>
 		<td><props:textProperty name="${cons.instanceNumber}" className="longField"/></td>
 	</tr>
@@ -298,4 +298,4 @@
 			});
 </script>
 
-<table class="runnerFormTable">
+<table class="runnerFormTable hidden">
