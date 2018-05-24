@@ -16,7 +16,7 @@ teamcity {
 
   server {
     descriptor {
-      name = project.name
+      name = "teamcity-softlayer"
       displayName = "SoftLayer Plugin"
       version = project.version
       vendorName = project.vendorName
@@ -26,9 +26,6 @@ teamcity {
       email = "scottwn@ibm.com"
       useSeparateClassloader = false
 
-      parameters {
-        parameter "param", "value"
-      }
     }
   }
 }
@@ -58,14 +55,12 @@ dependencies {
   )
 }
 
+serverPlugin.baseName = 'teamcity-softlayer'
+
 test {
   testLogging {
 	showStandardStreams = true
   }
-}
-
- jar {
-	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
 apply plugin: "org.junit.platform.gradle.plugin"
