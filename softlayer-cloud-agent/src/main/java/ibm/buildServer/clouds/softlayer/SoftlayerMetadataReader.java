@@ -38,10 +38,12 @@ public class SoftlayerMetadataReader {
     try {
       ApiClient client = new RestApiClient();
       Metadata.Service metadataService = Metadata.service(client);
-      String metadata = metadataService.getUserMetadata();
-      updateConfiguration(metadata);
+      long id = metadataService.getId();
+      LOG.info("This VSI ID is " + id);
+      //String metadata = metadataService.getUserMetadata();
+      //updateConfiguration(metadata);
     } catch (Exception e) {
-      LOG.warn("MetadataReader error: " + e);
+      LOG.warn("SoftlayerMetadataReader error in fetchConfiguration(): " + e);
     }
   }
 
@@ -60,7 +62,7 @@ public class SoftlayerMetadataReader {
           + data.getServerAddress());
       configuration.setServerUrl(data.getServerAddress());
     } catch (Exception e) {
-      LOG.warn("SoftlayerMetadataReader error: " + e);
+      LOG.warn("SoftlayerMetadataReader error in updateConfiguration(): " + e);
     }
   }
 }
