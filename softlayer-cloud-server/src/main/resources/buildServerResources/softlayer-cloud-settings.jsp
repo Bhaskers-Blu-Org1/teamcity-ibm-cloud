@@ -256,10 +256,15 @@
             	</td>
        	</tr>
 	</table>
-
+	
     <admin:showHideAdvancedOpts containerId="softlayerImageDialog" optsKey="softlayerImageSettings"/>
     <admin:highlightChangedFields containerId="softlayerImageDialog"/>
-
+	
+	<div class="icon_before icon16 attentionComment clearfix hidden" id="imageChangeMesssage">
+		<b>Save the changes.</b></br>
+		<i class="greyFont"></i>
+	</div>
+	
     <div class="popupSaveButtonsBlock">
         <forms:submit label="Add" type="button" id="softlayerAddImageButton"/>
         <forms:button title="Cancel" id="softlayerCancelAddImageButton">Cancel</forms:button>
