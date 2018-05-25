@@ -38,21 +38,19 @@ public class SoftlayerMetadataReader {
       String privateEndPoint = "https://api.service.softlayer.com/rest/v3/";
       ApiClient client = new RestApiClient(privateEndPoint);
       Metadata.Service metadataService = Metadata.service(client);
-      long id = metadataService.getId();
-      LOG.info("This VSI ID is " + id);
-      //String metadata = metadataService.getUserMetadata();
-      //updateConfiguration(metadata);
+      String metadata = metadataService.getUserMetadata();
+      updateConfiguration(metadata);
     } catch (Exception e) {
       LOG.warn("SoftlayerMetadataReader error in fetchConfiguration(): " + e);
     }
   }
 
-  private void updateConfiguration(String json) {
+  private void updateConfiguration(String metadata) {
     try {
-      CloudInstanceUserData data = CloudInstanceUserData.deserialize(json);
+      CloudInstanceUserData data = CloudInstanceUserData.deserialize(metadata);
       if(data == null) {
         LOG.info("SoftLayer integration is not available; no TeamCity data");
-        LOG.debug(json);
+        LOG.debug(metadata);
         return;
       }
       LOG.info(
