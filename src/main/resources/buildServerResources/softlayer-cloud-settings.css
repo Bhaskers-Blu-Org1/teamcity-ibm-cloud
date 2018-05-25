@@ -28,9 +28,32 @@
     margin-bottom: 0.5em;
 }
 
-/* Cloud image dialog box. Used in agentname and domainname row*/
+/* CSS for Cloud image dialog box.*/
 .orderedListNote
 {
 	padding-left: 10px;
 	margin-top: 3px
+}
+
+#imageChangeMesssage {
+	margin-top: 4%;
+	padding: 2%;
+	background-color: beige;
+	border: 1px solid #f8d1a2;
+}
+
+.greyFont {
+	color: grey;
+}
+
+#imageChangeMesssage i ul {
+	margin: 0.5%;
+	max-height:70px;
+    overflow-y:auto;
+}
+
+.disableActionButton {
+	  pointer-events: none;
+	  text-decoration: none;
+	  color: grey;
 }
