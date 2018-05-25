@@ -35,7 +35,8 @@ public class SoftlayerMetadataReader {
 
   private void fetchConfiguration() {
     try {
-      ApiClient client = new RestApiClient();
+      String privateEndPoint = "https://api.service.softlayer.com/rest/v3/";
+      ApiClient client = new RestApiClient(privateEndPoint);
       Metadata.Service metadataService = Metadata.service(client);
       long id = metadataService.getId();
       LOG.info("This VSI ID is " + id);
