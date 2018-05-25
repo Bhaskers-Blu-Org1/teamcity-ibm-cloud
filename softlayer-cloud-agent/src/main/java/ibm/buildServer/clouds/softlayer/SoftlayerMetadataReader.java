@@ -15,7 +15,6 @@ import jetbrains.buildServer.agent.BuildAgentConfigurationEx;
 import jetbrains.buildServer.clouds.CloudInstanceUserData;
 
 import com.softlayer.api.*;
-import com.softlayer.api.service.resource.Metadata;
 
 public class SoftlayerMetadataReader {
   private Logger LOG = Loggers.AGENT;
