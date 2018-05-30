@@ -91,10 +91,6 @@ public class SoftlayerCloudInstance implements CloudInstance
   }
 
   public String getName() {
-	if (hostname == null || id == null) {
-	  return null;
-	}
-	name = hostname + "_" + id;
     return name;
   }
 
@@ -141,6 +137,9 @@ public class SoftlayerCloudInstance implements CloudInstance
       guest = Guest.service(softlayerClient).createObject(guest);
       id = guest.getId().toString();
       hostname = guest.getHostname().toString();
+      if (hostname != null && id != null) {
+        name = hostname + "_" + id; 
+      }
       LOG.info("Softlayer Hostname " + hostname + " and ID is " + id);
       System.out.println("Softlayer Hostname " + hostname + " and ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;
