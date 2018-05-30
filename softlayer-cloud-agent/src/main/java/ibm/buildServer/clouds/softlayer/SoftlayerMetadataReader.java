@@ -59,6 +59,7 @@ public class SoftlayerMetadataReader {
           + " on server URL "
           + data.getServerAddress());
       configuration.setServerUrl(data.getServerAddress());
+      configuration.setName(data.getAgentConfigurationParameter("name"));
     } catch (Exception e) {
       LOG.warn("SoftlayerMetadataReader error in updateConfiguration(): " + e);
     }

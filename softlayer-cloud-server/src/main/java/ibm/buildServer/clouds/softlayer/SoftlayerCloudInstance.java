@@ -31,6 +31,7 @@ public class SoftlayerCloudInstance implements CloudInstance
   // id and name is set in the start() method.
   private String id;
   private String name;
+  private String hostname;
   private SoftlayerCloudImage image; // Set when SoftlayerCloudImage calls setImage
   public Guest guest;
   private Date startedTime;
@@ -135,9 +136,12 @@ public class SoftlayerCloudInstance implements CloudInstance
     try {
       guest = Guest.service(softlayerClient).createObject(guest);
       id = guest.getId().toString();
-      name = guest.getHostname().toString();
-      LOG.info("Softlayer Hostname " + name + " and ID is " + id);
-      System.out.println("Softlayer Hostname " + name + " and ID is " + id);
+      hostname = guest.getHostname().toString();
+      if (hostname != null && id != null) {
+        name = hostname + "_" + id; 
+      }
+      LOG.info("Softlayer Hostname " + hostname + " and ID is " + id);
+      System.out.println("Softlayer Hostname " + hostname + " and ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;
       myCurrentError = null;
     } catch (Exception e) {
@@ -185,6 +189,7 @@ public class SoftlayerCloudInstance implements CloudInstance
     try {
       // Serialize CloudInstanceUserData and set as SoftLayer user metadata.
       List<String> userDataList = new ArrayList<String>();
+      userData.addAgentConfigurationParameter("name", name);
       userDataList.add(userData.serialize());
       Long virtualGuestId = new Long(getInstanceId());
       Guest.Service virtualGuestService = Guest.service(softlayerClient,
