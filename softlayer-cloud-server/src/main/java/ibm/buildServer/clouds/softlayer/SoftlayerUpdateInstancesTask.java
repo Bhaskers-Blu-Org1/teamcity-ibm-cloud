@@ -52,6 +52,12 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
           vsiStatus = guest.getStatus();
           vsiState = guest.getPowerState();
           vsiTransaction = guest.getActiveTransaction();
+          // Update instance user metadata when disk is mounted.
+          if(vsiState != null
+              && vsiState.getName().equals("Running")
+              && !instance.metadataIsSet()) {
+            instance.setMetadata();
+          }
           newStatus = teamcityStatus(
               vsiStatus,
               vsiState,

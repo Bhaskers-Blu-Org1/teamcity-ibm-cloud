@@ -18,6 +18,16 @@ import ibm.buildServer.clouds.softlayer.SoftlayerCloudClientFactory;
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.serverSide.*;
 
+import com.softlayer.api.ApiClient;
+import com.softlayer.api.RestApiClient;
+import com.softlayer.api.service.Account;
+import com.softlayer.api.service.virtual.Guest;
+
+import com.google.gson.Gson;
+
+import java.util.List;
+import java.util.ArrayList;
+
 class SoftlayerCloudClientTest {
   private CloudClientParameters parameters;
   private SoftlayerCloudClient client;
@@ -98,6 +108,28 @@ class SoftlayerCloudClientTest {
       message = "instance status is " + status.getName();
       Assertions.assertFalse(status.isError(), message);
     }
+    Assertions.assertTrue(((SoftlayerCloudInstance) instance).metadataIsSet());
+    Long vsiId;
+    Long instanceId = new Long(instance.getInstanceId());
+    System.out.println("Retrieving metadata for " + instanceId);
+    List<Guest> metadata = retrieveMetadata();
+    Gson gson = new Gson();
+    for(Guest vsi : metadata) {
+      vsiId = new Long(vsi.getId());
+      if(vsiId.equals(instanceId)) {
+        System.out.println("Found instance " + vsiId);
+        // getUserData() returns a list; the first element in that list is the
+        // user data. It is a UserData object, getValue() returns a string.
+        CloudInstanceUserData data = CloudInstanceUserData.
+          deserialize(vsi.getUserData().get(0).getValue());
+        //System.out.println(vsi.getUserData().get(0).getValue());
+        String fakeAgentName = instanceData.getAgentName();
+        String agentName = data.getAgentName();
+        message = "Agent name should be " + fakeAgentName + " but the server returned "
+          + agentName;
+        Assertions.assertEquals(fakeAgentName, agentName, message);
+      }
+    }
     System.out.println("Terminating instance " + instance.getName());
     client.terminateInstance(instance);
     status = instance.getStatus();
@@ -112,12 +144,25 @@ class SoftlayerCloudClientTest {
     int size = image.getInstances().size();
     String messages = "There are " + size + " instances, there should be 0.";
     Assertions.assertEquals(size, 0, messages);
-    
   }
 
   @Test
   @DisplayName("Test findInstanceByAgent runs and returns null.")
   public void testFindInstanceByAgent() {
     Assertions.assertNull(client.findInstanceByAgent(agentDescription));
+  }
+
+  private List<Guest> retrieveMetadata() {
+    ApiClient softlayerClient = new RestApiClient().
+      withCredentials(System.getenv("SOFTLAYER_USER"), System.getenv("SOFTLAYER_API"));
+    Account.Service accountService = Account.service(softlayerClient);
+    accountService.setMask("mask[userData]");
+    List<Guest> output = new ArrayList<Guest>();
+    try {
+      output = accountService.getVirtualGuests();
+    } catch (Exception e) {
+      System.out.println("Unable to retrieve metadata unformation. " + e.getMessage());
+    }
+    return output;
   }
 }
