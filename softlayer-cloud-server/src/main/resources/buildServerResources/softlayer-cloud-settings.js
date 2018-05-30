@@ -475,29 +475,31 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
                     	* 2) The domain portion must consist of least one label followed by a period '.' then ending with the TLD label.
                     	* 3) Labels must begin and end with an alphanumeric character.
                     	* 4) Label can use '-'. And '-' & '.' shall not be adjacent.
+                    	* 5) TLD must not contain any digit or '-'.
                     	* */
-                    	var domainRegExp1 = new RegExp(/^([A-Za-z0-9]+(-[A-Za-z0-9]+)*)(\.[A-Za-z0-9]+(-[A-Za-z0-9]+)*)*(\.[A-Za-z0-9]+(-[A-Za-z0-9]+)*)$/,'g');
+                    //var domainRegExp1 = new RegExp(/^([A-Za-z0-9]+(-[A-Za-z0-9]+)*)(\.[A-Za-z0-9]+(-[A-Za-z0-9]+)*)*(\.[A-Za-z0-9]+(-[A-Za-z0-9]+)*)$/,'g');
+                		var domainRegExp1 = new RegExp(/^([A-Za-z0-9]+(-[A-Za-z0-9]+)*)(\.[A-Za-z0-9]+(-[A-Za-z0-9]+)*)*(\.[A-Za-z]+)$/,'g');
                                        
                     	/* domainRegExp2 checks:
                     	* 1) TLd is not solely comprised of only digits.
                     	* Test: True -> TLD only contains digits.
                     	* */
-                    	var domainRegExp2 = new RegExp(/^([A-Za-z0-9]+(-[A-Za-z0-9]+)*)(\.[A-Za-z0-9]+(-[A-Za-z0-9]+)*)*(\.[0-9]+(-[0-9]+)*)$/,'g');
+                    	//var domainRegExp2 = new RegExp(/^([A-Za-z0-9]+(-[A-Za-z0-9]+)*)(\.[A-Za-z0-9]+(-[A-Za-z0-9]+)*)*(\.[0-9]+(-[0-9]+)*)$/,'g');
                                       
-                   	/* domainRegExp2 checks:
+                   	/* domainRegExp3 checks:
                     	* 1) Length of each Label is min:1 to max:63
                     	* 2) The last label, the TLD (top level domain) must be between 2-24 alphabetic characters.
                     	* */
-                     var domainRegExp3 = new RegExp(/^([A-Za-z0-9-]{1,63})((\.[A-Za-z0-9-]{1,63}){0,})(\.[A-Za-z0-9-]{2,23})$/,'g'); 
+                     var domainRegExp3 = new RegExp(/^([A-Za-z0-9-]{1,63})((\.[A-Za-z0-9-]{1,63}){0,})(\.[A-Za-z]{2,23})$/,'g'); 
                                        
-                    	/* domainRegExp3 checks:
+                    	/* domainRegExp4 checks:
                     	* 1) Combining the agentname, followed by a period '.', followed by the domain gives the FQDN (fully qualified domain name), 
                     	* which may not exceed 253 characters in total length.
                     	* 2) String (including '.') length is min:2 to max:189 (253-63-1 = 189 [253-agentnNameLength-periodFollowedByAgentname])
                     	* */
                     	var domainRegExp4 = new RegExp(/^.{2,189}$/,'g'); 
                     	
-                    	if (!IBMSL_domainName || IBMSL_domainName === '' || IBMSL_domainName === undefined || !domainRegExp1.test(IBMSL_domainName) || domainRegExp2.test(IBMSL_domainName) || !domainRegExp3.test(IBMSL_domainName) || !domainRegExp4.test(IBMSL_domainName)) {
+                    	if (!IBMSL_domainName || IBMSL_domainName === '' || IBMSL_domainName === undefined || !domainRegExp1.test(IBMSL_domainName) || !domainRegExp3.test(IBMSL_domainName) || !domainRegExp4.test(IBMSL_domainName)) {
                     	    this.addOptionError('domainNameBadParam', 'IBMSL_domainName');
                         isValid = false;
                     }
