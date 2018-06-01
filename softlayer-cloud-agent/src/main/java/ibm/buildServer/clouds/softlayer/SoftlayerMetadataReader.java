@@ -24,12 +24,18 @@ public class SoftlayerMetadataReader {
       BuildAgentConfigurationEx configuration) {
     LOG.info("SoftLayer plugin initializing... via MetadataReader");
     this.configuration = configuration;
+//    configuration.addConfigurationParameter("INSTANCE_NAME", "beginning");
     events.addListener(new AgentLifeCycleAdapter() {
       @Override
       public void afterAgentConfigurationLoaded(BuildAgent agent) {
         LOG.info("SoftLayer loading configuration");
         fetchConfiguration();
       }
+      
+//      @Override
+//      public void beforeAgentConfigurationLoaded(BuildAgent agent) {
+//    	 configuration.addConfigurationParameter("INSTANCE_NAME", "beforeLoaded");
+//      }
     });
   }
 
@@ -59,7 +65,12 @@ public class SoftlayerMetadataReader {
           + " on server URL "
           + data.getServerAddress());
       configuration.setServerUrl(data.getServerAddress());
-      configuration.setName(data.getAgentConfigurationParameter("name"));
+      String agentName = data.getAgentConfigurationParameter("name");
+      String imageName = data.getAgentConfigurationParameter("IMAGE_NAME");
+      configuration.setName(agentName);
+      configuration.addConfigurationParameter("name", agentName);
+      configuration.addConfigurationParameter("INSTANCE_NAME", agentName);
+      configuration.addConfigurationParameter("IMAGE_NAME", imageName);
     } catch (Exception e) {
       LOG.warn("SoftlayerMetadataReader error in updateConfiguration(): " + e);
     }

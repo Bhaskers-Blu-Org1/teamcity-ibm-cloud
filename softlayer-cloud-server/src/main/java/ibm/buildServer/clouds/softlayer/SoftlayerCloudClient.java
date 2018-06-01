@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.Map;
 import java.util.HashMap;
@@ -26,10 +27,12 @@ public class SoftlayerCloudClient implements CloudClientEx {
   private Logger LOG = Loggers.SERVER;
   private CloudErrorInfo myCurrentError = null;
   private SoftlayerUpdateInstancesTask updateInstancesTask;
+  private final Map<String, AgentDescription> agents;
 
   public SoftlayerCloudClient(CloudClientParameters params) {
     executor = new CloudAsyncTaskExecutor("Async tasks for cloud " + params.getProfileDescription());
     images = new HashMap<String, SoftlayerCloudImage>();
+    agents = new HashMap<>();
     updateInstancesTask = new SoftlayerUpdateInstancesTask(this);
   }
 
@@ -53,6 +56,14 @@ public class SoftlayerCloudClient implements CloudClientEx {
   public Collection<SoftlayerCloudImage> getImages() throws CloudException {
     return images.values();
   }
+  
+  public boolean containsAgent(String agentName) {
+	return agents.containsKey(agentName);
+  }
+  
+  public AgentDescription getAgent(String agentName) {
+	return agents.get(agentName);
+  }
 
   public CloudErrorInfo getErrorInfo() {
     return myCurrentError;
@@ -64,6 +75,7 @@ public class SoftlayerCloudClient implements CloudClientEx {
   }
 
   public String generateAgentName(AgentDescription agentDescription) {
+	  LOG.info("find 1 agentdes in generateagentname");
     return agentDescription.getConfigurationParameters().get("name");
   }
 
@@ -88,18 +100,27 @@ public class SoftlayerCloudClient implements CloudClientEx {
 
   @Nullable
   public SoftlayerCloudInstance findInstanceByAgent(@NotNull final AgentDescription agentDescription) {
-    final String instanceName = agentDescription.getConfigurationParameters()
+	  LOG.info("find 1 agentdes in findinstancebyagentname");
+	  final String instanceName = agentDescription.getConfigurationParameters()
     		.get("INSTANCE_NAME");
     
     if(instanceName == null) {
       return null;
     }
-    for(SoftlayerCloudImage image : images.values()) {
-      final SoftlayerCloudInstance instance = image.findInstanceById(instanceName);
+    agents.put(instanceName, agentDescription);
+    LOG.info("agent name in client:" + instanceName + ",agent map size:" + agents.size());
+  //  for(SoftlayerCloudImage image : images.values()) {
+    SoftlayerCloudImage image = images.get(agentDescription.getConfigurationParameters().get("IMAGE_NAME"));
+    if (image == null) {
+    	return null;
+    }
+    final SoftlayerCloudInstance instance = image.findInstanceById(instanceName);
       if(instance != null) {
+    	  LOG.info("find instance in findinstancebyagentname");
         return instance;
       }
-    }
+  //  }
+    LOG.info("return null in findinstancebyagentname");
     return null;
   }
 

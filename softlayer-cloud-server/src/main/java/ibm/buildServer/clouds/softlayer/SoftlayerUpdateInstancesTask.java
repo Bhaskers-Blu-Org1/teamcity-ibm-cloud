@@ -8,6 +8,7 @@ package ibm.buildServer.clouds.softlayer;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.log.Loggers;
+import jetbrains.buildServer.serverSide.AgentDescription;
 
 import com.softlayer.api.service.provisioning.version1.Transaction;
 import com.softlayer.api.service.virtual.Guest;
@@ -75,9 +76,18 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
         }
         System.out.println("New status is " + newStatus.getName());
         instance.setStatus(newStatus);
+        if (instance.getStatus() == InstanceStatus.RUNNING) {
+        	AgentDescription agent = client.getAgent(instance.getName());
+        	if (agent != null) {
+        		LOG.info("called from task:" + agent.getConfigurationParameters().get("INSTANCE_NAME"));
+        		instance.containsAgent(agent);
+        		instance.isConnected = true;
+        	}
+        	
+        }
         if(removable(instance.getStatus())) {
           image.removeInstance(instance.getInstanceId());
-          clickedStopInstances.remove(instance.getImageId());
+          clickedStopInstances.remove(instance.getInstanceId());
         }
       }
     }

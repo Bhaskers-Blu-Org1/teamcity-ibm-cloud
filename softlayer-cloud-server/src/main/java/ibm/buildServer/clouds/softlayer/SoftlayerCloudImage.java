@@ -106,7 +106,7 @@ public class SoftlayerCloudImage implements CloudImage
 	{
 	    instance.setImage(this);
 	    instance.start();
-	    instances.put(instance.getInstanceId(), instance);
+	    instances.put(instance.getName(), instance);
 	    myCurrentError = null;
 	}
 	catch(Exception e)

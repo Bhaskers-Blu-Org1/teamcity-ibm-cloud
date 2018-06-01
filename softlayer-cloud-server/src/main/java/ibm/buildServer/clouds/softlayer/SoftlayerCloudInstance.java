@@ -42,6 +42,8 @@ public class SoftlayerCloudInstance implements CloudInstance
   int taskDelayTime = 60 * 1000;
   private CloudErrorInfo myCurrentError = null;
   private boolean metadataSet = false;
+  //public AgentDescription myAgent;
+  public boolean isConnected = false;
 
   public SoftlayerCloudInstance(SoftlayerCloudImageDetails details,
       CloudInstanceUserData data,
@@ -89,6 +91,10 @@ public class SoftlayerCloudInstance implements CloudInstance
   public String getInstanceId() {
     return id;
   }
+  
+  public String getImageName() {
+	return image.getName();
+  }
 
   public String getName() {
     return name;
@@ -116,11 +122,19 @@ public class SoftlayerCloudInstance implements CloudInstance
   }
 
   public boolean containsAgent(AgentDescription agent) {
-    if(getName() == null) {
+	//return true;
+    if(name == null) {
       LOG.warn("SoftLayer instance name has not been set.");
       return false;
     }
-    return agent.getConfigurationParameters().get("INSTANCE_NAME").contains(getName());
+    LOG.info("containsAgent: " + id + "," + agent.getConfigurationParameters().get("INSTANCE_NAME") + ", name: " +agent.getConfigurationParameters().get("name"));
+    if (agent.getConfigurationParameters().get("INSTANCE_NAME").equals(name)) {
+    	LOG.info("containsAgent: " + name);
+    	return true;
+    }
+    return false;
+    //return agent.getConfigurationParameters().containsKey("INSTANCE_NAME");
+    //return agent.getConfigurationParameters().get("INSTANCE_NAME").equals(name);
   }
 
   public CloudErrorInfo getErrorInfo() {
@@ -190,6 +204,7 @@ public class SoftlayerCloudInstance implements CloudInstance
       // Serialize CloudInstanceUserData and set as SoftLayer user metadata.
       List<String> userDataList = new ArrayList<String>();
       userData.addAgentConfigurationParameter("name", name);
+      userData.addAgentConfigurationParameter("IMAGE_NAME", getImageName());
       userDataList.add(userData.serialize());
       Long virtualGuestId = new Long(getInstanceId());
       Guest.Service virtualGuestService = Guest.service(softlayerClient,
