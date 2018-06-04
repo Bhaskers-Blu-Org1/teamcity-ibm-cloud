@@ -76,15 +76,6 @@ public class SoftlayerUpdateInstancesTask implements Runnable {
         }
         System.out.println("New status is " + newStatus.getName());
         instance.setStatus(newStatus);
-        if (instance.getStatus() == InstanceStatus.RUNNING) {
-        	AgentDescription agent = client.getAgent(instance.getName());
-        	if (agent != null) {
-        		LOG.info("called from task:" + agent.getConfigurationParameters().get("INSTANCE_NAME"));
-        		instance.containsAgent(agent);
-        		instance.isConnected = true;
-        	}
-        	
-        }
         if(removable(instance.getStatus())) {
           image.removeInstance(instance.getInstanceId());
           clickedStopInstances.remove(instance.getInstanceId());

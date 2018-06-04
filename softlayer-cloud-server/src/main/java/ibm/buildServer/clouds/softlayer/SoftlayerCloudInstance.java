@@ -127,14 +127,14 @@ public class SoftlayerCloudInstance implements CloudInstance
       LOG.warn("SoftLayer instance name has not been set.");
       return false;
     }
-    LOG.info("containsAgent: " + id + "," + agent.getConfigurationParameters().get("INSTANCE_NAME") + ", name: " +agent.getConfigurationParameters().get("name"));
-    if (agent.getConfigurationParameters().get("INSTANCE_NAME").equals(name)) {
-    	LOG.info("containsAgent: " + name);
-    	return true;
-    }
-    return false;
+//    LOG.info("containsAgent: " + id + "," + agent.getConfigurationParameters().get("INSTANCE_NAME") + ", name: " +agent.getConfigurationParameters().get("name"));
+//    if (agent.getConfigurationParameters().get("INSTANCE_NAME").equals(name)) {
+//    	LOG.info("containsAgent: " + name);
+//    	return true;
+//    }
+//    return false;
     //return agent.getConfigurationParameters().containsKey("INSTANCE_NAME");
-    //return agent.getConfigurationParameters().get("INSTANCE_NAME").equals(name);
+    return agent.getConfigurationParameters().get("INSTANCE_NAME").equals(name);
   }
 
   public CloudErrorInfo getErrorInfo() {
