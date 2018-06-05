@@ -8,7 +8,6 @@ package ibm.buildServer.clouds.softlayer;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.log.Loggers;
-import jetbrains.buildServer.serverSide.AgentDescription;
 
 import com.softlayer.api.service.provisioning.version1.Transaction;
 import com.softlayer.api.service.virtual.Guest;

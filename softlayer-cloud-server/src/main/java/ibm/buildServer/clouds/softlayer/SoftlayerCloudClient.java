@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.Map;
 import java.util.HashMap;
@@ -65,7 +64,6 @@ public class SoftlayerCloudClient implements CloudClientEx {
   }
 
   public String generateAgentName(AgentDescription agentDescription) {
-	  LOG.info("find 1 agentdes in generateagentname");
     return agentDescription.getConfigurationParameters().get("name");
   }
 
@@ -90,23 +88,18 @@ public class SoftlayerCloudClient implements CloudClientEx {
 
   @Nullable
   public SoftlayerCloudInstance findInstanceByAgent(@NotNull final AgentDescription agentDescription) {
-	  final String instanceName = agentDescription.getConfigurationParameters()
+    final String instanceName = agentDescription.getConfigurationParameters()
     		.get("INSTANCE_NAME");
     
     if(instanceName == null) {
       return null;
     }
-  //  for(SoftlayerCloudImage image : images.values()) {
     SoftlayerCloudImage image = images.get(agentDescription.getConfigurationParameters().get("IMAGE_NAME"));
-    if (image == null) {
-    	return null;
+    if (image != null) {
+    	//instanceName: hostname_vsiID
+        String instanceID = instanceName.split("_")[1];
+        return image.findInstanceById(instanceID);
     }
-    String instanceID = instanceName.split("_")[1];
-    final SoftlayerCloudInstance instance = image.findInstanceById(instanceID);
-      if(instance != null) {
-        return instance;
-      }
-  //  }
     return null;
   }
 
