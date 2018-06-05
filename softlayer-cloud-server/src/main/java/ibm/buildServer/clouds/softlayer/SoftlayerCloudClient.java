@@ -94,11 +94,11 @@ public class SoftlayerCloudClient implements CloudClientEx {
     if(instanceName == null) {
       return null;
     }
-    for(SoftlayerCloudImage image : images.values()) {
-      final SoftlayerCloudInstance instance = image.findInstanceById(instanceName);
-      if(instance != null) {
-        return instance;
-      }
+    SoftlayerCloudImage image = images.get(agentDescription.getConfigurationParameters().get("IMAGE_NAME"));
+    if (image != null) {
+    	//Instance name is set in the format of hostname_instanceID.
+        String instanceID = instanceName.split("_")[1];
+        return image.findInstanceById(instanceID);
     }
     return null;
   }

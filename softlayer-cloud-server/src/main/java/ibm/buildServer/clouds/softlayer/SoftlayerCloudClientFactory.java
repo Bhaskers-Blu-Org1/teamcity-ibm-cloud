@@ -125,6 +125,6 @@ public class SoftlayerCloudClientFactory implements CloudClientFactory {
   * @return true if this agent could be an instance of that cloud type
   */
   public boolean canBeAgentOfType(@NotNull AgentDescription description) {
-	return true;
+	return description.getConfigurationParameters().containsKey("INSTANCE_NAME");
   }
 }

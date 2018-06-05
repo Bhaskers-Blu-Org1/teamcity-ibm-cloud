@@ -89,6 +89,10 @@ public class SoftlayerCloudInstance implements CloudInstance
   public String getInstanceId() {
     return id;
   }
+  
+  public String getImageName() {
+	return image.getName();
+  }
 
   public String getName() {
     return name;
@@ -116,11 +120,11 @@ public class SoftlayerCloudInstance implements CloudInstance
   }
 
   public boolean containsAgent(AgentDescription agent) {
-    if(getName() == null) {
+    if(name == null) {
       LOG.warn("SoftLayer instance name has not been set.");
       return false;
     }
-    return agent.getConfigurationParameters().get("INSTANCE_NAME").contains(getName());
+    return agent.getConfigurationParameters().get("INSTANCE_NAME").equals(name);
   }
 
   public CloudErrorInfo getErrorInfo() {
@@ -190,6 +194,7 @@ public class SoftlayerCloudInstance implements CloudInstance
       // Serialize CloudInstanceUserData and set as SoftLayer user metadata.
       List<String> userDataList = new ArrayList<String>();
       userData.addAgentConfigurationParameter("name", name);
+      userData.addAgentConfigurationParameter("IMAGE_NAME", getImageName());
       userDataList.add(userData.serialize());
       Long virtualGuestId = new Long(getInstanceId());
       Guest.Service virtualGuestService = Guest.service(softlayerClient,

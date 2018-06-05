@@ -58,8 +58,13 @@ public class SoftlayerMetadataReader {
           + data.getAgentName()
           + " on server URL "
           + data.getServerAddress());
+      String agentName = data.getAgentConfigurationParameter("name");
+      String imageName = data.getAgentConfigurationParameter("IMAGE_NAME");
       configuration.setServerUrl(data.getServerAddress());
-      configuration.setName(data.getAgentConfigurationParameter("name"));
+      configuration.setName(agentName);
+      configuration.addConfigurationParameter("name", agentName);
+      configuration.addConfigurationParameter("INSTANCE_NAME", agentName);
+      configuration.addConfigurationParameter("IMAGE_NAME", imageName);
     } catch (Exception e) {
       LOG.warn("SoftlayerMetadataReader error in updateConfiguration(): " + e);
     }
