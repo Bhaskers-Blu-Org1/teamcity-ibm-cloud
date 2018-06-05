@@ -67,7 +67,7 @@ public class SoftlayerCloudInstance implements CloudInstance
     guest.setLocalDiskFlag(details.getLocalDiskFlag());
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
-    //guest.setPostInstallScriptUri("http://169.60.13.41/test.sh");
+    guest.setPostInstallScriptUri("http://169.60.13.41/test.sh");
     startedTime = new Date();
     imageDetails = details;
     userData = data;
@@ -120,18 +120,10 @@ public class SoftlayerCloudInstance implements CloudInstance
   }
 
   public boolean containsAgent(AgentDescription agent) {
-	//return true;
     if(name == null) {
       LOG.warn("SoftLayer instance name has not been set.");
       return false;
     }
-//    LOG.info("containsAgent: " + id + "," + agent.getConfigurationParameters().get("INSTANCE_NAME") + ", name: " +agent.getConfigurationParameters().get("name"));
-//    if (agent.getConfigurationParameters().get("INSTANCE_NAME").equals(name)) {
-//    	LOG.info("containsAgent: " + name);
-//    	return true;
-//    }
-//    return false;
-    //return agent.getConfigurationParameters().containsKey("INSTANCE_NAME");
     return agent.getConfigurationParameters().get("INSTANCE_NAME").equals(name);
   }
 
