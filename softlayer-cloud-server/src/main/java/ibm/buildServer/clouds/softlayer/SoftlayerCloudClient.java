@@ -96,7 +96,7 @@ public class SoftlayerCloudClient implements CloudClientEx {
     }
     SoftlayerCloudImage image = images.get(agentDescription.getConfigurationParameters().get("IMAGE_NAME"));
     if (image != null) {
-    	//instanceName: hostname_vsiID
+    	//Instance name is set in the format of hostname_instanceID.
         String instanceID = instanceName.split("_")[1];
         return image.findInstanceById(instanceID);
     }
