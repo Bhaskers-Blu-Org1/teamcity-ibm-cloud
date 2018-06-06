@@ -94,11 +94,11 @@ public class IBMCloudClient implements CloudClientEx {
     if(instanceName == null) {
       return null;
     }
-    for(IBMCloudImage image : images.values()) {
-      final IBMCloudInstance instance = image.findInstanceById(instanceName);
-      if(instance != null) {
-        return instance;
-      }
+    IBMCloudImage image = images.get(agentDescription.getConfigurationParameters().get("IMAGE_NAME"));
+    if (image != null) {
+    	//Instance name is set in the format of hostname_instanceID.
+        String instanceID = instanceName.split("_")[1];
+        return image.findInstanceById(instanceID);
     }
     return null;
   }

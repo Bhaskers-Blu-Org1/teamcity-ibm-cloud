@@ -77,7 +77,7 @@ public class IBMUpdateInstancesTask implements Runnable {
         instance.setStatus(newStatus);
         if(removable(instance.getStatus())) {
           image.removeInstance(instance.getInstanceId());
-          clickedStopInstances.remove(instance.getImageId());
+          clickedStopInstances.remove(instance.getInstanceId());
         }
       }
     }
