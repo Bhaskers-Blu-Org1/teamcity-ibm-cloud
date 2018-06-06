@@ -1,4 +1,4 @@
-rootProject.name = 'teamcity-softlayer'
+rootProject.name = 'teamcity-ibm'
 
-include 'softlayer-cloud-agent'
-include 'softlayer-cloud-server'
+include 'ibm-cloud-agent'
+include 'ibm-cloud-server'
