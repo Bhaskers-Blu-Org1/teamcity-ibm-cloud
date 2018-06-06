@@ -8,12 +8,12 @@
 <%@ taglib prefix="intprop" uri="/WEB-INF/functions/intprop"%>
 
 <jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean" />
-<jsp:useBean id="cons" class="ibm.buildServer.clouds.softlayer.SoftlayerCloudConstants"/>
+<jsp:useBean id="cons" class="ibm.buildServer.clouds.ibm.IBMCloudConstants"/>
 <jsp:useBean id="agentPools" scope="request" type="java.util.Collection<jetbrains.buildServer.serverSide.agentPools.AgentPool>"/>
 </table>
 
 <script type="text/javascript">
-    BS.LoadStyleSheetDynamically("<c:url value='${teamcityPluginResourcesPath}softlayer-cloud-settings.css'/>");
+    BS.LoadStyleSheetDynamically("<c:url value='${teamcityPluginResourcesPath}ibm-cloud-settings.css'/>");
 </script>
 
 <table class="runnerFormTable">
@@ -43,9 +43,9 @@
 
 <div class="buttonsWrapper">
   <span id="error_fetch_options" class="error"></span>
-  <div class="hidden options-loader"><i class="icon-refresh icon-spin"></i>&nbsp;Fetching parameter values from Softlayer...</div>
+  <div class="hidden options-loader"><i class="icon-refresh icon-spin"></i>&nbsp;Fetching parameter values from IBM Cloud...</div>
   <div>
-    <forms:button id="softlayerFetchOptionsButton" onclick="BS.IBMSoftlayer.ProfileSettingsForm.checkConnection();">Check connection / Fetch parameter values</forms:button>
+    <forms:button id="ibmFetchOptionsButton" onclick="BS.IBMCloud.ProfileSettingsForm.checkConnection();">Check connection / Fetch parameter values</forms:button>
   </div>
 </div>
 
@@ -53,7 +53,7 @@
 
 <div class="buttonsWrapper">
     <div class="imagesTableWrapper hidden">
-        <table id="softlayerImagesTable" class="settings imagesTable hidden">
+        <table id="ibmImagesTable" class="settings imagesTable hidden">
             <tbody>
             <tr>
             		<th class="name">VSI Template</th>
@@ -76,8 +76,8 @@
     <forms:addButton title="Add image" id="showAddImageDialogButton">Add image</forms:addButton>
 </div>
 
-<bs:dialog dialogId="softlayerImageDialog" title="Add IBM Softlayer Cloud Image" closeCommand="BS.IBMSoftlayer.ImageDialog.close()"
-           dialogClass="softlayerImageDialog" titleId="softlayerImageDialogTitle">
+<bs:dialog dialogId="ibmImageDialog" title="Add IBM Cloud Image" closeCommand="BS.IBMCloud.ImageDialog.close()"
+           dialogClass="ibmImageDialog" titleId="ibmImageDialogTitle">
     <table class="runnerFormTable paramsTable">
 	    	
 	    	<!-- Image List row -->
@@ -257,8 +257,8 @@
        	</tr>
 	</table>
 	
-    <admin:showHideAdvancedOpts containerId="softlayerImageDialog" optsKey="softlayerImageSettings"/>
-    <admin:highlightChangedFields containerId="softlayerImageDialog"/>
+    <admin:showHideAdvancedOpts containerId="ibmImageDialog" optsKey="ibmImageSettings"/>
+    <admin:highlightChangedFields containerId="ibmImageDialog"/>
 	
 	<div class="icon_before icon16 attentionComment clearfix hidden" id="imageChangeMesssage">
 		<b>Save the changes.</b></br>
@@ -266,20 +266,20 @@
 	</div>
 	
     <div class="popupSaveButtonsBlock">
-        <forms:submit label="Add" type="button" id="softlayerAddImageButton"/>
-        <forms:button title="Cancel" id="softlayerCancelAddImageButton">Cancel</forms:button>
+        <forms:submit label="Add" type="button" id="ibmAddImageButton"/>
+        <forms:button title="Cancel" id="ibmCancelAddImageButton">Cancel</forms:button>
     </div>
     
 </bs:dialog>
 
-<bs:dialog dialogId="softlayerDeleteImageDialog" title="Delete IBM Softlayer Cloud Image" closeCommand="BS.IBMSoftlayer.DeleteImageDialog.close()"
-           dialogClass="softlayerDeleteImageDialog" titleId="softlayerDeleteImageDialogTitle">
+<bs:dialog dialogId="ibmDeleteImageDialog" title="Delete IBM Cloud Image" closeCommand="BS.IBMCloud.DeleteImageDialog.close()"
+           dialogClass="ibmDeleteImageDialog" titleId="ibmDeleteImageDialogTitle">
 
-    <div id="softlayerDeleteImageDialogBody"></div>
+    <div id="ibmDeleteImageDialogBody"></div>
 
     <div class="popupSaveButtonsBlock">
-        <forms:submit label="Delete" type="button" id="softlayerDeleteImageButton"/>
-        <forms:button title="Cancel" id="softlayerCancelDeleteImageButton">Cancel</forms:button>
+        <forms:submit label="Delete" type="button" id="ibmDeleteImageButton"/>
+        <forms:button title="Cancel" id="ibmCancelDeleteImageButton">Cancel</forms:button>
         <span class="hidden delete-loader"><i class="icon-refresh icon-spin"></i></span>
     </div>
     
@@ -287,16 +287,16 @@
 
 <script type="text/javascript">
 	$j.ajax({
-				url : "<c:url value="${teamcityPluginResourcesPath}softlayer-cloud-settings.js"/>",
+				url : "<c:url value="${teamcityPluginResourcesPath}ibm-cloud-settings.js"/>",
 				dataType : "script",
 				success : function() {
 
-					BS.IBMSoftlayer.ProfileSettingsForm.checkConnectionUrl = '<c:url value="${softlayerCheckConnectionController}"/>';
-					BS.IBMSoftlayer.ProfileSettingsForm.propertiesBeanVsiTemplate = '<c:out value="${propertiesBean.properties[cons.vsiTemplateList]}" />';
-					BS.IBMSoftlayer.ProfileSettingsForm.propertiesBeanDatacenter = '<c:out value="${propertiesBean.properties[cons.datacenterList]}" />';
-					BS.IBMSoftlayer.DeleteImageDialog.url = '<c:url value="${deleteImageUrl}"/>';
-					BS.IBMSoftlayer.ProfileSettingsForm.initialize();
-					BS.IBMSoftlayer.ProfileSettingsForm.checkConnection();
+					BS.IBMCloud.ProfileSettingsForm.checkConnectionUrl = '<c:url value="${ibmCheckConnectionController}"/>';
+					BS.IBMCloud.ProfileSettingsForm.propertiesBeanVsiTemplate = '<c:out value="${propertiesBean.properties[cons.vsiTemplateList]}" />';
+					BS.IBMCloud.ProfileSettingsForm.propertiesBeanDatacenter = '<c:out value="${propertiesBean.properties[cons.datacenterList]}" />';
+					BS.IBMCloud.DeleteImageDialog.url = '<c:url value="${deleteImageUrl}"/>';
+					BS.IBMCloud.ProfileSettingsForm.initialize();
+					BS.IBMCloud.ProfileSettingsForm.checkConnection();
 
 				},
 				cache : true

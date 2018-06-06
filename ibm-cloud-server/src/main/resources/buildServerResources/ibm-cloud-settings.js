@@ -1,7 +1,7 @@
 if (!BS) BS = {};
-if (!BS.IBMSoftlayer) BS.IBMSoftlayer = {};
+if (!BS.IBMCloud) BS.IBMCloud = {};
 
-if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = OO.extend(BS.PluginPropertiesForm, {
+if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend(BS.PluginPropertiesForm, {
 
     checkConnectionUrl: '',
     propertiesBeanVsiTemplate: '',
@@ -62,16 +62,16 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
          this.$IBMSL_apiKey = $j(BS.Util.escapeId('secure:IBMSL_apiKey'));
          this.$IBMSL_instanceNumber = $j('#IBMSL_instanceNumber');
          
-         this.$imagesTable = $j('#softlayerImagesTable');
+         this.$imagesTable = $j('#ibmImagesTable');
          this.$imagesTableWrapper = $j('.imagesTableWrapper');
          this.$emptyImagesListMessage = $j('.emptyImagesListMessage'); //TODO: implement
          this.$showAddImageDialogButton = $j('#showAddImageDialogButton');
 
          // add/edit image dialog
-         this.$addImageButton = $j('#softlayerAddImageButton');
-         this.$cancelAddImageButton = $j('#softlayerCancelAddImageButton');
-         this.$deleteImageButton = $j('#softlayerDeleteImageButton');
-         this.$cancelDeleteImageButton = $j('#softlayerCancelDeleteImageButton');
+         this.$addImageButton = $j('#ibmAddImageButton');
+         this.$cancelAddImageButton = $j('#ibmCancelAddImageButton');
+         this.$deleteImageButton = $j('#ibmDeleteImageButton');
+         this.$cancelDeleteImageButton = $j('#ibmCancelDeleteImageButton');
 
          this.$IBMSL_vsiTemplate = $j('#IBMSL_vsiTemplate');
          this.$IBMSL_datacenter = $j('#IBMSL_datacenter');
@@ -327,13 +327,13 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
             } else {
                 this.addImage();
             }
-            BS.IBMSoftlayer.ImageDialog.close();
+            BS.IBMCloud.ImageDialog.close();
         }
         return false;
     },
 
     _cancelDialogClickHandler: function () {
-        BS.IBMSoftlayer.ImageDialog.close();
+        BS.IBMCloud.ImageDialog.close();
         return false;
     },
     
@@ -342,11 +342,11 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     		this.isEditImageOrAddImageClicked = false;
     		$j('#imageChangeMesssage').addClass('hidden');
     		
-        $j('#softlayerImageDialogTitle').text('Add IBM Softlayer Cloud Image');
-        BS.Hider.addHideFunction('softlayerImageDialog', this._resetDataAndDialog.bind(this));
+        $j('#ibmImageDialogTitle').text('Add IBM Cloud Image');
+        BS.Hider.addHideFunction('ibmImageDialog', this._resetDataAndDialog.bind(this));
         this.$addImageButton.val('Add').data('image-id', 'undefined');
         this._image = {};
-        BS.IBMSoftlayer.ImageDialog.showCentered();
+        BS.IBMCloud.ImageDialog.showCentered();
     },
     
     showEditImageDialog: function ($elem) {
@@ -360,9 +360,9 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         var imageId = $elem.parents(this.selectors.imagesTableRow).data('image-id');
         var srcId = $elem.parents(this.selectors.imagesTableRow).attr('src-id');
 
-        $j('#softlayerImageDialogTitle').text('Edit IBM Softlayer Cloud Image');
+        $j('#ibmImageDialogTitle').text('Edit IBM Cloud Image');
 
-        BS.Hider.addHideFunction('softlayerImageDialog', this._resetDataAndDialog.bind(this));
+        BS.Hider.addHideFunction('ibmImageDialog', this._resetDataAndDialog.bind(this));
 
         typeof imageId !== 'undefined' && (this._image = $j.extend({}, this.imagesData[imageId]));
         this.$addImageButton.val('Save').data('image-id', imageId);
@@ -371,7 +371,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         }
         
         // ajax call to delete controller to get list of running VSis on image. We get HTML response in resonseText object.
-        BS.ajaxUpdater($("softlayerDeleteImageDialogBody"), BS.IBMSoftlayer.DeleteImageDialog.url + window.location.search, {
+        BS.ajaxUpdater($("ibmDeleteImageDialogBody"), BS.IBMCloud.DeleteImageDialog.url + window.location.search, {
             method: 'get',
             parameters : {
                 imageId : srcId
@@ -401,7 +401,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         this.$agentPoolId.trigger('change', image['agent_pool_id'] || '');
         this.$IBMSL_maximumInstances.trigger('change', image['IBMSL_maximumInstances'] || '');
 
-        BS.IBMSoftlayer.ImageDialog.showCentered();
+        BS.IBMCloud.ImageDialog.showCentered();
     },
 
     _resetDataAndDialog: function () {
@@ -659,7 +659,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
         if(this.hasCloudImageEdited) {
         	
         			var oldSrc = this._image['source-id'];
-        			BS.ajaxRequest(BS.IBMSoftlayer.DeleteImageDialog.url + window.location.search, {
+        			BS.ajaxRequest(BS.IBMCloud.DeleteImageDialog.url + window.location.search, {
         	            method: 'post',
         	            parameters : {
         	                imageId : oldSrc
@@ -696,43 +696,43 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
 
     showDeleteImageDialog: function ($elem) {
     	
-    		// Opens delete image dialog box and sends GET ajax request to SoftlayerDeleteCloudImageController.java
+    		// Opens delete image dialog box and sends GET ajax request to IBMDeleteCloudImageController.java
         var imageId = $elem.parents(this.selectors.imagesTableRow).data('image-id');
         var srcId = $elem.parents(this.selectors.imagesTableRow).attr('src-id');
 
-        BS.ajaxUpdater($("softlayerDeleteImageDialogBody"), BS.IBMSoftlayer.DeleteImageDialog.url + window.location.search, {
+        BS.ajaxUpdater($("ibmDeleteImageDialogBody"), BS.IBMCloud.DeleteImageDialog.url + window.location.search, {
             method: 'get',
             parameters : {
                 imageId : srcId
             },
             onComplete: function() {
-                BS.IBMSoftlayer.DeleteImageDialog.show(imageId, srcId);
+                BS.IBMCloud.DeleteImageDialog.show(imageId, srcId);
             }
         });
     },
     
     _cancelDeleteImageDialogClickHandler: function () {
-        BS.IBMSoftlayer.DeleteImageDialog.close();
+        BS.IBMCloud.DeleteImageDialog.close();
         return false;
     },
 
     _submitDeleteImageDialogClickHandler: function() {
     		
-    		// Confirmation on deleting cloud image and sends POST ajax request to SoftlayerDeleteCloudImageController.java
-        var imageId = BS.IBMSoftlayer.DeleteImageDialog.currentImageId;
-        var srcId = BS.IBMSoftlayer.DeleteImageDialog.currentSrcId;
+    		// Confirmation on deleting cloud image and sends POST ajax request to IBMDeleteCloudImageController.java
+        var imageId = BS.IBMCloud.DeleteImageDialog.currentImageId;
+        var srcId = BS.IBMCloud.DeleteImageDialog.currentSrcId;
         var $deleteLoader = $j('.delete-loader');
         $deleteLoader.removeClass('hidden');
         
-        BS.ajaxRequest(BS.IBMSoftlayer.DeleteImageDialog.url + window.location.search, {
+        BS.ajaxRequest(BS.IBMCloud.DeleteImageDialog.url + window.location.search, {
             method: 'post',
             parameters : {
                 imageId : srcId
             },
             onComplete: function() {
-                BS.IBMSoftlayer.ProfileSettingsForm.removeImage(imageId);
+                BS.IBMCloud.ProfileSettingsForm.removeImage(imageId);
                 $deleteLoader.addClass('hidden');
-                BS.IBMSoftlayer.DeleteImageDialog.close();
+                BS.IBMCloud.DeleteImageDialog.close();
             }
         });
     },
@@ -745,7 +745,7 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     		//disable edit/delete buttons on cloud image table rows.
     		this._toggleActionImageButton(false);
     		
-    		// Check connection function will send POST ajax request to SoftlayerEditProfileController.java to authenticate user.
+    		// Check connection function will send POST ajax request to IBMEditProfileController.java to authenticate user.
 	    var valid =	this.validateServerSettings();
 	    var $fetchOptions = $j('#error_fetch_options');
 	    var $loader = $j('.options-loader');
@@ -831,24 +831,24 @@ if(!BS.IBMSoftlayer.ProfileSettingsForm) BS.IBMSoftlayer.ProfileSettingsForm = O
     
 });
 
-if(!BS.IBMSoftlayer.ImageDialog) BS.IBMSoftlayer.ImageDialog = OO.extend(BS.AbstractModalDialog, {
+if(!BS.IBMCloud.ImageDialog) BS.IBMCloud.ImageDialog = OO.extend(BS.AbstractModalDialog, {
     getContainer: function() {
-        return $('softlayerImageDialog');
+        return $('ibmImageDialog');
     }
 });
 
-if(!BS.IBMSoftlayer.DeleteImageDialog) BS.IBMSoftlayer.DeleteImageDialog = OO.extend(BS.AbstractModalDialog, {
+if(!BS.IBMCloud.DeleteImageDialog) BS.IBMCloud.DeleteImageDialog = OO.extend(BS.AbstractModalDialog, {
     url: '',
     currentImageId: '',
     currentSrcId: '',
 
     getContainer: function() {
-        return $('softlayerDeleteImageDialog');
+        return $('ibmDeleteImageDialog');
     },
 
     show: function (imageId, srcId) {
-        BS.IBMSoftlayer.DeleteImageDialog.currentImageId = imageId;
-        BS.IBMSoftlayer.DeleteImageDialog.currentSrcId = srcId;
-        BS.IBMSoftlayer.DeleteImageDialog.showCentered();
+        BS.IBMCloud.DeleteImageDialog.currentImageId = imageId;
+        BS.IBMCloud.DeleteImageDialog.currentSrcId = srcId;
+        BS.IBMCloud.DeleteImageDialog.showCentered();
 }
 });
