@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.Map;
 import java.util.HashMap;
 
+import com.softlayer.api.service.Account;
+
 public class SoftlayerCloudClient implements CloudClientEx {
   boolean initialized = false;
   private CloudAsyncTaskExecutor executor;
@@ -142,5 +144,21 @@ public class SoftlayerCloudClient implements CloudClientEx {
     dispose();
     executor = new CloudAsyncTaskExecutor("Async tasks for cloud " + params.getProfileDescription());
     start();
+  }
+
+  public void connectRunningInstances() {
+    for(SoftlayerCloudImage image : images) {
+      // Retrieve instance metadata from SoftLayer API.
+      Account.Service accountService = Account.service(image.softlayerClient);
+      accountService.setMask("mask[userData]");
+      try {
+        Gson gson = new Gson();
+        LOG.info(gson.toJson(accountService.getVirtualGuests()));
+      } catch (Exception e) {
+        LOG.error("Unable to retrieve the SoftLayer metadata information. "
+            + e.getMessage());
+      }
+      // Connect instance if metadata matches this image.
+    }
   }
 }
