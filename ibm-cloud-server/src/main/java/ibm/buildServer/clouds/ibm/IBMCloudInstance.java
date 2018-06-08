@@ -28,7 +28,7 @@ public class IBMCloudInstance implements CloudInstance
 {
   private InstanceStatus myStatus;
   private ScheduledExecutorService executor;
-  // id and name is set in the start() method.
+  // id, name, and hostname are set in the setName() method.
   private String id;
   private String name;
   private String hostname;
@@ -46,9 +46,7 @@ public class IBMCloudInstance implements CloudInstance
   public IBMCloudInstance(IBMCloudImageDetails details,
       CloudInstanceUserData data,
       ApiClient ibmClient) {
-    myStatus = InstanceStatus.UNKNOWN;
-    executor = Executors.newSingleThreadScheduledExecutor();
-    guest = new Guest();
+    this(details, data, ibmClient, new Guest(), new Date());
     guest.setHostname(details.getAgentName());
     guest.setDomain(details.getDomainName());
     guest.setStartCpus(details.getMaxCores());
@@ -68,10 +66,28 @@ public class IBMCloudInstance implements CloudInstance
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
     guest.setPostInstallScriptUri("http://169.60.13.41/test.sh");
-    startedTime = new Date();
+  }
+
+  public IBMCloudInstance(IBMCloudImageDetails details,
+      CloudInstanceUserData data,
+      ApiClient ibmClient,
+      Guest guest,
+      Date dateTime) {
+    this.guest = guest;
+    startedTime = dateTime;
     imageDetails = details;
     userData = data;
     this.ibmClient = ibmClient;
+    myStatus = InstanceStatus.UNKNOWN;
+    executor = Executors.newSingleThreadScheduledExecutor();
+  }
+
+  public void setName() {
+    id = guest.getId().toString();
+    hostname = guest.getHostname().toString();
+    if (hostname != null && id != null) {
+      name = hostname + "_" + id; 
+    }
   }
 
   public IBMCloudImage getImage() {
@@ -139,11 +155,7 @@ public class IBMCloudInstance implements CloudInstance
     }
     try {
       guest = Guest.service(ibmClient).createObject(guest);
-      id = guest.getId().toString();
-      hostname = guest.getHostname().toString();
-      if (hostname != null && id != null) {
-        name = hostname + "_" + id; 
-      }
+      setName();
       LOG.info("Softlayer Hostname " + hostname + " and ID is " + id);
       System.out.println("Softlayer Hostname " + hostname + " and ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;

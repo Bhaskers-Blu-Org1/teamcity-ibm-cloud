@@ -68,6 +68,10 @@ public class IBMCloudImage implements CloudImage
     instances.remove(instanceId);
   }
 
+  public void addInstance(IBMCloudInstance instance) {
+    instances.putIfAbsent(instance.getInstanceId(), instance);
+  }
+
   @Nullable
   public IBMCloudInstance findInstanceById(
       @NotNull final String instanceId) {

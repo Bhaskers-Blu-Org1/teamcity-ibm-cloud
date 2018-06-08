@@ -17,8 +17,10 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 
 import com.softlayer.api.service.Account;
+import com.softlayer.api.service.virtual.Guest;
 
 public class IBMCloudClient implements CloudClientEx {
   boolean initialized = false;
@@ -146,19 +148,40 @@ public class IBMCloudClient implements CloudClientEx {
     start();
   }
 
-  public void connectRunningInstances() {
+  public void connectRunningInstances(List<Guest> instances, IBMCloudImage image) {
+    String agentName = image.getDetails().getAgentName();
+    String metadataImageName;
+    CloudInstanceUserData data;
+    IBMCloudInstance teamcityInstance;
+    LOG.info("Trying to find SoftLayer instances that match " + agentName);
+    for(Guest instance : instances) {
+      if(instance.getUserData() != null 
+          && instance.getHostname().contains(agentName)) {
+        LOG.info(instance.getHostname() + " matches " + agentName);
+        data = CloudInstanceUserData.deserialize(instance.getUserData());
+        metadataImageName = data.getAgentConfigurationParameter("IMAGE_NAME");
+        LOG.info("Checking metadata image name " + metadataImageName
+            + " against TeamCity image name " + image.getName());
+        if(metadataImageName.equals(image.getName())) {
+          LOG.info("They match.");
+          teamcityInstance = new IBMCloudInstance(image.getDetails(), data,
+              image.ibmClient, instance, instance.getProvisionDate());
+          teamcityInstance.setName();
+          teamcityInstance.setImage(image);
+
+  public void retrieveRunningInstances() {
     for(IBMCloudImage image : images) {
       // Retrieve instance metadata from SoftLayer API.
       Account.Service accountService = Account.service(image.ibmClient);
       accountService.setMask("mask[userData]");
       try {
-        //Gson gson = new Gson();
-        LOG.info(accountService.getVirtualGuests());
+        List<Guest> instances = accountService.getVirtualGuests());
+        // Connect instance if metadata matches this image.
+        connectRunningInstances(instances, image.getDetails().getAgentName());
       } catch (Exception e) {
         LOG.error("Unable to retrieve the SoftLayer metadata information. "
             + e.getMessage());
       }
-      // Connect instance if metadata matches this image.
     }
   }
 }
