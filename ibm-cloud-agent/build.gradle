@@ -1,0 +1,32 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+}
+
+plugins {
+  id "com.github.rodm.teamcity-agent" version "1.0"
+}
+
+teamcity {
+  version = teamcityVersion
+
+  agent {
+    descriptor = project.file('teamcity-plugin.xml')
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  provided "org.jetbrains.teamcity.internal:agent:$teamcityVersion"
+  provided "org.jetbrains.teamcity:cloud-interface:$teamcityVersion"
+  provided "org.jetbrains.teamcity:cloud-shared:$teamcityVersion"
+  
+  compile "com.softlayer.api:softlayer-api-client:0.2.5"
+}
+
+agentPlugin.baseName = 'teamcity-ibm'
+

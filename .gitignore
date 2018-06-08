@@ -1,7 +1,9 @@
 *.class
 *.jar
 .gradle
+.DS_Store
 **/.gradle
+**/.DS_Store
 build/descriptor/**
 build/resources/**
 build/libs/**
