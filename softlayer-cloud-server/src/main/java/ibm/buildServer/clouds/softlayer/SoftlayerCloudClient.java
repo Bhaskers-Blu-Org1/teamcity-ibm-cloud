@@ -152,8 +152,8 @@ public class SoftlayerCloudClient implements CloudClientEx {
       Account.Service accountService = Account.service(image.softlayerClient);
       accountService.setMask("mask[userData]");
       try {
-        Gson gson = new Gson();
-        LOG.info(gson.toJson(accountService.getVirtualGuests()));
+        //Gson gson = new Gson();
+        LOG.info(accountService.getVirtualGuests());
       } catch (Exception e) {
         LOG.error("Unable to retrieve the SoftLayer metadata information. "
             + e.getMessage());
