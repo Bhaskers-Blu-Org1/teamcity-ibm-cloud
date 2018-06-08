@@ -158,14 +158,17 @@ public class IBMCloudClient implements CloudClientEx {
       if(instance.getUserData() != null 
           && instance.getHostname().contains(agentName)) {
         LOG.info(instance.getHostname() + " matches " + agentName);
-        data = CloudInstanceUserData.deserialize(instance.getUserData());
+        // getUserData() returns a list; the first element in that list is the
+        // user data. It is a UserData object, getValue() returns a string.
+        data = CloudInstanceUserData.
+          deserialize(instance.getUserData().get(0).getValue());
         metadataImageName = data.getAgentConfigurationParameter("IMAGE_NAME");
         LOG.info("Checking metadata image name " + metadataImageName
             + " against TeamCity image name " + image.getName());
         if(metadataImageName.equals(image.getName())) {
           LOG.info("They match.");
           teamcityInstance = new IBMCloudInstance(image.getDetails(), data,
-              image.ibmClient, instance, instance.getProvisionDate());
+              image.ibmClient, instance, instance.getProvisionDate().getTime());
           teamcityInstance.setName();
           teamcityInstance.setImage(image);
           image.addInstance(teamcityInstance);
@@ -175,14 +178,14 @@ public class IBMCloudClient implements CloudClientEx {
   }
 
   public void retrieveRunningInstances() {
-    for(IBMCloudImage image : images) {
+    for(IBMCloudImage image : getImages()) {
       // Retrieve instance metadata from SoftLayer API.
       Account.Service accountService = Account.service(image.ibmClient);
       accountService.setMask("mask[userData]");
       try {
-        List<Guest> instances = accountService.getVirtualGuests());
+        List<Guest> instances = accountService.getVirtualGuests();
         // Connect instance if metadata matches this image.
-        connectRunningInstances(instances, image.getDetails().getAgentName());
+        connectRunningInstances(instances, image);
       } catch (Exception e) {
         LOG.error("Unable to retrieve the SoftLayer metadata information. "
             + e.getMessage());

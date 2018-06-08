@@ -122,7 +122,6 @@ class IBMCloudClientTest {
         // user data. It is a UserData object, getValue() returns a string.
         CloudInstanceUserData data = CloudInstanceUserData.
           deserialize(vsi.getUserData().get(0).getValue());
-        //System.out.println(vsi.getUserData().get(0).getValue());
         String fakeAgentName = instanceData.getAgentName();
         String agentName = data.getAgentName();
         message = "Agent name should be " + fakeAgentName + " but the server returned "
