@@ -65,7 +65,6 @@ public class IBMCloudInstance implements CloudInstance
     guest.setLocalDiskFlag(details.getLocalDiskFlag());
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
-    guest.setPostInstallScriptUri("http://169.60.13.41/test.sh");
   }
 
   public IBMCloudInstance(IBMCloudImageDetails details,

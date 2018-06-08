@@ -168,6 +168,11 @@ public class IBMCloudClient implements CloudClientEx {
               image.ibmClient, instance, instance.getProvisionDate());
           teamcityInstance.setName();
           teamcityInstance.setImage(image);
+          image.addInstance(teamcityInstance);
+        }
+      }
+    }
+  }
 
   public void retrieveRunningInstances() {
     for(IBMCloudImage image : images) {
