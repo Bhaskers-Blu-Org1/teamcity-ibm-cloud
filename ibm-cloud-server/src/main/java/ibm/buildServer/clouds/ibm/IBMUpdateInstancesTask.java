@@ -37,6 +37,7 @@ public class IBMUpdateInstancesTask implements Runnable {
     Transaction vsiTransaction;
     Guest.Service service;
     Guest guest;
+    String message;
     for(IBMCloudImage image : client.getImages()) {
       for(IBMCloudInstance instance : image.getInstances()) {
         currentStatus = instance.getStatus();
@@ -73,7 +74,10 @@ public class IBMUpdateInstancesTask implements Runnable {
           LOG.warn("Error: " + e);
           newStatus = InstanceStatus.ERROR;
         }
-        System.out.println("New status is " + newStatus.getName());
+        message = "New status for " + currentInstanceId + " is "
+          + newStatus.getName();
+        System.out.println(message);
+        LOG.info(message);
         instance.setStatus(newStatus);
         if(removable(instance.getStatus())) {
           image.removeInstance(instance.getInstanceId());

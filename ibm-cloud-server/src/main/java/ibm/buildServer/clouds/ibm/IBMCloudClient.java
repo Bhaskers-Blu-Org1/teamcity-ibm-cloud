@@ -151,17 +151,20 @@ public class IBMCloudClient implements CloudClientEx {
   public void connectRunningInstances(List<Guest> instances, IBMCloudImage image) {
     String agentName = image.getDetails().getAgentName();
     String metadataImageName;
+    String metadata;
     CloudInstanceUserData data;
     IBMCloudInstance teamcityInstance;
     LOG.info("Trying to find SoftLayer instances that match " + agentName);
     for(Guest instance : instances) {
       if(instance.getUserData() != null 
           && instance.getHostname().contains(agentName)) {
-        LOG.info(instance.getHostname() + " matches " + agentName);
+        LOG.info(instance.getHostname() + " matches " + agentName
+            + " for VSI ID " + instance.getId());
         // getUserData() returns a list; the first element in that list is the
         // user data. It is a UserData object, getValue() returns a string.
-        data = CloudInstanceUserData.
-          deserialize(instance.getUserData().get(0).getValue());
+        metadata = instance.getUserData().get(0).getValue();
+        LOG.info("Metadata: " + metadata);
+        data = CloudInstanceUserData.deserialize(metadata);
         metadataImageName = data.getAgentConfigurationParameter("IMAGE_NAME");
         LOG.info("Checking metadata image name " + metadataImageName
             + " against TeamCity image name " + image.getName());
@@ -187,8 +190,7 @@ public class IBMCloudClient implements CloudClientEx {
         // Connect instance if metadata matches this image.
         connectRunningInstances(instances, image);
       } catch (Exception e) {
-        LOG.error("Unable to retrieve the SoftLayer metadata information. "
-            + e.getMessage());
+        LOG.error("Unable to retrieve the SoftLayer metadata information. " + e);
       }
     }
   }
