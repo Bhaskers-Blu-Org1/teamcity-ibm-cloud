@@ -70,7 +70,7 @@ public class IBMCloudInstance implements CloudInstance
     guest.getDatacenter().setName(details.getDatacenter());
     guest.setPostInstallScriptUri("http://169.60.13.41/test.sh");
     Component networkComponent = new Component();
-    networkComponent.setMaxSpeed(new Long(Integer.valueOf(details.getNetwork())));
+    networkComponent.setMaxSpeed(Long.valueOf(details.getNetwork()));
     guest.getNetworkComponents().add(networkComponent);
     startedTime = new Date();
     imageDetails = details;
