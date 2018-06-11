@@ -13,6 +13,7 @@ import com.softlayer.api.service.provisioning.version1.Transaction;
 import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.service.virtual.guest.Status;
 import com.softlayer.api.service.virtual.guest.power.State;
+import com.softlayer.api.ApiException;
 
 import java.util.*;
 
@@ -68,7 +69,7 @@ public class IBMUpdateInstancesTask implements Runnable {
         // is available as a Java class. println statements are for printing to
         // screen during test as logging has not been implemented in automated unit
         // tests.
-        } catch(Exception e) {
+        } catch(ApiException e) {
           System.out.println("Error: " + e);
           LOG.warn("Error: " + e);
           newStatus = InstanceStatus.ERROR;
