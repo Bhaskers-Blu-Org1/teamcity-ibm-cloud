@@ -64,11 +64,6 @@ public class IBMUpdateInstancesTask implements Runnable {
               vsiState,
               vsiTransaction,
               currentStatus);
-        // This catch block is only meant to catch "object not found" errors
-        // returned by SoftLayer but at this time it's unkown if this exception
-        // is available as a Java class. println statements are for printing to
-        // screen during test as logging has not been implemented in automated unit
-        // tests.
         } catch(ApiException e) {
           System.out.println("Error: " + e);
           LOG.warn("Error: " + e);
