@@ -152,7 +152,7 @@ public class IBMCloudClient implements CloudClientEx {
   }
 
   private void checkMetadata(Guest vsi, IBMCloudImage image) {
-    if(vsi.getUserData() == null) {
+    if(vsi.getUserData() == null || vsi.getUserData().size() == 0) {
       // Terminate this instance because the metadata was never set.
       String name = vsi.getHostname().toString() + "_" + vsi.getId().toString();
       executor 
