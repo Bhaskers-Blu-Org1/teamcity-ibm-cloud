@@ -80,7 +80,7 @@ public class IBMCloudInstance implements CloudInstance
 
   public void setName() {
     id = guest.getId().toString();
-    hostname = guest.getHostname().toString();
+    hostname = guest.getHostname();
     if (hostname != null && id != null) {
       name = hostname + "_" + id; 
     }

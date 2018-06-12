@@ -154,7 +154,7 @@ public class IBMCloudClient implements CloudClientEx {
   private void checkMetadata(Guest vsi, IBMCloudImage image) {
     if(vsi.getUserData() == null || vsi.getUserData().size() == 0) {
       // Terminate this instance because the metadata was never set.
-      String name = vsi.getHostname().toString() + "_" + vsi.getId().toString();
+      String name = vsi.getHostname() + "_" + vsi.getId().toString();
       executor 
         = new CloudAsyncTaskExecutor("Terminating orphan instance " + name);
       IBMTerminateInstanceTask task = new IBMTerminateInstanceTask(
@@ -216,7 +216,7 @@ public class IBMCloudClient implements CloudClientEx {
     LOG.info("Trying to find SoftLayer instances that match " + agentName);
     for(Guest instance : instances) {
       if(teamcityInstances.contains(instance.getId().toString())
-          && instance.getHostname().contains(agentName)) {
+          && instance.getHostname().equals(agentName)) {
         LOG.info(instance.getHostname() + " matches " + agentName
             + " for VSI ID " + instance.getId());
         checkMetadata(instance, image);
@@ -225,17 +225,16 @@ public class IBMCloudClient implements CloudClientEx {
   }
 
   public void retrieveRunningInstances() {
-    for(IBMCloudImage image : getImages()) {
-      // Retrieve instance metadata from SoftLayer API.
-      Account.Service accountService = Account.service(image.ibmClient);
-      accountService.setMask("mask[userData]");
-      try {
-        List<Guest> instances = accountService.getVirtualGuests();
-        // Connect instance if metadata matches this image.
+    Account.Service accountService = Account.service(
+        getImages().get(0).ibmClient);
+    accountService.setMask("mask[userData]");
+    try {
+      List<Guest> instances = accountService.getVirtualGuests();
+      for(IBMCloudImage image : getImages()) {
         connectRunningInstances(instances, image);
-      } catch (Exception e) {
-        LOG.error("Unable to retrieve the SoftLayer metadata information. " + e);
       }
+    } catch (Exception e) {
+      LOG.error("Unable to retrieve the SoftLayer metadata information. " + e);
     }
   }
 }
