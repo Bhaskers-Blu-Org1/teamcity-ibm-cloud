@@ -18,6 +18,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
 
 import com.softlayer.api.service.Account;
 import com.softlayer.api.service.virtual.Guest;
@@ -199,11 +202,15 @@ public class IBMCloudClient implements CloudClientEx {
     File file = new File(image.TEAMCITY_INSTANCES);
     String teamcityInstances = "";
     if(file.exists()) {
-      FileReader fr = new FileReader(file);
-      BufferedReader reader = new BufferedReader(fr);
-      teamcityInstances = reader.readline();
-      reader.close();
-      fr.close();
+      try {
+        FileReader fr = new FileReader(file);
+        BufferedReader reader = new BufferedReader(fr);
+        teamcityInstances = reader.readLine();
+        reader.close();
+        fr.close();
+      } catch (Exception e) {
+        LOG.error("IBMCloudClient error: " + e);
+      }
     }
     String agentName = image.getDetails().getAgentName();
     LOG.info("Trying to find SoftLayer instances that match " + agentName);

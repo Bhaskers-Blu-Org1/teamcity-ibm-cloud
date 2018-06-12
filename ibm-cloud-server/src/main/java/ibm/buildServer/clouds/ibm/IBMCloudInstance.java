@@ -21,6 +21,10 @@ import java.util.concurrent.Executors;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
 
 import com.intellij.openapi.diagnostic.Logger;
 
@@ -165,13 +169,17 @@ public class IBMCloudInstance implements CloudInstance
   }
 
   private void writeInstanceId() {
-    File file = new File(image.TEAMCITY_INSTANCES);
-    file.createNewFile();
-    FileWriter fw = new FileWriter(file, true);
-    PrintWriter writer = new PrintWriter(fw);
-    writer.write(getName());
-    writer.close();
-    fw.close();
+    try {
+      File file = new File(image.TEAMCITY_INSTANCES);
+      file.createNewFile();
+      FileWriter fw = new FileWriter(file, true);
+      PrintWriter writer = new PrintWriter(fw);
+      writer.write(getName());
+      writer.close();
+      fw.close();
+    } catch (IOException e) {
+      LOG.error("IBMCloudInstance error: " + e);
+    }
   }
 
   public void terminate() {
