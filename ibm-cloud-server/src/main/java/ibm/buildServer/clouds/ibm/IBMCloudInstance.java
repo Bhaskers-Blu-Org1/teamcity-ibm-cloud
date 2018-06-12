@@ -152,6 +152,7 @@ public class IBMCloudInstance implements CloudInstance
       System.out.println("Softlayer Hostname " + hostname + " and ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;
       myCurrentError = null;
+      writeInstanceId();
     } catch (Exception e) {
     	  // Any exception related to softlayer api or start of VSI will be caught here. 
       System.out.println("Error: " + e);
@@ -161,6 +162,16 @@ public class IBMCloudInstance implements CloudInstance
       myCurrentError = new CloudErrorInfo("Failed to start cloud instance" + e);
       throw e;  
     }
+  }
+
+  private void writeInstanceId() {
+    File file = new File(image.TEAMCITY_INSTANCES);
+    file.createNewFile();
+    FileWriter fw = new FileWriter(file, true);
+    PrintWriter writer = new PrintWriter(fw);
+    writer.write(getName());
+    writer.close();
+    fw.close();
   }
 
   public void terminate() {

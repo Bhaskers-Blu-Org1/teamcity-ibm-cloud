@@ -148,34 +148,71 @@ public class IBMCloudClient implements CloudClientEx {
     start();
   }
 
-  public void connectRunningInstances(List<Guest> instances, IBMCloudImage image) {
+  private void checkMetadata(Guest vsi, IBMCloudImage image) {
+    if(vsi.getUserData() == null) {
+      // Terminate this instance because the metadata was never set.
+      String name = vsi.getHostname().toString() + "_" + vsi.getId().toString();
+      executor 
+        = new CloudAsyncTaskExecutor("Terminating orphan instance " + name);
+      IBMTerminateInstanceTask task = new IBMTerminateInstanceTask(
+          image.ibmClient,
+          name,
+          vsi);
+      executor.submit("terminate orphan vsi", new Runnable() {
+        public void run() {
+          try {
+            task.run();
+            executor.scheduleWithFixedDelay(
+                "Terminate orphan instnace.",
+                task,
+                taskDelayTime,
+                taskDelayTime,
+                TimeUnit.MILLISECONDS);
+          } catch (Exception e) {
+            LOG.warn("IBMCloudClient error: " + e);
+          }
+        }
+      });
+    } else { 
+      // Create an instance object and connect it to this image.
+      // getUserData() returns a list; the first element in that list is the
+      // user data. It is a UserData object, getValue() returns a string.
+      String metadata = vsi.getUserData().get(0).getValue();
+      LOG.info("Metadata: " + metadata);
+      CloudInstanceUserData data = CloudInstanceUserData.deserialize(metadata);
+      String metadataImageName = data.getAgentConfigurationParameter("IMAGE_NAME");
+      LOG.info("Checking metadata image name " + metadataImageName
+          + " against TeamCity image name " + image.getName());
+      if(metadataImageName.equals(image.getName())) {
+        LOG.info("They match.");
+        IBMCloudInstance teamcityInstance = new IBMCloudInstance(image.getDetails(), data,
+            image.ibmClient, vsi, vsi.getProvisionDate().getTime());
+        teamcityInstance.setName();
+        teamcityInstance.setImage(image);
+        image.addInstance(teamcityInstance);
+      }
+    }
+  }
+
+
+  private void connectRunningInstances(List<Guest> instances, IBMCloudImage image) {
+    File file = new File(image.TEAMCITY_INSTANCES);
+    String teamcityInstances = "";
+    if(file.exists()) {
+      FileReader fr = new FileReader(file);
+      BufferedReader reader = new BufferedReader(fr);
+      teamcityInstances = reader.readline();
+      reader.close();
+      fr.close();
+    }
     String agentName = image.getDetails().getAgentName();
-    String metadataImageName;
-    String metadata;
-    CloudInstanceUserData data;
-    IBMCloudInstance teamcityInstance;
     LOG.info("Trying to find SoftLayer instances that match " + agentName);
     for(Guest instance : instances) {
-      if(instance.getUserData() != null 
+      if(teamcityInstances.contains(instance.getId().toString())
           && instance.getHostname().contains(agentName)) {
         LOG.info(instance.getHostname() + " matches " + agentName
             + " for VSI ID " + instance.getId());
-        // getUserData() returns a list; the first element in that list is the
-        // user data. It is a UserData object, getValue() returns a string.
-        metadata = instance.getUserData().get(0).getValue();
-        LOG.info("Metadata: " + metadata);
-        data = CloudInstanceUserData.deserialize(metadata);
-        metadataImageName = data.getAgentConfigurationParameter("IMAGE_NAME");
-        LOG.info("Checking metadata image name " + metadataImageName
-            + " against TeamCity image name " + image.getName());
-        if(metadataImageName.equals(image.getName())) {
-          LOG.info("They match.");
-          teamcityInstance = new IBMCloudInstance(image.getDetails(), data,
-              image.ibmClient, instance, instance.getProvisionDate().getTime());
-          teamcityInstance.setName();
-          teamcityInstance.setImage(image);
-          image.addInstance(teamcityInstance);
-        }
+        checkMetadata(instance, image);
       }
     }
   }

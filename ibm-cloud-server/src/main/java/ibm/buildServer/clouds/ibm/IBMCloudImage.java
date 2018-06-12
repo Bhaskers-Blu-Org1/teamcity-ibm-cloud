@@ -25,9 +25,10 @@ public class IBMCloudImage implements CloudImage
   private IBMCloudImageDetails details;
   private final Map<String, IBMCloudInstance> instances = new ConcurrentHashMap<>();
   public ApiClient ibmClient;
-  private final static Logger LOG = Loggers.SERVER;
   private CloudErrorInfo myCurrentError = null;
 
+  private final static Logger LOG = Loggers.SERVER;
+  public final static String TEAMCITY_INSTANCES = "teamcity_instances";
   public IBMCloudImage(IBMCloudImageDetails details) {
     this.details = details;
   }
