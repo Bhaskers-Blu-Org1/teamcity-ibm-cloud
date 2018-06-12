@@ -13,6 +13,7 @@ import com.softlayer.api.service.provisioning.version1.Transaction;
 import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.service.virtual.guest.Status;
 import com.softlayer.api.service.virtual.guest.power.State;
+import com.softlayer.api.service.Account;
 import com.softlayer.api.ApiException;
 
 import java.util.*;
@@ -42,33 +43,38 @@ public class IBMUpdateInstancesTask implements Runnable {
       for(IBMCloudInstance instance : image.getInstances()) {
         currentStatus = instance.getStatus();
         currentInstanceId = instance.getInstanceId();
-        try {
-          // This logic is modeled on https://github.com/softlayer/softlayer-java/blob/master/examples/src/main/java/com/softlayer/api/example/OrderVirtualServer.java
-          service = instance.guest.asService(instance.ibmClient);
-          service.withMask().status().name();
-          service.withMask().powerState().name();
-          service.withMask().activeTransaction();
-          service.withMask().activeTransaction().transactionStatus().friendlyName();
-          guest = service.getObject();
-          vsiStatus = guest.getStatus();
-          vsiState = guest.getPowerState();
-          vsiTransaction = guest.getActiveTransaction();
-          // Update instance user metadata when disk is mounted.
-          if(vsiState != null
-              && vsiState.getName().equals("Running")
-              && !instance.metadataIsSet()) {
-            instance.setMetadata();
-          }
-          newStatus = teamcityStatus(
-              vsiStatus,
-              vsiState,
-              vsiTransaction,
-              currentStatus);
-        } catch(ApiException.NotFound e) {
-          System.out.println("Error: " + e);
-          LOG.warn("Error: " + e);
-          newStatus = InstanceStatus.ERROR;
-        }
+        boolean isStopped = checkStopped(instance);        
+        if (isStopped) {
+        	newStatus = InstanceStatus.STOPPED;
+        } else {
+        	try {
+                // This logic is modeled on https://github.com/softlayer/softlayer-java/blob/master/examples/src/main/java/com/softlayer/api/example/OrderVirtualServer.java
+                service = instance.guest.asService(instance.ibmClient);
+                service.withMask().status().name();
+                service.withMask().powerState().name();
+                service.withMask().activeTransaction();
+                service.withMask().activeTransaction().transactionStatus().friendlyName();
+                guest = service.getObject();
+                vsiStatus = guest.getStatus();
+                vsiState = guest.getPowerState();
+                vsiTransaction = guest.getActiveTransaction();
+                // Update instance user metadata when disk is mounted.
+                if(vsiState != null
+                    && vsiState.getName().equals("Running")
+                    && !instance.metadataIsSet()) {
+                  instance.setMetadata();
+                }
+                newStatus = teamcityStatus(
+                    vsiStatus,
+                    vsiState,
+                    vsiTransaction,
+                    currentStatus);
+              } catch(ApiException.NotFound e) {
+                System.out.println("Error: " + e);
+                LOG.warn("Error: " + e);
+                newStatus = InstanceStatus.ERROR;
+              }
+        }        
         System.out.println("New status is " + newStatus.getName());
         instance.setStatus(newStatus);
         if(removable(instance.getStatus())) {
@@ -132,5 +138,23 @@ public class IBMUpdateInstancesTask implements Runnable {
   
   public void setClickedStop(String instanceId) {
 	  clickedStopInstances.add(instanceId);
+  }
+  
+  private boolean checkStopped(IBMCloudInstance instance) {
+	  InstanceStatus currentStatus = instance.getStatus();
+	  //Check whether the instance is already removed from SL.
+	  //If yes, we don't call SL api to update status, in order to avoid unnecessary ObjectNotFound exception.
+	  if (currentStatus == InstanceStatus.SCHEDULED_TO_STOP || currentStatus == InstanceStatus.STOPPING) {
+      	Account.Service accountService = Account.service(instance.ibmClient);
+      	List<Guest> guests = accountService.getVirtualGuests();
+      	for(Guest accountGuest : guests) {
+      		if (accountGuest.getId().toString().equals(instance.getInstanceId())) {
+      			return false;
+      		}
+      	}
+      } else {
+    	  return false;
+      }
+	  return true;
   }
 }
