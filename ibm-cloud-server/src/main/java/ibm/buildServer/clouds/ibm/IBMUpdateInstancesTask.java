@@ -74,7 +74,7 @@ public class IBMUpdateInstancesTask implements Runnable {
                 LOG.warn("Error: " + e);
                 newStatus = InstanceStatus.ERROR;
               }
-        }        
+        }
         System.out.println("New status is " + newStatus.getName());
         instance.setStatus(newStatus);
         if(removable(instance.getStatus())) {
@@ -141,20 +141,20 @@ public class IBMUpdateInstancesTask implements Runnable {
   }
   
   private boolean checkStopped(IBMCloudInstance instance) {
-	  InstanceStatus currentStatus = instance.getStatus();
-	  //Check whether the instance is already removed from SL.
-	  //If yes, we don't call SL api to update status, in order to avoid unnecessary ObjectNotFound exception.
-	  if (currentStatus == InstanceStatus.SCHEDULED_TO_STOP || currentStatus == InstanceStatus.STOPPING) {
-      	Account.Service accountService = Account.service(instance.ibmClient);
-      	List<Guest> guests = accountService.getVirtualGuests();
-      	for(Guest accountGuest : guests) {
-      		if (accountGuest.getId().toString().equals(instance.getInstanceId())) {
-      			return false;
-      		}
-      	}
-      } else {
-    	  return false;
+    InstanceStatus currentStatus = instance.getStatus();
+    //Check whether the instance is already removed from SL.
+    //If yes, we don't call SL api to update status, in order to avoid unnecessary ObjectNotFound exception.
+    if (currentStatus == InstanceStatus.SCHEDULED_TO_STOP || currentStatus == InstanceStatus.STOPPING) {
+      Account.Service accountService = Account.service(instance.ibmClient);
+      List<Guest> guests = accountService.getVirtualGuests();
+      for(Guest accountGuest : guests) {
+        if (accountGuest.getId().toString().equals(instance.getInstanceId())) {
+          return false;
+        }
       }
-	  return true;
+    } else {
+      return false;
+    }
+    return true;
   }
 }
