@@ -21,6 +21,8 @@ public class IBMCloudConstants {
 	public static final String DATACENTER_LIST = "IBMSL_datacenter";
 	public static final String AGENT_NAME = "IBMSL_agentName";
 	public static final String INSTANCE_NUMBER = "IBMSL_instanceNumber";
+	public static final String CUSTOMIZE_MACHINE_TYPE = "IBMSL_customizeMachineType";
+	public static final String FLAVOR_LIST = "IBMSL_flavorList";
 	public static final String MAX_MEMORY = "IBMSL_maxMemory";
 	public static final String MAX_CORES = "IBMSL_maxCores";
 	public static final String DISK_TYPE = "IBMSL_diskType";
@@ -59,6 +61,14 @@ public class IBMCloudConstants {
 		return INSTANCE_NUMBER;
 	}
 
+	public String getCustomizeMachineType() {
+		return CUSTOMIZE_MACHINE_TYPE;
+	}
+			
+	public String getFlavorList() {
+		return FLAVOR_LIST;
+	}
+		
 	public String getMaxMemory() {
 		return MAX_MEMORY;
 	}
