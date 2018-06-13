@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 
 import com.softlayer.api.service.Account;
 import com.softlayer.api.service.virtual.Guest;
+import com.softlayer.api.ApiClient;
 
 public class IBMCloudClient implements CloudClientEx {
   boolean initialized = false;
@@ -33,6 +34,7 @@ public class IBMCloudClient implements CloudClientEx {
   private Logger LOG = Loggers.SERVER;
   private CloudErrorInfo myCurrentError = null;
   private IBMUpdateInstancesTask updateInstancesTask;
+  private ApiClient ibmClient;
 
   public IBMCloudClient(CloudClientParameters params) {
     executor = new CloudAsyncTaskExecutor("Async tasks for cloud " + params.getProfileDescription());
@@ -41,13 +43,16 @@ public class IBMCloudClient implements CloudClientEx {
   }
 
   public void addImage(IBMCloudImage image) {
+    if(ibmClient == null) {
+      ibmClient = image.ibmClient;
+    }
 	  if (!images.containsKey(image.getName())) {
 		  images.put(image.getName(), image);
 	  } else {
 		  images.get(image.getName()).setDetails(image.getDetails());
 	  }   
   }
-    
+
   public boolean isInitialized() {
     return initialized;
   }
@@ -157,8 +162,7 @@ public class IBMCloudClient implements CloudClientEx {
       String name = vsi.getHostname() + "_" + vsi.getId().toString();
       executor 
         = new CloudAsyncTaskExecutor("Terminating orphan instance " + name);
-      IBMTerminateInstanceTask task = new IBMTerminateInstanceTask(
-          image.ibmClient,
+      IBMTerminateInstanceTask task = new IBMTerminateInstanceTask(ibmClient,
           name,
           vsi);
       executor.submit("terminate orphan vsi", new Runnable() {
@@ -188,15 +192,18 @@ public class IBMCloudClient implements CloudClientEx {
           + " against TeamCity image name " + image.getName());
       if(metadataImageName.equals(image.getName())) {
         LOG.info("They match.");
-        IBMCloudInstance teamcityInstance = new IBMCloudInstance(image.getDetails(), data,
-            image.ibmClient, vsi, vsi.getProvisionDate().getTime());
+        IBMCloudInstance teamcityInstance = new IBMCloudInstance(
+            image.getDetails(),
+            data,
+            ibmClient,
+            vsi,
+            vsi.getProvisionDate().getTime());
         teamcityInstance.setName();
         teamcityInstance.setImage(image);
         image.addInstance(teamcityInstance);
       }
     }
   }
-
 
   private void connectRunningInstances(List<Guest> instances, IBMCloudImage image) {
     File file = new File(image.TEAMCITY_INSTANCES);
@@ -225,8 +232,7 @@ public class IBMCloudClient implements CloudClientEx {
   }
 
   public void retrieveRunningInstances() {
-    Account.Service accountService = Account.service(
-        getImages().get(0).ibmClient);
+    Account.Service accountService = Account.service(ibmClient);
     accountService.setMask("mask[userData]");
     try {
       List<Guest> instances = accountService.getVirtualGuests();
