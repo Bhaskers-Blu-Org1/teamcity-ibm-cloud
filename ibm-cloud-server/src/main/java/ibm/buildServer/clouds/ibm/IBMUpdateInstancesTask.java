@@ -71,7 +71,7 @@ public class IBMUpdateInstancesTask implements Runnable {
                     vsiState,
                     vsiTransaction,
                     currentStatus);
-              } catch(Exception e) {
+              } catch(ApiException.NotFound e) {
                 System.out.println("Error: " + e);
                 LOG.warn("Error: " + e);
                 newStatus = InstanceStatus.ERROR;
