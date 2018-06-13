@@ -70,13 +70,11 @@ public class IBMCloudInstance implements CloudInstance
      * Else:  Set Flavor List.
      */
     if(details.getCustomizeMachineType()) {
-    		LOG.info("vvvvvvvvvvvvvvvvvvvvvvvvvvvvv  Custom vvvvvvvvvvvvvvvvvvvvvvvvvvvvv MaxCorer"+ details.getMaxCores());
      	guest.setStartCpus(details.getMaxCores());
 	    guest.setMaxMemory(details.getMaxMemory());
 	    guest.setLocalDiskFlag(details.getLocalDiskFlag());
     }
     else {
-    		LOG.info("vvvvvvvvvvvvvvvvvvvvvvvvvvvvv Not Custom  Flavor List vvvvvvvvvvvvvvvvvvvvvvvvvvvvv "+ details.getFlavorList());
 	    SupplementalCreateObjectOptions supplementObject = new SupplementalCreateObjectOptions(); 
 	    supplementObject.setFlavorKeyName(details.getFlavorList());
 	    guest.setSupplementalCreateObjectOptions(supplementObject);
