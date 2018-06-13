@@ -71,12 +71,12 @@ public class IBMUpdateInstancesTask implements Runnable {
                     vsiState,
                     vsiTransaction,
                     currentStatus);
-              } catch(ApiException.NotFound e) {
+              } catch(Exception e) {
                 System.out.println("Error: " + e);
                 LOG.warn("Error: " + e);
                 newStatus = InstanceStatus.ERROR;
               }
-        }
+        }        
         message = "New status for " + currentInstanceId + " is "
           + newStatus.getName();
         // This print statement is for checking the status during automated unit
@@ -147,20 +147,20 @@ public class IBMUpdateInstancesTask implements Runnable {
   }
   
   private boolean checkStopped(IBMCloudInstance instance) {
-    InstanceStatus currentStatus = instance.getStatus();
-    //Check whether the instance is already removed from SL.
-    //If yes, we don't call SL api to update status, in order to avoid unnecessary ObjectNotFound exception.
-    if (currentStatus == InstanceStatus.SCHEDULED_TO_STOP || currentStatus == InstanceStatus.STOPPING) {
-      Account.Service accountService = Account.service(instance.ibmClient);
-      List<Guest> guests = accountService.getVirtualGuests();
-      for(Guest accountGuest : guests) {
-        if (accountGuest.getId().toString().equals(instance.getInstanceId())) {
-        	return false;
-        }
-      }
-    } else {
-      return false;
-    }
-    return true;
+	    InstanceStatus currentStatus = instance.getStatus();
+	    //Check whether the instance is already removed from SL.
+	    //If yes, we don't call SL api to update status, in order to avoid unnecessary ObjectNotFound exception.
+	    if (currentStatus == InstanceStatus.SCHEDULED_TO_STOP || currentStatus == InstanceStatus.STOPPING) {
+	      Account.Service accountService = Account.service(instance.ibmClient);
+	      List<Guest> guests = accountService.getVirtualGuests();
+	      for(Guest accountGuest : guests) {
+	        if (accountGuest.getId().toString().equals(instance.getInstanceId())) {
+	        	return false;
+	        }
+	      }
+	    } else {
+	      return false;
+	    }
+	    return true;
   }
 }
