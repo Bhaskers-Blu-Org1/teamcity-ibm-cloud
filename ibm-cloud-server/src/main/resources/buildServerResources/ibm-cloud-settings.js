@@ -219,6 +219,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         
         this.$IBMSL_flavorList.on('change', function (e, value) {
         		if(value !== undefined) this.$IBMSL_flavorList.val(value);
+        		this.checkCloudImageEdited(this._image['IBMSL_flavorList'], this.$IBMSL_flavorList.val());
         		this._image['IBMSL_flavorList'] = this.$IBMSL_flavorList.val();
         		this.validateOptions(e.target.getAttribute('data-id'));
         	}.bind(this));
