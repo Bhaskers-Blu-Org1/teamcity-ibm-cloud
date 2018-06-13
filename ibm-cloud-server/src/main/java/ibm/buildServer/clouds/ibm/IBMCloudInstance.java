@@ -22,6 +22,10 @@ import java.util.concurrent.Executors;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
 
 import com.intellij.openapi.diagnostic.Logger;
 
@@ -29,7 +33,7 @@ public class IBMCloudInstance implements CloudInstance
 {
   private InstanceStatus myStatus;
   private ScheduledExecutorService executor;
-  // id and name is set in the start() method.
+  // id, name, and hostname are set in the setName() method.
   private String id;
   private String name;
   private String hostname;
@@ -47,35 +51,40 @@ public class IBMCloudInstance implements CloudInstance
   public IBMCloudInstance(IBMCloudImageDetails details,
       CloudInstanceUserData data,
       ApiClient ibmClient) {
-    myStatus = InstanceStatus.UNKNOWN;
-    executor = Executors.newSingleThreadScheduledExecutor();
-    guest = new Guest();
+    this(details, data, ibmClient, new Guest(), new Date());
     guest.setHostname(details.getAgentName());
     guest.setDomain(details.getDomainName());
     guest.setStartCpus(details.getMaxCores());
     guest.setMaxMemory(details.getMaxMemory());
-    // Hardcode hourly billing for now. Once the UI allows the user to select
-    // hourly or monthly billing we'll do something like details.getBilling()
-    //guest.setHourlyBillingFlag(true);
     guest.setHourlyBillingFlag(details.getVsiBilling());
-    // Hardcode agent using global identifier. Selecting agents is in the next
-    // sprint.
     Group blockDevice = new Group();
-    //blockDevice.setGlobalIdentifier("aaad7259-06ff-453b-bedc-e425661fa151");
     blockDevice.setGlobalIdentifier(details.getVsiTemplate());
     guest.setBlockDeviceTemplateGroup(blockDevice);
-    //guest.setLocalDiskFlag(details.getLocalDiskFlag().contains("true"));
     guest.setLocalDiskFlag(details.getLocalDiskFlag());
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
-    guest.setPostInstallScriptUri("http://169.60.13.41/test.sh");
-    Component networkComponent = new Component();
-    networkComponent.setMaxSpeed(Long.valueOf(details.getNetwork()));
-    guest.getNetworkComponents().add(networkComponent);
-    startedTime = new Date();
+  }
+
+  public IBMCloudInstance(IBMCloudImageDetails details,
+      CloudInstanceUserData data,
+      ApiClient ibmClient,
+      Guest guest,
+      Date dateTime) {
+    this.guest = guest;
+    startedTime = dateTime;
     imageDetails = details;
     userData = data;
     this.ibmClient = ibmClient;
+    myStatus = InstanceStatus.UNKNOWN;
+    executor = Executors.newSingleThreadScheduledExecutor();
+  }
+
+  public void setName() {
+    id = guest.getId().toString();
+    hostname = guest.getHostname();
+    if (hostname != null && id != null) {
+      name = hostname + "_" + id; 
+    }
   }
 
   public IBMCloudImage getImage() {
@@ -143,15 +152,12 @@ public class IBMCloudInstance implements CloudInstance
     }
     try {
       guest = Guest.service(ibmClient).createObject(guest);
-      id = guest.getId().toString();
-      hostname = guest.getHostname().toString();
-      if (hostname != null && id != null) {
-        name = hostname + "_" + id; 
-      }
+      setName();
       LOG.info("Softlayer Hostname " + hostname + " and ID is " + id);
       System.out.println("Softlayer Hostname " + hostname + " and ID is " + id);
       myStatus = InstanceStatus.SCHEDULED_TO_START;
       myCurrentError = null;
+      writeInstanceId();
     } catch (Exception e) {
     	  // Any exception related to softlayer api or start of VSI will be caught here. 
       System.out.println("Error: " + e);
@@ -160,6 +166,20 @@ public class IBMCloudInstance implements CloudInstance
       // Catch exception as cloud error and throw error to ibmCloudImage file.
       myCurrentError = new CloudErrorInfo("Failed to start cloud instance" + e);
       throw e;  
+    }
+  }
+
+  private void writeInstanceId() {
+    try {
+      File file = new File(image.TEAMCITY_INSTANCES);
+      file.createNewFile();
+      FileWriter fw = new FileWriter(file, true);
+      PrintWriter writer = new PrintWriter(fw);
+      writer.write(getName());
+      writer.close();
+      fw.close();
+    } catch (IOException e) {
+      LOG.error("IBMCloudInstance error: " + e);
     }
   }
 

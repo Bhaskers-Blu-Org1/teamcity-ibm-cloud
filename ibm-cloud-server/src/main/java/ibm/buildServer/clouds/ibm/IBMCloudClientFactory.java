@@ -44,6 +44,7 @@ public class IBMCloudClientFactory implements CloudClientFactory {
 	  String clientId = state.getProjectId() + state.getProfileId();
 	  IBMCloudClient client;
 	  boolean createdNewClient = false;
+      boolean clientHasImage = false;
 	  if (clients.containsKey(clientId)) {
 		  client = clients.get(clientId);
 	  } else {
@@ -59,8 +60,13 @@ public class IBMCloudClientFactory implements CloudClientFactory {
       image.setCredentials(params.getParameter(IBMCloudConstants.USER_NAME), 
     		  params.getParameter(IBMCloudConstants.API_KEY));
       client.addImage(image);
+      clientHasImage = true;
     }
-    if (createdNewClient) {
+    if(clientHasImage) {
+      LOG.info("Checking for running instances on each image for " + clientId);
+      client.retrieveRunningInstances();
+    }
+    if(createdNewClient) {
       client.start();
     } else {
       //The updateInstancesTask stops working when user updates images, so needs to restart.

@@ -17,6 +17,13 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
+
+import com.softlayer.api.service.Account;
+import com.softlayer.api.service.virtual.Guest;
 
 public class IBMCloudClient implements CloudClientEx {
   boolean initialized = false;
@@ -142,5 +149,92 @@ public class IBMCloudClient implements CloudClientEx {
     dispose();
     executor = new CloudAsyncTaskExecutor("Async tasks for cloud " + params.getProfileDescription());
     start();
+  }
+
+  private void checkMetadata(Guest vsi, IBMCloudImage image) {
+    if(vsi.getUserData() == null || vsi.getUserData().size() == 0) {
+      // Terminate this instance because the metadata was never set.
+      String name = vsi.getHostname() + "_" + vsi.getId().toString();
+      executor 
+        = new CloudAsyncTaskExecutor("Terminating orphan instance " + name);
+      IBMTerminateInstanceTask task = new IBMTerminateInstanceTask(
+          image.ibmClient,
+          name,
+          vsi);
+      executor.submit("terminate orphan vsi", new Runnable() {
+        public void run() {
+          try {
+            task.run();
+            executor.scheduleWithFixedDelay(
+                "Terminate orphan instnace.",
+                task,
+                taskDelayTime,
+                taskDelayTime,
+                TimeUnit.MILLISECONDS);
+          } catch (Exception e) {
+            LOG.warn("IBMCloudClient error: " + e);
+          }
+        }
+      });
+    } else { 
+      // Create an instance object and connect it to this image.
+      // getUserData() returns a list; the first element in that list is the
+      // user data. It is a UserData object, getValue() returns a string.
+      String metadata = vsi.getUserData().get(0).getValue();
+      LOG.info("Metadata: " + metadata);
+      CloudInstanceUserData data = CloudInstanceUserData.deserialize(metadata);
+      String metadataImageName = data.getAgentConfigurationParameter("IMAGE_NAME");
+      LOG.info("Checking metadata image name " + metadataImageName
+          + " against TeamCity image name " + image.getName());
+      if(metadataImageName.equals(image.getName())) {
+        LOG.info("They match.");
+        IBMCloudInstance teamcityInstance = new IBMCloudInstance(image.getDetails(), data,
+            image.ibmClient, vsi, vsi.getProvisionDate().getTime());
+        teamcityInstance.setName();
+        teamcityInstance.setImage(image);
+        image.addInstance(teamcityInstance);
+      }
+    }
+  }
+
+
+  private void connectRunningInstances(List<Guest> instances, IBMCloudImage image) {
+    File file = new File(image.TEAMCITY_INSTANCES);
+    String teamcityInstances = "";
+    if(file.exists()) {
+      try {
+        FileReader fr = new FileReader(file);
+        BufferedReader reader = new BufferedReader(fr);
+        teamcityInstances = reader.readLine();
+        reader.close();
+        fr.close();
+      } catch (Exception e) {
+        LOG.error("IBMCloudClient error: " + e);
+      }
+    }
+    String agentName = image.getDetails().getAgentName();
+    LOG.info("Trying to find SoftLayer instances that match " + agentName);
+    for(Guest instance : instances) {
+      if(teamcityInstances.contains(instance.getId().toString())
+          && instance.getHostname().equals(agentName)) {
+        LOG.info(instance.getHostname() + " matches " + agentName
+            + " for VSI ID " + instance.getId());
+        checkMetadata(instance, image);
+      }
+    }
+  }
+
+  public void retrieveRunningInstances() {
+    Account.Service accountService = Account.service(
+        getImages().get(0).ibmClient);
+    accountService.setMask("mask[userData]");
+    try {
+      List<Guest> instances = accountService.getVirtualGuests();
+      for(IBMCloudImage image : getImages()) {
+        connectRunningInstances(instances, image);
+      }
+    } catch (Exception e) {
+      LOG.error("Unable to retrieve the SoftLayer metadata information. " + e);
+    }
   }
 }
