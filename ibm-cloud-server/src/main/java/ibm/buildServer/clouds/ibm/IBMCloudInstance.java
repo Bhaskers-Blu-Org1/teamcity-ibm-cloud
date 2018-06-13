@@ -9,6 +9,7 @@ import com.softlayer.api.ApiClient;
 import com.softlayer.api.service.Location;
 import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.service.virtual.guest.block.device.template.Group;
+import com.softlayer.api.service.virtual.guest.network.Component;
 import com.softlayer.api.service.virtual.guest.SupplementalCreateObjectOptions;
 
 import jetbrains.buildServer.clouds.*;
@@ -60,6 +61,10 @@ public class IBMCloudInstance implements CloudInstance
     // Setting Datacenter.
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
+
+    Component networkComponent = new Component();
+    networkComponent.setMaxSpeed(Long.valueOf(details.getNetwork()));
+    guest.getNetworkComponents().add(networkComponent);
     
     // Setting Host name, Domain name & VsiBilling Type.
     guest.setHostname(details.getAgentName());
@@ -79,6 +84,7 @@ public class IBMCloudInstance implements CloudInstance
 	    supplementObject.setFlavorKeyName(details.getFlavorList());
 	    guest.setSupplementalCreateObjectOptions(supplementObject);
     }
+
   }
 
   public IBMCloudInstance(IBMCloudImageDetails details,
