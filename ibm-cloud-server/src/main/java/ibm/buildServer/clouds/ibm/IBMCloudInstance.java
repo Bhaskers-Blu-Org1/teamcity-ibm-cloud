@@ -9,7 +9,6 @@ import com.softlayer.api.ApiClient;
 import com.softlayer.api.service.Location;
 import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.service.virtual.guest.block.device.template.Group;
-import com.softlayer.api.service.virtual.guest.network.Component;
 
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.base.connector.CloudAsyncTaskExecutor;
