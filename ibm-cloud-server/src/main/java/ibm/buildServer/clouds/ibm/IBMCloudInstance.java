@@ -9,6 +9,7 @@ import com.softlayer.api.ApiClient;
 import com.softlayer.api.service.Location;
 import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.service.virtual.guest.block.device.template.Group;
+import com.softlayer.api.service.virtual.guest.network.Component;
 
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.base.connector.CloudAsyncTaskExecutor;
@@ -62,6 +63,9 @@ public class IBMCloudInstance implements CloudInstance
     guest.setLocalDiskFlag(details.getLocalDiskFlag());
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
+    Component networkComponent = new Component();
+    networkComponent.setMaxSpeed(Long.valueOf(details.getNetwork()));
+    guest.getNetworkComponents().add(networkComponent);
   }
 
   public IBMCloudInstance(IBMCloudImageDetails details,
