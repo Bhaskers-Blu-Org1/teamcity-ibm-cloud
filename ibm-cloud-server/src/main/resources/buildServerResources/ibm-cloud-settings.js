@@ -8,8 +8,9 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
     propertiesBeanDatacenter: '',
     hasCloudImageEdited: false,
     isEditImageOrAddImageClicked: false,
+    customizeMachineTypeChecked: false,
     
-    _dataKeys: [ 'IBMSL_vsiTemplate', 'IBMSL_datacenter', 'IBMSL_agentName', 'IBMSL_domainName', 'IBMSL_maxMemory', 'IBMSL_maxCores', 'IBMSL_diskType', 'IBMSL_network', 'IBMSL_vsiBilling', 'agent_pool_id', 'IBMSL_maximumInstances'],
+    _dataKeys: [ 'IBMSL_vsiTemplate', 'IBMSL_datacenter', 'IBMSL_agentName', 'IBMSL_domainName', 'IBMSL_customizeMachineType', 'IBMSL_flavorList', 'IBMSL_maxMemory', 'IBMSL_maxCores', 'IBMSL_diskType', 'IBMSL_network', 'IBMSL_vsiBilling', 'agent_pool_id', 'IBMSL_maximumInstances'],
     
     templates: {
         imagesTableRow: $j('<tr class="imagesTableRow">\
@@ -17,9 +18,6 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         		<td class="IBMSL_datacenter"></td>\
         		<td class="IBMSL_agentName"></td>\
         		<td class="IBMSL_domainName"></td>\
-        		<td class="IBMSL_maxMemory"></td>\
-        		<td class="IBMSL_maxCores"></td>\
-        		<td class="IBMSL_diskType"></td>\
 			<td class="IBMSL_network"></td>\
         		<td class="IBMSL_vsiBilling"></td>\
 			<td class="edit"><a href="#" class="editVmImageLink">edit</a></td>\
@@ -37,6 +35,8 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         		IBMSL_datacenter: '!SHOULD_NOT_BE_EMPTY!',
         		IBMSL_agentName: '!SHOULD_NOT_BE_EMPTY!',
         		IBMSL_domainName: '!SHOULD_NOT_BE_EMPTY!',
+        		IBMSL_customizeMachineType: '!OPTIONAL_FIELD!',
+        		IBMSL_flavorList: '!SHOULD_NOT_BE_EMPTY!',
         		IBMSL_maxMemory: '!SHOULD_NOT_BE_EMPTY!',
         		IBMSL_maxCores: '!SHOULD_NOT_BE_EMPTY!',
         		IBMSL_diskType: '!SHOULD_NOT_BE_EMPTY!',
@@ -48,10 +48,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         	 	agentNameBadParam: 'Not a valid Agent Name',
         		domainNameBadParam: 'Not a valid Domain Name',
             required: 'This field cannot be blank',
-            requiredForFargate: 'This field is required when using FARGATE launch type',
             notSelected: 'Something should be selected',
-            nonNegative: 'Must be non-negative number',
-            nonPercentile: 'Must be a number from range 1..100',
             maximumInstances: 'Must be a positive integer or leave blank'
         },
         
@@ -77,6 +74,8 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
          this.$IBMSL_datacenter = $j('#IBMSL_datacenter');
          this.$IBMSL_agentName = $j('#IBMSL_agentName');
          this.$IBMSL_domainName = $j('#IBMSL_domainName');
+         this.$IBMSL_customizeMachineType = $j('#IBMSL_customizeMachineType');
+         this.$IBMSL_flavorList = $j('#IBMSL_flavorList');
          this.$IBMSL_maxMemory = $j('#IBMSL_maxMemory');
          this.$IBMSL_maxCores = $j('#IBMSL_maxCores');
          this.$IBMSL_diskType = $j('#IBMSL_diskType');
@@ -200,6 +199,31 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
             this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
         
+        this.$IBMSL_customizeMachineType.on('change', function (e, value) {
+        		if(value !== undefined) {
+        			if(value == 'true' || value === true) this.$IBMSL_customizeMachineType.prop('checked', true);
+        	        else this.$IBMSL_customizeMachineType.prop('checked',false);
+        		}
+        	    this._image['IBMSL_customizeMachineType'] = this.$IBMSL_customizeMachineType.is(':checked');
+        	    this.customizeMachineTypeChecked = this.$IBMSL_customizeMachineType.is(':checked');
+            if(this.customizeMachineTypeChecked) {
+        	    		$j('.customizeMachine').removeClass('hidden');
+        	    		$j('.flavor').addClass('hidden');
+        	    	}
+        	    	else {
+        	    		$j('.customizeMachine').addClass('hidden');
+        	    		$j('.flavor').removeClass('hidden');
+        	    	}
+        	    	this.validateOptions(e.target.getAttribute('data-id'));
+        }.bind(this));
+        
+        this.$IBMSL_flavorList.on('change', function (e, value) {
+        		if(value !== undefined) this.$IBMSL_flavorList.val(value);
+        		this.checkCloudImageEdited(this._image['IBMSL_flavorList'], this.$IBMSL_flavorList.val());
+        		this._image['IBMSL_flavorList'] = this.$IBMSL_flavorList.val();
+        		this.validateOptions(e.target.getAttribute('data-id'));
+        	}.bind(this));
+        
         this.$IBMSL_maxMemory.on('change', function (e, value) {
             if(value !== undefined) this.$IBMSL_maxMemory.val(value);
             this.checkCloudImageEdited(this._image['IBMSL_maxMemory'], this.$IBMSL_maxMemory.val());
@@ -291,7 +315,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         				var vsiTemplateValueJson = JSON.parse(props[className]);
         				$row.find('.' + className).text(vsiTemplateValueJson.name.replace(/&nbsp;/g,' ') || defaults[className]);
         			}
-        		else if(className == 'IBMSL_diskType' || className == 'IBMSL_vsiBilling')
+        		else if(className == 'IBMSL_vsiBilling')
         			{
         				var json = JSON.parse(props[className]);
         				$row.find('.' + className).text(json.type || defaults[className]);
@@ -345,7 +369,22 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         $j('#ibmImageDialogTitle').text('Add IBM Cloud Image');
         BS.Hider.addHideFunction('ibmImageDialog', this._resetDataAndDialog.bind(this));
         this.$addImageButton.val('Add').data('image-id', 'undefined');
+        // initializing _image with fields default value.
         this._image = {};
+        this._image['IBMSL_vsiTemplate'] = "";
+        	this._image['IBMSL_datacenter'] = "";
+        	this._image['IBMSL_agentName'] = "";
+        	this._image['IBMSL_domainName'] = "";
+        	this._image['IBMSL_datacenter'] = "";
+        	this._image['IBMSL_customizeMachineType'] = false;
+        	this._image['IBMSL_flavorList'] = "";
+        	this._image['IBMSL_maxMemory'] = "";
+        	this._image['IBMSL_maxCores'] = "";
+        	this._image['IBMSL_diskType'] = "";
+        	this._image['IBMSL_network'] = "";
+        	this._image['IBMSL_vsiBilling'] = "";
+        	this._image['agent_pool_id'] = "";
+        	this._image['IBMSL_maximumInstances'] = "";
         BS.IBMCloud.ImageDialog.showCentered();
     },
     
@@ -393,6 +432,8 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         this.$IBMSL_datacenter.trigger('change', image['IBMSL_datacenter'] || '');
         this.$IBMSL_agentName.trigger('change', image['IBMSL_agentName'] || '');
         this.$IBMSL_domainName.trigger('change', image['IBMSL_domainName'] || '');
+        this.$IBMSL_customizeMachineType.trigger('change', image['IBMSL_customizeMachineType'] || '');
+        this.$IBMSL_flavorList.trigger('change', image['IBMSL_flavorList'] || '');
         this.$IBMSL_maxMemory.trigger('change', image['IBMSL_maxMemory'] || '');
         this.$IBMSL_maxCores.trigger('change', image['IBMSL_maxCores'] || '');
         this.$IBMSL_diskType.trigger('change', image['IBMSL_diskType'] || '');
@@ -411,6 +452,8 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         this.$IBMSL_datacenter.trigger('change', '');
         this.$IBMSL_agentName.trigger('change', '');
         this.$IBMSL_domainName.trigger('change', '');
+        this.$IBMSL_customizeMachineType.trigger('change', '');
+        this.$IBMSL_flavorList.trigger('change', '');
         this.$IBMSL_maxMemory.trigger('change', '');
         this.$IBMSL_maxCores.trigger('change', '');
         this.$IBMSL_diskType.trigger('change', '');
@@ -504,11 +547,18 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
                         isValid = false;
                     }
             }.bind(this),
-                
+            
+            IBMSL_flavorList : function () {
+            		var IBMSL_flavorList = this._image['IBMSL_flavorList'];
+            	    	if (!this.customizeMachineTypeChecked && (!IBMSL_flavorList || IBMSL_flavorList === '' || IBMSL_flavorList === undefined)) {
+            	    		this.addOptionError('notSelected', 'IBMSL_flavorList');
+            	    		isValid = false;
+            	    	}
+            }.bind(this),
                 
             IBMSL_maxMemory : function () {
                     var IBMSL_maxMemory = this._image['IBMSL_maxMemory'];
-                    if (!IBMSL_maxMemory || IBMSL_maxMemory === '' || IBMSL_maxMemory === undefined) {
+                    if (this.customizeMachineTypeChecked && (!IBMSL_maxMemory || IBMSL_maxMemory === '' || IBMSL_maxMemory === undefined)) {
                         this.addOptionError('notSelected', 'IBMSL_maxMemory');
                         isValid = false;
                     }
@@ -516,7 +566,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
                 
            IBMSL_maxCores : function () {
                     var IBMSL_maxCores = this._image['IBMSL_maxCores'];
-                    if (!IBMSL_maxCores || IBMSL_maxCores === '' || IBMSL_maxCores === undefined) {
+                    if (this.customizeMachineTypeChecked && (!IBMSL_maxCores || IBMSL_maxCores === '' || IBMSL_maxCores === undefined)) {
                         this.addOptionError('notSelected', 'IBMSL_maxCores');
                         isValid = false;
                     }
@@ -524,7 +574,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
                 
            IBMSL_diskType : function () {
                     var IBMSL_diskType = this._image['IBMSL_diskType'];
-                    if (!IBMSL_diskType || IBMSL_diskType === '' || IBMSL_diskType === undefined) {
+                    if (this.customizeMachineTypeChecked && (!IBMSL_diskType || IBMSL_diskType === '' || IBMSL_diskType === undefined)) {
                         this.addOptionError('notSelected', 'IBMSL_diskType');
                         isValid = false;
                     }

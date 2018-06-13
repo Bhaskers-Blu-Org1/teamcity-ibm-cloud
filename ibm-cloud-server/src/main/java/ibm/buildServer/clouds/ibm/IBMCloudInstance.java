@@ -10,6 +10,7 @@ import com.softlayer.api.service.Location;
 import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.service.virtual.guest.block.device.template.Group;
 import com.softlayer.api.service.virtual.guest.network.Component;
+import com.softlayer.api.service.virtual.guest.SupplementalCreateObjectOptions;
 
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.base.connector.CloudAsyncTaskExecutor;
@@ -52,20 +53,38 @@ public class IBMCloudInstance implements CloudInstance
       CloudInstanceUserData data,
       ApiClient ibmClient) {
     this(details, data, ibmClient, new Guest(), new Date());
-    guest.setHostname(details.getAgentName());
-    guest.setDomain(details.getDomainName());
-    guest.setStartCpus(details.getMaxCores());
-    guest.setMaxMemory(details.getMaxMemory());
-    guest.setHourlyBillingFlag(details.getVsiBilling());
+    // Setting VsiTemplate.
     Group blockDevice = new Group();
     blockDevice.setGlobalIdentifier(details.getVsiTemplate());
     guest.setBlockDeviceTemplateGroup(blockDevice);
-    guest.setLocalDiskFlag(details.getLocalDiskFlag());
+    
+    // Setting Datacenter.
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
+
     Component networkComponent = new Component();
     networkComponent.setMaxSpeed(Long.valueOf(details.getNetwork()));
     guest.getNetworkComponents().add(networkComponent);
+    
+    // Setting Host name, Domain name & VsiBilling Type.
+    guest.setHostname(details.getAgentName());
+    guest.setDomain(details.getDomainName());
+    guest.setHourlyBillingFlag(details.getVsiBilling());
+    
+    /* If CustomizeMachineType = true: Set RAM, CPU & Disk Type.
+     * Else:  Set Flavor List.
+     */
+    if(details.getCustomizeMachineType()) {
+     	guest.setStartCpus(details.getMaxCores());
+	    guest.setMaxMemory(details.getMaxMemory());
+	    guest.setLocalDiskFlag(details.getLocalDiskFlag());
+    }
+    else {
+	    SupplementalCreateObjectOptions supplementObject = new SupplementalCreateObjectOptions(); 
+	    supplementObject.setFlavorKeyName(details.getFlavorList());
+	    guest.setSupplementalCreateObjectOptions(supplementObject);
+    }
+
   }
 
   public IBMCloudInstance(IBMCloudImageDetails details,
@@ -73,13 +92,13 @@ public class IBMCloudInstance implements CloudInstance
       ApiClient ibmClient,
       Guest guest,
       Date dateTime) {
-    this.guest = guest;
-    startedTime = dateTime;
-    imageDetails = details;
-    userData = data;
-    this.ibmClient = ibmClient;
-    myStatus = InstanceStatus.UNKNOWN;
-    executor = Executors.newSingleThreadScheduledExecutor();
+	  this.guest = guest;
+	  startedTime = dateTime;
+	  imageDetails = details;
+	  userData = data;
+	  this.ibmClient = ibmClient;
+	  myStatus = InstanceStatus.UNKNOWN;
+	  executor = Executors.newSingleThreadScheduledExecutor();
   }
 
   public void setName() {

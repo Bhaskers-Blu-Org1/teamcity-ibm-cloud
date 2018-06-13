@@ -13,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 import com.softlayer.api.*;
 
+import ibm.buildServer.clouds.ibm.IBMCloudImageDetails;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
@@ -82,7 +84,7 @@ public class IBMCloudImage implements CloudImage
   @Nullable
   @Override
   public Integer getAgentPoolId() {
-    return details.agentPoolId;
+    return details.getAgentPoolId();
   }
 
   @Nullable

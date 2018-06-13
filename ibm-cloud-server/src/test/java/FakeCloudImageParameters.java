@@ -21,8 +21,9 @@ public class FakeCloudImageParameters extends CloudImageParameters {
     parameters = new HashMap<String,String>();
     parameters.put(IBMCloudConstants.AGENT_NAME, "fake-agent");
     parameters.put(IBMCloudConstants.DATACENTER_LIST, "dal13");
-    parameters.put(IBMCloudConstants.DISK_TYPE, "{\"type\":\"SAN\", \"value\":\"false\"}");
+    parameters.put(IBMCloudConstants.DISK_TYPE, "false");
     parameters.put(IBMCloudConstants.DOMAIN_NAME, "ibmwdtest.com");
+    parameters.put(IBMCloudConstants.CUSTOMIZE_MACHINE_TYPE, "true");
     parameters.put(IBMCloudConstants.MAX_CORES, "1");
     parameters.put(IBMCloudConstants.MAX_MEMORY, "1024");
     parameters.put(IBMCloudConstants.NETWORK, "100");
@@ -33,6 +34,7 @@ public class FakeCloudImageParameters extends CloudImageParameters {
     parameters.put(IBMCloudConstants.PROFILE_ID, "fake-profile");
     parameters.put(IBMCloudConstants.SOURCE_ID, "fake-source-id");
     parameters.put(IBMCloudConstants.MAXIMUM_INSTANCES, "");
+    
   }
 
   public Integer getAgentPoolId() {
