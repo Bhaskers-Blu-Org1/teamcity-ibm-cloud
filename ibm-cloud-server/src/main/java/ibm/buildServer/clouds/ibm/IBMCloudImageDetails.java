@@ -18,6 +18,7 @@ public class IBMCloudImageDetails{
 	private String network;
 	private String flavorList;
 	private String localDiskFlag;
+	private String diskSize;
 	private String maxCores;
 	private String maxMemory;
 	private boolean customizeMachineType;
@@ -35,6 +36,7 @@ public class IBMCloudImageDetails{
 		network = imageParameters.getParameter(IBMCloudConstants.NETWORK);
 		flavorList = imageParameters.getParameter(IBMCloudConstants.FLAVOR_LIST);
 		localDiskFlag = imageParameters.getParameter(IBMCloudConstants.DISK_TYPE);
+		diskSize = imageParameters.getParameter(IBMCloudConstants.DISK_SIZE);
 		customizeMachineType = Boolean.parseBoolean(imageParameters.getParameter(IBMCloudConstants.CUSTOMIZE_MACHINE_TYPE));
 		vsiBilling = Boolean.parseBoolean(getValueFromJSON(imageParameters.getParameter(IBMCloudConstants.VSI_BILLING)));
 		maxCores = imageParameters.getParameter(IBMCloudConstants.MAX_CORES);
@@ -125,6 +127,14 @@ public class IBMCloudImageDetails{
 		this.localDiskFlag = localDiskFlag;
 	}
 	
+	public String getDiskSize() {
+		return diskSize;
+	}
+	
+	public void setDiskSize(String diskSize) {
+		this.diskSize = diskSize;
+	}
+	
 	public boolean getCustomizeMachineType() {
 		return customizeMachineType;
 	}
@@ -178,7 +188,8 @@ public class IBMCloudImageDetails{
 		  String str = "Image Details: {\nProfile Id:"+ profileId+
 				  		",\nNetwork:"+network+",\nSource Id:"+sourceId+
 				  		",\nAgentName:"+agentName+",\nDatacenter:"+datacenter+
-				  		",\nDiskType:"+localDiskFlag+",\nVSI Template:"+vsiTemplate+
+				  		",\nDiskType:"+localDiskFlag+",\nDiskSize:"+diskSize+
+				  		",\nVSI Template:"+vsiTemplate+
 				  		",\nMax Cores:"+maxCores+",\nMax Memory:"+maxMemory+
 				  		",\nDomain:"+domainName+
 				  		",\nAgent Pool Id:"+Integer.toString(agentPoolId)+

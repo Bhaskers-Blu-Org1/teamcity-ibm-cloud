@@ -8,9 +8,11 @@ package ibm.buildServer.clouds.ibm;
 import com.softlayer.api.ApiClient;
 import com.softlayer.api.service.Location;
 import com.softlayer.api.service.virtual.Guest;
+import com.softlayer.api.service.virtual.guest.block.device.Template;
 import com.softlayer.api.service.virtual.guest.block.device.template.Group;
 import com.softlayer.api.service.virtual.guest.network.Component;
 import com.softlayer.api.service.virtual.guest.SupplementalCreateObjectOptions;
+import com.softlayer.api.service.virtual.disk.Image;
 
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.base.connector.CloudAsyncTaskExecutor;
@@ -71,13 +73,20 @@ public class IBMCloudInstance implements CloudInstance
     guest.setDomain(details.getDomainName());
     guest.setHourlyBillingFlag(details.getVsiBilling());
     
-    /* If CustomizeMachineType = true: Set RAM, CPU & Disk Type.
+    /* If CustomizeMachineType = true: Set RAM, CPU, Disk Type & Disk Size.
      * Else:  Set Flavor List.
      */
     if(details.getCustomizeMachineType()) {
      	guest.setStartCpus(details.getMaxCores());
 	    guest.setMaxMemory(details.getMaxMemory());
 	    guest.setLocalDiskFlag(details.getLocalDiskFlag());
+	    
+	    // Disk Size
+	    Template template = new Template();
+	    Image diskImage = new Image();
+	    diskImage.setCapacity(Long.valueOf(details.getDiskSize()));
+	    template.setDiskImage(diskImage);
+	    blockDevice.getBlockDevices().add(template);
     }
     else {
 	    SupplementalCreateObjectOptions supplementObject = new SupplementalCreateObjectOptions(); 

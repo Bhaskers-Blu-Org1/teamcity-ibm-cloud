@@ -62,11 +62,12 @@ public class IBMCloudClientFactory implements CloudClientFactory {
       client.addImage(image);
       clientHasImage = true;
     }
-    if(clientHasImage) {
-      LOG.info("Checking for running instances on each image for " + clientId);
-      client.retrieveRunningInstances();
-    }
     if(createdNewClient) {
+      // Only retrieve instances when client is created for the first time.
+      if(clientHasImage) {
+        LOG.info("Checking for running instances on each image for " + clientId);
+        client.retrieveRunningInstances();
+      }
       client.start();
     } else {
       //The updateInstancesTask stops working when user updates images, so needs to restart.

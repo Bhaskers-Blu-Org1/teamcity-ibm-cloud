@@ -60,6 +60,7 @@ public class IBMEditProfileController extends BaseFormXmlController {
 		mv.getModel().put("ramList", getMaximumMemory());
 		mv.getModel().put("coreList", getMaximumCores());
 		mv.getModel().put("diskTypeList", getDiskType());
+		mv.getModel().put("diskSizeList", getDiskSize());
 		mv.getModel().put("networkList", getNetwork());
 		mv.getModel().put("billingTypeList", getVsiBillingType());
 		
@@ -180,6 +181,16 @@ public class IBMEditProfileController extends BaseFormXmlController {
 		diskType.put(false, "SAN");
 
 		return diskType;
+	}
+	
+	// Get softlayer Disk size list.
+	public TreeMap<Integer, String> getDiskSize() {
+		
+		TreeMap<Integer, String> diskSize = new TreeMap<Integer, String>();
+		diskSize.put(25, "25 GB");
+		diskSize.put(100, "100 GB");
+		
+		return diskSize;
 	}
 
 	// Get softlayer Network list.
