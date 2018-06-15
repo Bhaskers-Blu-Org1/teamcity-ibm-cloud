@@ -211,10 +211,15 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
             if(this.customizeMachineTypeChecked) {
         	    		$j('.customizeMachine').removeClass('hidden');
         	    		$j('.flavor').addClass('hidden');
+        	    		this._image['IBMSL_flavorList'] = '';
         	    	}
         	    	else {
         	    		$j('.customizeMachine').addClass('hidden');
         	    		$j('.flavor').removeClass('hidden');
+        	    		this._image['IBMSL_maxMemory'] = '';
+        	    		this._image['IBMSL_maxCores'] = '';
+        	    		this._image['IBMSL_diskType'] = '';
+        	    		this._image['IBMSL_diskSize'] = '';
         	    	}
         	    	this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
