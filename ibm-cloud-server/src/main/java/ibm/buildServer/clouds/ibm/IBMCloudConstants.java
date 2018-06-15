@@ -26,6 +26,7 @@ public class IBMCloudConstants {
 	public static final String MAX_MEMORY = "IBMSL_maxMemory";
 	public static final String MAX_CORES = "IBMSL_maxCores";
 	public static final String DISK_TYPE = "IBMSL_diskType";
+	public static final String DISK_SIZE = "IBMSL_diskSize";
 	public static final String NETWORK = "IBMSL_network";
 	public static final String DOMAIN_NAME = "IBMSL_domainName";
 	public static final String VSI_BILLING = "IBMSL_vsiBilling";
@@ -98,5 +99,9 @@ public class IBMCloudConstants {
 	}
 	public String getMaximumInstances() {
 		return MAXIMUM_INSTANCES;
+	}
+	
+	public String getDiskSize() {
+		return DISK_SIZE;
 	}
 }

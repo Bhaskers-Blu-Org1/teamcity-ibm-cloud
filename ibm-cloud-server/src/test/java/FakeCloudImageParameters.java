@@ -22,6 +22,7 @@ public class FakeCloudImageParameters extends CloudImageParameters {
     parameters.put(IBMCloudConstants.AGENT_NAME, "fake-agent");
     parameters.put(IBMCloudConstants.DATACENTER_LIST, "dal13");
     parameters.put(IBMCloudConstants.DISK_TYPE, "false");
+    parameters.put(IBMCloudConstants.DISK_SIZE, "25");
     parameters.put(IBMCloudConstants.DOMAIN_NAME, "ibmwdtest.com");
     parameters.put(IBMCloudConstants.CUSTOMIZE_MACHINE_TYPE, "true");
     parameters.put(IBMCloudConstants.MAX_CORES, "1");

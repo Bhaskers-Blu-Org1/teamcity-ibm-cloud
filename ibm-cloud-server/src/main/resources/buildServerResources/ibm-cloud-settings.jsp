@@ -289,17 +289,33 @@
 	
 		<!-- Disk Type -->
 		<tr class="customizeMachine hidden">
-			<th><label for="${cons.diskType}">Disk:<l:star /></label></th>
+			<th><label for="${cons.diskType}">Disk Type:<l:star /></label></th>
 			<td>
 				<div style="white-space: nowrap">
 					<select id="${cons.diskType}" data-id="${cons.diskType}" class="mediumField configParam" name="${cons.diskType}">
 							<option value="">Select Disk Type...</option>
 							<c:forEach var="diskType" items="${diskTypeList}">
-								<option value=${diskType.key}">${diskType.value} </option>
+								<option value="${diskType.key}">${diskType.value} </option>
 							</c:forEach>
 					</select>
 				</div>
 				<span class="error option-error option-error_${cons.diskType}"></span>
+			</td>
+		</tr>
+		
+		<!-- Disk Size -->
+		<tr class="customizeMachine hidden">
+			<th><label for="${cons.diskSize}">Disk Size:<l:star /></label></th>
+			<td>
+				<div style="white-space: nowrap">
+					<select id="${cons.diskSize}" data-id="${cons.diskSize}" class="mediumField configParam" name="${cons.diskSize}">
+							<option value="">Select Disk Size...</option>
+							<c:forEach var="diskSize" items="${diskSizeList}">
+								<option value="${diskSize.key}">${diskSize.value} </option>
+							</c:forEach>
+					</select>
+				</div>
+				<span class="error option-error option-error_${cons.diskSize}"></span>
 			</td>
 		</tr>	
     		

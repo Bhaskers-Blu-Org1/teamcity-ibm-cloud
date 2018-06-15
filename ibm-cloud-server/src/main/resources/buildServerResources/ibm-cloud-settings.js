@@ -10,7 +10,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
     isEditImageOrAddImageClicked: false,
     customizeMachineTypeChecked: false,
     
-    _dataKeys: [ 'IBMSL_vsiTemplate', 'IBMSL_datacenter', 'IBMSL_agentName', 'IBMSL_domainName', 'IBMSL_customizeMachineType', 'IBMSL_flavorList', 'IBMSL_maxMemory', 'IBMSL_maxCores', 'IBMSL_diskType', 'IBMSL_network', 'IBMSL_vsiBilling', 'agent_pool_id', 'IBMSL_maximumInstances'],
+    _dataKeys: [ 'IBMSL_vsiTemplate', 'IBMSL_datacenter', 'IBMSL_agentName', 'IBMSL_domainName', 'IBMSL_customizeMachineType', 'IBMSL_flavorList', 'IBMSL_maxMemory', 'IBMSL_maxCores', 'IBMSL_diskType', 'IBMSL_diskSize','IBMSL_network', 'IBMSL_vsiBilling', 'agent_pool_id', 'IBMSL_maximumInstances'],
     
     templates: {
         imagesTableRow: $j('<tr class="imagesTableRow">\
@@ -40,6 +40,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         		IBMSL_maxMemory: '!SHOULD_NOT_BE_EMPTY!',
         		IBMSL_maxCores: '!SHOULD_NOT_BE_EMPTY!',
         		IBMSL_diskType: '!SHOULD_NOT_BE_EMPTY!',
+        		IBMSL_diskSize: '!SHOULD_NOT_BE_EMPTY!',
         		IBMSL_network: '!SHOULD_NOT_BE_EMPTY!',
         		IBMSL_vsiBilling: '!SHOULD_NOT_BE_EMPTY!'
         },
@@ -79,6 +80,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
          this.$IBMSL_maxMemory = $j('#IBMSL_maxMemory');
          this.$IBMSL_maxCores = $j('#IBMSL_maxCores');
          this.$IBMSL_diskType = $j('#IBMSL_diskType');
+         this.$IBMSL_diskSize = $j('#IBMSL_diskSize');
          this.$IBMSL_network = $j('#IBMSL_network');
          this.$IBMSL_vsiBilling = $j('#IBMSL_vsiBilling');
          this.$agentPoolId = $j('#agent_pool_id');
@@ -245,6 +247,13 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
             this.validateOptions(e.target.getAttribute('data-id'));
         }.bind(this));
         
+        this.$IBMSL_diskSize.on('change', function (e, value) {
+            if(value !== undefined) this.$IBMSL_diskSize.val(value);
+            this.checkCloudImageEdited(this._image['IBMSL_diskSize'], this.$IBMSL_diskSize.val());
+            this._image['IBMSL_diskSize'] = this.$IBMSL_diskSize.val();
+            this.validateOptions(e.target.getAttribute('data-id'));
+        }.bind(this));
+        
         this.$IBMSL_network.on('change', function (e, value) {
             if(value !== undefined) this.$IBMSL_network.val(value);
             this.checkCloudImageEdited(this._image['IBMSL_network'], this.$IBMSL_network.val());
@@ -381,6 +390,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         	this._image['IBMSL_maxMemory'] = "";
         	this._image['IBMSL_maxCores'] = "";
         	this._image['IBMSL_diskType'] = "";
+        	this._image['IBMSL_diskSize'] = "";
         	this._image['IBMSL_network'] = "";
         	this._image['IBMSL_vsiBilling'] = "";
         	this._image['agent_pool_id'] = "";
@@ -437,6 +447,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         this.$IBMSL_maxMemory.trigger('change', image['IBMSL_maxMemory'] || '');
         this.$IBMSL_maxCores.trigger('change', image['IBMSL_maxCores'] || '');
         this.$IBMSL_diskType.trigger('change', image['IBMSL_diskType'] || '');
+        this.$IBMSL_diskSize.trigger('change', image['IBMSL_diskSize'] || '');
         this.$IBMSL_network.trigger('change', image['IBMSL_network'] || '');
         this.$IBMSL_vsiBilling.trigger('change', image['IBMSL_vsiBilling'] || '');
         this.$agentPoolId.trigger('change', image['agent_pool_id'] || '');
@@ -457,6 +468,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         this.$IBMSL_maxMemory.trigger('change', '');
         this.$IBMSL_maxCores.trigger('change', '');
         this.$IBMSL_diskType.trigger('change', '');
+        this.$IBMSL_diskSize.trigger('change', '');
         this.$IBMSL_network.trigger('change', '');
         this.$IBMSL_vsiBilling.trigger('change', '');
         this.$agentPoolId.trigger('change', '');
@@ -578,6 +590,14 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
                         this.addOptionError('notSelected', 'IBMSL_diskType');
                         isValid = false;
                     }
+           }.bind(this),
+           
+           IBMSL_diskSize : function () {
+               var IBMSL_diskSize = this._image['IBMSL_diskSize'];
+               if (this.customizeMachineTypeChecked && (!IBMSL_diskSize || IBMSL_diskSize === '' || IBMSL_diskSize === undefined)) {
+                   this.addOptionError('notSelected', 'IBMSL_diskSize');
+                   isValid = false;
+               }
            }.bind(this),
                                      
            IBMSL_network : function () {
