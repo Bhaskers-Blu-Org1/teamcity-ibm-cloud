@@ -22,26 +22,28 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.HashMap;
 import java.util.Map;
 
-public class IBMCloudImage implements CloudImage
-{
+public class IBMCloudImage implements CloudImage {
+
   private IBMCloudImageDetails details;
   private final Map<String, IBMCloudInstance> instances = new ConcurrentHashMap<>();
-  public ApiClient ibmClient;
   private CloudErrorInfo myCurrentError = null;
-
   private final static Logger LOG = Loggers.SERVER;
+  public ApiClient ibmClient;
   public final static String TEAMCITY_INSTANCES = "teamcity_instances";
+
   public IBMCloudImage(IBMCloudImageDetails details) {
     this.details = details;
   }
+
   @NotNull
   public IBMCloudImageDetails getDetails() {
     return details;
   }
-  
+
   public void setDetails(IBMCloudImageDetails details) {
-	this.details = details;
+    this.details = details;
   }
+
   @NotNull
   public String getId() {
     return details.getSourceId();
@@ -76,8 +78,7 @@ public class IBMCloudImage implements CloudImage
   }
 
   @Nullable
-  public IBMCloudInstance findInstanceById(
-      @NotNull final String instanceId) {
+  public IBMCloudInstance findInstanceById(@NotNull final String instanceId) {
     return instances.get(instanceId);
   }
 
@@ -89,41 +90,37 @@ public class IBMCloudImage implements CloudImage
 
   @Nullable
   public CloudErrorInfo getErrorInfo() {
-	  return myCurrentError;
+    return myCurrentError;
   }
 
   @NotNull
   public IBMCloudInstance startNewInstance(@NotNull final CloudInstanceUserData data) {
-    if(canStartNewInstance()) {
+    if (canStartNewInstance()) {
       return createInstance(data);
-    }  
+    }
     return null;
   }
 
   protected boolean canStartNewInstance() {
-	//maxInstances == 0 means infinite instances.
-	return getMaxInstances() == 0 || instances.size() < getMaxInstances();
+    // maxInstances == 0 means infinite instances.
+    return getMaxInstances() == 0 || instances.size() < getMaxInstances();
   }
 
   protected IBMCloudInstance createInstance(CloudInstanceUserData data) {
-	IBMCloudInstance instance = new IBMCloudInstance(details, data, ibmClient);
-	try
-	{
-	    instance.setImage(this);
-	    instance.start();
-	    instances.put(instance.getInstanceId(), instance);
-	    myCurrentError = null;
-	}
-	catch(Exception e)
-	{
-		/*
-		 *  Exception from IBMCloudInstance and generate its stacktraces. Exception thrown to file IBMCloudClient. 
-		 *  On TC server UI, this exception will show up on Agents->Cloud tab.
-		 * */
-		
-		myCurrentError = new CloudErrorInfo("Failed to start cloud image: ", e.getMessage(), e);
-		throw e;
-	}
+    IBMCloudInstance instance = new IBMCloudInstance(details, data, ibmClient);
+    try {
+      instance.setImage(this);
+      instance.start();
+      instances.put(instance.getInstanceId(), instance);
+      myCurrentError = null;
+    } catch (Exception e) {
+      
+      /* Exception from IBMCloudInstance, thrown to file IBMCloudClient. 
+       * On TC server UI, this exception will show up on Agents->Cloud tab.
+       */
+      myCurrentError = new CloudErrorInfo("Failed to start cloud image: ", e.getMessage(), e);
+      throw e;
+    }
     return instance;
   }
 

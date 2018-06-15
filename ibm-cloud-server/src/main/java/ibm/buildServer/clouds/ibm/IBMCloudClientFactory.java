@@ -51,8 +51,9 @@ public class IBMCloudClientFactory implements CloudClientFactory {
   }
 
   /* 1) createNewClient(): called when you create/edit new cloud profile. 
-   * And, when cloud profile is created/edited, this function will be called for all existing cloud profiles too. 
-   * 2) [line: 69] Check HashMap to match existing cloud profiles and add new cloud profiles to HashMap.
+   *    And, when cloud profile is created/edited, this function will be called for all existing cloud profiles too. 
+   * 2) [line: 69] Check HashMap to match existing cloud profiles and add new cloud profiles to HashMap. 
+   *    And create new IBMCloudClient object for each cloud profile.
    * 3) [line: 83] Adding all images to their cloud profile object 'client'. 
    * 
    * @return just created new client instance.

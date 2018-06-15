@@ -1,6 +1,10 @@
 /*
-* @author: Scott Wyman Neagle 
-* scottwn@ibm.com
+* @author: Scott Wyman Neagle, scottwn@ibm.com
+* 
+* File description: 
+*  Handles: cloud profile life cycle. 
+*  Handles: start/terminate/restart/generate agent name for VSI.
+*  Handles: Re-Connecting old agents to corresponding cloud image.
 **/
 
 package ibm.buildServer.clouds.ibm;
@@ -10,6 +14,7 @@ import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.base.connector.CloudAsyncTaskExecutor;
 import jetbrains.buildServer.serverSide.AgentDescription;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,14 +32,14 @@ import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.ApiClient;
 
 public class IBMCloudClient implements CloudClientEx {
-  boolean initialized = false;
   private CloudAsyncTaskExecutor executor;
-  int taskDelayTime = 60 * 1000; // Time in milliseconds.
   private final Map<String, IBMCloudImage> images;
   private Logger LOG = Loggers.SERVER;
   private CloudErrorInfo myCurrentError = null;
   private IBMUpdateInstancesTask updateInstancesTask;
   private ApiClient ibmClient;
+  boolean initialized = false;
+  int taskDelayTime = 60 * 1000; // Time in milliseconds.
 
   public IBMCloudClient(CloudClientParameters params) {
     executor = new CloudAsyncTaskExecutor("Async tasks for cloud " + params.getProfileDescription());
@@ -42,6 +47,9 @@ public class IBMCloudClient implements CloudClientEx {
     updateInstancesTask = new IBMUpdateInstancesTask(this);
   }
 
+  /* addImage(): function is called, when parsing through all cloud profiles images from IBMCloudClientFactory.java.
+   * Only new Cloud images are added to HashMap.
+   * */
   public void addImage(IBMCloudImage image) {
     if(ibmClient == null) {
       ibmClient = image.ibmClient;
@@ -57,8 +65,7 @@ public class IBMCloudClient implements CloudClientEx {
     return initialized;
   }
 
-  public IBMCloudImage findImageById(String imageId)
-      throws CloudException {
+  public IBMCloudImage findImageById(String imageId) throws CloudException {
     return images.get(imageId);
   }
 
@@ -70,65 +77,68 @@ public class IBMCloudClient implements CloudClientEx {
     return myCurrentError;
   }
 
+  // TODO: Add Comment
   public boolean canStartNewInstance(@NotNull final CloudImage baseImage) {
     IBMCloudImage image = (IBMCloudImage) baseImage;
     return image.canStartNewInstance();
   }
 
+  //TODO: Add Comment
   public String generateAgentName(AgentDescription agentDescription) {
     return agentDescription.getConfigurationParameters().get("name");
   }
 
+  /* TC server will call this method to start instance on new images added to HashMap.
+   * */
   public CloudInstance startNewInstance(CloudImage image, CloudInstanceUserData data) {
 	  
 	  CloudInstance cloudInstance = null;
-	  try
-	  {
+	  try {
 		  cloudInstance = ((IBMCloudImage) image).startNewInstance(data);
 		  myCurrentError = null;
 	  }
-	  catch(Exception e)
-	  {
-		  /*
-		   * Catch exception from IBMCloudImage and generate its stacktraces. 
-		   * On TC server UI, this exception will show up on Cloud Profile tab.
-		   * */
+	  catch(Exception e) {
+		  // Catch exception from IBMCloudImage.On TC server UI, this exception will show up on Cloud Profile tab.
 		  myCurrentError = new CloudErrorInfo("Failed to start cloud client ", e.getMessage(), e);
 	  }
 	  return cloudInstance;
   }
 
+  //TODO: Add Comment
   @Nullable
   public IBMCloudInstance findInstanceByAgent(@NotNull final AgentDescription agentDescription) {
     final String instanceName = agentDescription.getConfigurationParameters()
-    		.get("INSTANCE_NAME");
-    
-    if(instanceName == null) {
-      return null;
-    }
-    IBMCloudImage image = images.get(agentDescription.getConfigurationParameters().get("IMAGE_NAME"));
+        .get("INSTANCE_NAME");
+    if(instanceName == null) return null;
+    IBMCloudImage image = images.get(agentDescription.getConfigurationParameters()
+        .get("IMAGE_NAME"));
     if (image != null) {
-    	//Instance name is set in the format of hostname_instanceID.
-        String instanceID = instanceName.split("_")[1];
-        return image.findInstanceById(instanceID);
+      // Instance name is set in the format of hostname_instanceID.
+      String instanceID = instanceName.split("_")[1];
+      return image.findInstanceById(instanceID);
     }
     return null;
   }
 
+  /* TC server will call this method to terminate running instances. 
+   * @see jetbrains.buildServer.clouds.CloudClientEx#terminateInstance(jetbrains.buildServer.clouds.CloudInstance)
+   */
   public void terminateInstance(@NotNull final CloudInstance baseInstance) {
     IBMCloudInstance instance = (IBMCloudInstance) baseInstance;
     updateInstancesTask.setClickedStop(instance.getInstanceId());
     instance.terminate(); 
   }
 
+  /*  Start() method is called on client object in IBMCloudClientFactory.java,
+   *  when new cloud profile is created.
+   * */
   public void start() {
     executor.submit("Client start", new Runnable() {
       public void run() {
         try {
           updateInstancesTask.run();
-          executor.scheduleWithFixedDelay("Update instances", updateInstancesTask, taskDelayTime, 
-        		  taskDelayTime, 
-        		  TimeUnit.MILLISECONDS);
+          executor.scheduleWithFixedDelay("Update instances", updateInstancesTask, taskDelayTime,
+              taskDelayTime, TimeUnit.MILLISECONDS);
         } finally {
           initialized = true;
         }
@@ -136,6 +146,7 @@ public class IBMCloudClient implements CloudClientEx {
     });
   }
 
+  // TODO: Add Comment
   public void dispose() {
     executor.dispose();
   }
@@ -150,31 +161,27 @@ public class IBMCloudClient implements CloudClientEx {
     }
   }
   
+  // TODO: Add Comment
   public void restartUpdateInstancesTask(CloudClientParameters params) {
     dispose();
     executor = new CloudAsyncTaskExecutor("Async tasks for cloud " + params.getProfileDescription());
     start();
   }
 
+  // TODO: Add Comment
   private void checkMetadata(Guest vsi, IBMCloudImage image) {
+    
     if(vsi.getUserData() == null || vsi.getUserData().size() == 0) {
       // Terminate this instance because the metadata was never set.
       String name = vsi.getHostname() + "_" + vsi.getId().toString();
-      executor 
-        = new CloudAsyncTaskExecutor("Terminating orphan instance " + name);
-      IBMTerminateInstanceTask task = new IBMTerminateInstanceTask(ibmClient,
-          name,
-          vsi);
+      executor = new CloudAsyncTaskExecutor("Terminating orphan instance " + name);
+      IBMTerminateInstanceTask task = new IBMTerminateInstanceTask(ibmClient, name, vsi);
       executor.submit("terminate orphan vsi", new Runnable() {
         public void run() {
           try {
             task.run();
-            executor.scheduleWithFixedDelay(
-                "Terminate orphan instnace.",
-                task,
-                taskDelayTime,
-                taskDelayTime,
-                TimeUnit.MILLISECONDS);
+            executor.scheduleWithFixedDelay("Terminate orphan instnace.", task, taskDelayTime,
+                taskDelayTime, TimeUnit.MILLISECONDS);
           } catch (Exception e) {
             LOG.warn("IBMCloudClient error: " + e);
           }
@@ -191,13 +198,8 @@ public class IBMCloudClient implements CloudClientEx {
       LOG.info("Checking metadata image name " + metadataImageName
           + " against TeamCity image name " + image.getName());
       if(metadataImageName.equals(image.getName())) {
-        LOG.info("They match.");
-        IBMCloudInstance teamcityInstance = new IBMCloudInstance(
-            image.getDetails(),
-            data,
-            ibmClient,
-            vsi,
-            vsi.getProvisionDate().getTime());
+        IBMCloudInstance teamcityInstance = new IBMCloudInstance(image.getDetails(), data,
+            ibmClient, vsi, vsi.getProvisionDate().getTime());
         teamcityInstance.setName();
         teamcityInstance.setImage(image);
         image.addInstance(teamcityInstance);
@@ -205,7 +207,9 @@ public class IBMCloudClient implements CloudClientEx {
     }
   }
 
+  //TODO: Add Comment
   private void connectRunningInstances(List<Guest> instances, IBMCloudImage image) {
+    
     File file = new File(image.TEAMCITY_INSTANCES);
     String teamcityInstances = "";
     if(file.exists()) {
@@ -220,17 +224,15 @@ public class IBMCloudClient implements CloudClientEx {
       }
     }
     String agentName = image.getDetails().getAgentName();
-    LOG.info("Trying to find SoftLayer instances that match " + agentName);
     for(Guest instance : instances) {
       if(teamcityInstances.contains(instance.getId().toString())
           && instance.getHostname().equals(agentName)) {
-        LOG.info(instance.getHostname() + " matches " + agentName
-            + " for VSI ID " + instance.getId());
         checkMetadata(instance, image);
       }
     }
   }
 
+  //TODO: Add Comment
   public void retrieveRunningInstances() {
     Account.Service accountService = Account.service(ibmClient);
     accountService.setMask("mask[userData]");
