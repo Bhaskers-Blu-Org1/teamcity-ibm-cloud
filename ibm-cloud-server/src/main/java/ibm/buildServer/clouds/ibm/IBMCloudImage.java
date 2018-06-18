@@ -1,6 +1,9 @@
 /*
-* @author: Scott Wyman Neagle 
-* scottwn@ibm.com
+* @author: Scott Wyman Neagle, scottwn@ibm.com
+* 
+* File Description:
+* Handles: Object for Cloud Image.
+* Handles: Has functions for fetching ProfileId, SourceId, Instances, PoolId for cloud image.
 **/
 
 package ibm.buildServer.clouds.ibm;
