@@ -80,7 +80,7 @@ public class IBMCloudImage implements CloudImage
       @NotNull final String instanceId) {
     LOG.info("IBM findInstanceByID " + instanceId);
     LOG.info("Instances for image " + getId() + ": " + instances.keySet());
-    if(instances.containsKey(instanceID)) {
+    if(instances.containsKey(instanceId)) {
       LOG.info("Found the one we're looking for.");
     }
     return instances.get(instanceId);
