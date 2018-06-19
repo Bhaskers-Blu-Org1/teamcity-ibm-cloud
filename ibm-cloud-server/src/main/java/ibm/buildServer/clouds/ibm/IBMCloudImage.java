@@ -78,6 +78,11 @@ public class IBMCloudImage implements CloudImage
   @Nullable
   public IBMCloudInstance findInstanceById(
       @NotNull final String instanceId) {
+    LOG.info("IBM findInstanceByID " + instanceId);
+    LOG.info("Instances for image " + getId() + ": " + instances.keySet());
+    if(instances.containsKey(instanceID)) {
+      LOG.info("Found the one we're looking for.");
+    }
     return instances.get(instanceId);
   }
 
