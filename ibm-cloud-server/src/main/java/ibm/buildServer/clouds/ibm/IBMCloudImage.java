@@ -67,15 +67,24 @@ public class IBMCloudImage implements CloudImage {
     return details.getMaxInstances();
   }
 
+  /* TODO: Add Comment
+   * 
+   */
   @NotNull
   public Collection<IBMCloudInstance> getInstances() {
     return Collections.unmodifiableCollection(instances.values());
   }
 
+  /* TODO: Add Comment
+   * 
+   */
   public void removeInstance(String instanceId) {
     instances.remove(instanceId);
   }
 
+  /* TODO: Add Comment
+   * 
+   */
   public void addInstance(IBMCloudInstance instance) {
     instances.putIfAbsent(instance.getInstanceId(), instance);
   }
@@ -85,6 +94,8 @@ public class IBMCloudImage implements CloudImage {
     return instances.get(instanceId);
   }
 
+  /* Get the agent pool id set for cloud image.
+   */
   @Nullable
   @Override
   public Integer getAgentPoolId() {
@@ -96,6 +107,8 @@ public class IBMCloudImage implements CloudImage {
     return myCurrentError;
   }
 
+  /* Method will start new instance
+   */
   @NotNull
   public IBMCloudInstance startNewInstance(@NotNull final CloudInstanceUserData data) {
     if (canStartNewInstance()) {
@@ -104,11 +117,15 @@ public class IBMCloudImage implements CloudImage {
     return null;
   }
 
+  /* Check whether TC server can start new instance by checking the max count set by user.
+   */
   protected boolean canStartNewInstance() {
     // maxInstances == 0 means infinite instances.
     return getMaxInstances() == 0 || instances.size() < getMaxInstances();
   }
 
+  /* TODO: Add Comment
+   */
   protected IBMCloudInstance createInstance(CloudInstanceUserData data) {
     IBMCloudInstance instance = new IBMCloudInstance(details, data, ibmClient);
     try {
@@ -127,6 +144,9 @@ public class IBMCloudImage implements CloudImage {
     return instance;
   }
 
+  /* TODO: Add Comment
+   * 
+   */
   public void setCredentials(String username, String apiKey) {
     ibmClient = new RestApiClient().withCredentials(username, apiKey);
   }

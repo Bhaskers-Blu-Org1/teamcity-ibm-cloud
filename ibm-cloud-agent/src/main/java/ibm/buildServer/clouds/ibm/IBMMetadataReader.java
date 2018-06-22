@@ -16,13 +16,14 @@ import jetbrains.buildServer.clouds.CloudInstanceUserData;
 
 import com.softlayer.api.*;
 
+/* TODO: Add Comment
+ */
 public class IBMMetadataReader {
   private Logger LOG = Loggers.AGENT;
   private BuildAgentConfigurationEx configuration;
 
   public IBMMetadataReader(EventDispatcher<AgentLifeCycleListener> events,
       BuildAgentConfigurationEx configuration) {
-    LOG.info("IBM Cloud plugin initializing... via MetadataReader");
     this.configuration = configuration;
     events.addListener(new AgentLifeCycleAdapter() {
       @Override
@@ -33,6 +34,8 @@ public class IBMMetadataReader {
     });
   }
 
+  /* TODO: Add Comment
+   */
   private void fetchConfiguration() {
     try {
       String privateEndPoint = "https://api.service.softlayer.com/rest/v3/";
@@ -45,6 +48,8 @@ public class IBMMetadataReader {
     }
   }
 
+  /* TODO: Add Comment
+   */
   private void updateConfiguration(String metadata) {
     try {
       CloudInstanceUserData data = CloudInstanceUserData.deserialize(metadata);

@@ -49,8 +49,7 @@ public class IBMCloudInstance implements CloudInstance
   private CloudErrorInfo myCurrentError = null;
   private boolean metadataSet = false;
 
-  public IBMCloudInstance(IBMCloudImageDetails details,
-      CloudInstanceUserData data,
+  public IBMCloudInstance(IBMCloudImageDetails details, CloudInstanceUserData data,
       ApiClient ibmClient) {
     this(details, data, ibmClient, new Guest(), new Date());
     // Setting VsiTemplate.
@@ -87,18 +86,17 @@ public class IBMCloudInstance implements CloudInstance
 
   }
 
-  public IBMCloudInstance(IBMCloudImageDetails details,
-      CloudInstanceUserData data,
-      ApiClient ibmClient,
-      Guest guest,
-      Date dateTime) {
-	  this.guest = guest;
-	  startedTime = dateTime;
-	  imageDetails = details;
-	  userData = data;
-	  this.ibmClient = ibmClient;
-	  myStatus = InstanceStatus.UNKNOWN;
-	  executor = Executors.newSingleThreadScheduledExecutor();
+  /* TODO: Add Comment
+   */
+  public IBMCloudInstance(IBMCloudImageDetails details, CloudInstanceUserData data,
+      ApiClient ibmClient, Guest guest, Date dateTime) {
+    this.guest = guest;
+    startedTime = dateTime;
+    imageDetails = details;
+    userData = data;
+    this.ibmClient = ibmClient;
+    myStatus = InstanceStatus.UNKNOWN;
+    executor = Executors.newSingleThreadScheduledExecutor();
   }
 
   public void setName() {
@@ -166,6 +164,8 @@ public class IBMCloudInstance implements CloudInstance
 	  return myCurrentError;
   }
 
+  /* TODO: Add Comment
+   */
   public void start() {
     if(ibmClient != null) {
       // println statements are for printing to screen during test as logging has
@@ -191,6 +191,8 @@ public class IBMCloudInstance implements CloudInstance
     }
   }
 
+  /* TODO: Add Comment
+   */
   private void writeInstanceId() {
     try {
       File file = new File(image.TEAMCITY_INSTANCES);
@@ -205,21 +207,18 @@ public class IBMCloudInstance implements CloudInstance
     }
   }
 
+  /* TODO: Add Comment
+   */
   public void terminate() {
 	  myStatus = InstanceStatus.SCHEDULED_TO_STOP;
-	  CloudAsyncTaskExecutor executor = new CloudAsyncTaskExecutor(
-		        "Async tasks for terminating vsi");
+    CloudAsyncTaskExecutor executor = new CloudAsyncTaskExecutor("Async tasks for terminating vsi");
 	  IBMTerminateInstanceTask task = new IBMTerminateInstanceTask(this);
 	  executor.submit("terminate vsi", new Runnable() {
 	      public void run() {
 	        try {
 	          task.run();
-	          executor.scheduleWithFixedDelay(
-	              "Terminate instance",
-	              task,
-	              taskDelayTime,
-	              taskDelayTime,
-	              TimeUnit.MILLISECONDS);
+	          executor.scheduleWithFixedDelay("Terminate instance", task, taskDelayTime, 
+              taskDelayTime, TimeUnit.MILLISECONDS);
 	        } catch (Exception e) {
 	            LOG.warn("IBMCloudInstance Error: " + e);
 	            // catch exception with stacktraces message. On TC server UI, this exception will show up on Agents->Cloud tab.
@@ -231,10 +230,14 @@ public class IBMCloudInstance implements CloudInstance
 	    });
   }
 
+  /* TODO: Add Comment
+   */
   public boolean metadataIsSet() {
     return metadataSet;
   }
 
+  /* TODO: Add Comment
+   */
   public void setMetadata() {
     try {
       // Serialize CloudInstanceUserData and set as SoftLayer user metadata.
@@ -243,8 +246,7 @@ public class IBMCloudInstance implements CloudInstance
       userData.addAgentConfigurationParameter("IMAGE_NAME", getImageName());
       userDataList.add(userData.serialize());
       Long virtualGuestId = new Long(getInstanceId());
-      Guest.Service virtualGuestService = Guest.service(ibmClient,
-          virtualGuestId);
+      Guest.Service virtualGuestService = Guest.service(ibmClient, virtualGuestId);
       virtualGuestService.setUserMetadata(userDataList);
       metadataSet = true;
     } catch (Exception e) {
