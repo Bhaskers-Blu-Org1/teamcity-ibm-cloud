@@ -166,25 +166,11 @@ public class IBMCloudInstance implements CloudInstance
   public boolean containsAgent(AgentDescription agent) {
     if(name == null || agent == null 
         || agent.getConfigurationParameters().get("INSTANCE_NAME") == null) {
-      LOG.info("Instance " + name + " does not contain agent "
-          + getAgentName(agent));
       return false;
     }
     String instanceNameFromAgent
       = agent.getConfigurationParameters().get("INSTANCE_NAME");
-    LOG.info("Agent " + getAgentName(agent) + " for instance " + name
-        + " has agent configuration parameter INSTANCE_NAME="
-        + instanceNameFromAgent);
-    boolean output = instanceNameFromAgent.equals(name);
-    LOG.info("containsAgent will return " + output);
-    return output;
-  }
-
-  private String getAgentName(AgentDescription agent) {
-    if(agent == null || agent.getConfigurationParameters().get("name") == null) {
-      return "with no name.";
-    }
-    return agent.getConfigurationParameters().get("name");
+    return instanceNameFromAgent.equals(name);
   }
 
   public CloudErrorInfo getErrorInfo() {

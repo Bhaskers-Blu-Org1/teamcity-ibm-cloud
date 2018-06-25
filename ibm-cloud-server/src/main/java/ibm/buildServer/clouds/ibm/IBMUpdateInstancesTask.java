@@ -32,7 +32,6 @@ public class IBMUpdateInstancesTask implements Runnable {
 
   public void run() {
     Logger LOG = Loggers.SERVER;
-    LOG.info("IBMUpdateInstancesTask is running.");
     InstanceStatus newStatus;
     InstanceStatus currentStatus;
     Status vsiStatus;
@@ -82,7 +81,6 @@ public class IBMUpdateInstancesTask implements Runnable {
         // This print statement is for checking the status during automated unit
         // tests.
         System.out.println(message);
-        LOG.info(message);
         instance.setStatus(newStatus);
         if(removable(instance.getStatus())) {
           image.removeInstance(instance.getInstanceId());
