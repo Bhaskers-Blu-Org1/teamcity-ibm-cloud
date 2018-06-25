@@ -52,9 +52,9 @@ public class IBMCloudClientFactory implements CloudClientFactory {
 
   /* 1) createNewClient(): called when you create/edit new cloud profile. 
    *    And, when cloud profile is created/edited, this function will be called for all existing cloud profiles too. 
-   * 2) [line: 69] Check HashMap to match existing cloud profiles and add new cloud profiles to HashMap. 
+   * 2) [line: 70] Check HashMap to match existing cloud profiles and add new cloud profiles to HashMap. 
    *    And create new IBMCloudClient object for each cloud profile.
-   * 3) [line: 83] Adding all images to their cloud profile object 'client'. 
+   * 3) [line: 84] Adding all images to their cloud profile object 'client'. 
    * 
    * @return just created new client instance.
    */
@@ -79,17 +79,17 @@ public class IBMCloudClientFactory implements CloudClientFactory {
       // Unit Test: Print to the screen during test.
       System.out.println("creating image for " + params.getParameter(IBMCloudConstants.USER_NAME)); 
       IBMCloudImage image = new IBMCloudImage(imageDetails);
-      image.setCredentials(params.getParameter(IBMCloudConstants.USER_NAME),
+      image.setCredentials(params.getParameter(IBMCloudConstants.USER_NAME), 
           params.getParameter(IBMCloudConstants.API_KEY));
       client.addImage(image);
       clientHasImage = true;
     }
     
-    if (clientHasImage) {
-      client.retrieveRunningInstances();
-    }
-    
     if (createdNewClient) {
+      // Only retrieve instances when client is created for the first time.
+      if (clientHasImage) {
+        client.retrieveRunningInstances();
+      }
       client.start();
     } else {                                                            
       // Restart updateInstancesTask when user updates images.

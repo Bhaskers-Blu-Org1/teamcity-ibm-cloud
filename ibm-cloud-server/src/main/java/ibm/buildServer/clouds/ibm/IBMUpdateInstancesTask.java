@@ -30,8 +30,7 @@ public class IBMUpdateInstancesTask implements Runnable {
     clickedStopInstances = new HashSet<>();
   }
 
-  /* TODO: Add Comment
-   */
+  // Called by IBMCloudClient. Upate the status of all instances of a cloud profile. It runs every minute.
   public void run() {
     Logger LOG = Loggers.SERVER;
     LOG.info("IBMUpdateInstancesTask is running.");
@@ -49,40 +48,31 @@ public class IBMUpdateInstancesTask implements Runnable {
         currentInstanceId = instance.getInstanceId();
         boolean isStopped = checkStopped(instance);
         if (isStopped) {
-        	newStatus = InstanceStatus.STOPPED;
+          newStatus = InstanceStatus.STOPPED;
         } else {
-        	try {
-                // This logic is modeled on https://github.com/softlayer/softlayer-java/blob/master/examples/src/main/java/com/softlayer/api/example/OrderVirtualServer.java
-                service = instance.guest.asService(instance.ibmClient);
-                service.withMask().status().name();
-                service.withMask().powerState().name();
-                service.withMask().activeTransaction();
-                service.withMask().activeTransaction().transactionStatus().friendlyName();
-                guest = service.getObject();
-                vsiStatus = guest.getStatus();
-                vsiState = guest.getPowerState();
-                vsiTransaction = guest.getActiveTransaction();
-                // Update instance user metadata when disk is mounted.
-                if(vsiState != null
-                    && vsiState.getName().equals("Running")
-                    && !instance.metadataIsSet()) {
-                  instance.setMetadata();
-                }
-                newStatus = teamcityStatus(
-                    vsiStatus,
-                    vsiState,
-                    vsiTransaction,
-                    currentStatus);
-              } catch(ApiException.NotFound e) {
-                System.out.println("Error: " + e);
-                LOG.warn("Error: " + e);
-                newStatus = InstanceStatus.ERROR;
-              }
-        }        
-        message = "New status for " + currentInstanceId + " is "
-          + newStatus.getName();
-        // This print statement is for checking the status during automated unit
-        // tests.
+          try {
+            // This logic is modeled on https://github.com/softlayer/softlayer-java/blob/master/examples/src/main/java/com/softlayer/api/example/OrderVirtualServer.java
+            service = instance.guest.asService(instance.ibmClient);
+            service.withMask().status().name();
+            service.withMask().powerState().name();
+            service.withMask().activeTransaction();
+            service.withMask().activeTransaction().transactionStatus().friendlyName();
+            guest = service.getObject();
+            vsiStatus = guest.getStatus();
+            vsiState = guest.getPowerState();
+            vsiTransaction = guest.getActiveTransaction();
+            // Update instance user metadata when disk is mounted.
+            if(vsiState != null && vsiState.getName().equals("Running") && !instance.metadataIsSet()) {
+              instance.setMetadata();
+            }
+            newStatus = teamcityStatus(vsiStatus, vsiState, vsiTransaction, currentStatus);
+          } catch(ApiException.NotFound e) {
+            System.out.println("Error: " + e);
+            LOG.warn("Error: " + e);
+            newStatus = InstanceStatus.ERROR;
+          }
+        }
+        message = "New status for " + currentInstanceId + " is " + newStatus.getName();
         System.out.println(message);
         instance.setStatus(newStatus);
         if(removable(instance.getStatus())) {
@@ -93,19 +83,15 @@ public class IBMUpdateInstancesTask implements Runnable {
     }
   }
 
-  /* TODO: Add Comment
-   */
+  // If instance status is STOPPED or ERROR, the instance will be removed from image.
   public boolean removable(InstanceStatus status) {
     return status == InstanceStatus.ERROR || status == InstanceStatus.STOPPED;
   }
 
-  /* TODO: Add Comment
-   */
+  // Update instance status based on vsiStatus, vsiState and vsiTransaction.
   private InstanceStatus teamcityStatus(Status vsiStatus, State vsiState,
       Transaction vsiTransaction, InstanceStatus currentStatus) {
     if (vsiStatus == null) {
-      // println statements are for printing to screen during tests as logging has
-      // not been implemented in automated unit tests.
       System.out.println("vsiStatus is null");
     } else {
       System.out.println("vsiStatus is " + vsiStatus.getName());

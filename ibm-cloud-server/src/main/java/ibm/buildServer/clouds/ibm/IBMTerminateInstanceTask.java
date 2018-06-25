@@ -24,23 +24,19 @@ public class IBMTerminateInstanceTask implements Runnable {
   private String name;
   private Guest vsi;
 	
-  /* TODO: Add Comment
-   */
+  //Called by IBMCloudInstance. Check active transactions of the instance to make sure vsi gets cancelled properly.
   public IBMTerminateInstanceTask(IBMCloudInstance instance) {
     this(instance.ibmClient, instance.getName(), instance.guest);
     this.instance = instance;
   }
 
-  /* TODO: Add Comment
-   */
   public IBMTerminateInstanceTask(ApiClient client, String instanceName, Guest guest) {
     ibmClient = client;
     name = instanceName;
     vsi = guest;
   }
 
-  /* TODO: Add Comment
-   */
+  // A thread checks vsiTransaction every minute. Vsi will be cancelled until there's no active transactions.
   @Override
   public void run() {
     if (ibmClient == null) {

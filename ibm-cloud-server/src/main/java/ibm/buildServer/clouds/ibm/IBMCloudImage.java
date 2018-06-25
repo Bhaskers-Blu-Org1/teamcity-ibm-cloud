@@ -67,24 +67,18 @@ public class IBMCloudImage implements CloudImage {
     return details.getMaxInstances();
   }
 
-  /* TODO: Add Comment
-   * 
-   */
+  // Return a collecton of instances of the image.
   @NotNull
   public Collection<IBMCloudInstance> getInstances() {
     return Collections.unmodifiableCollection(instances.values());
   }
 
-  /* TODO: Add Comment
-   * 
-   */
+  // Remove the instance with instanceId.
   public void removeInstance(String instanceId) {
     instances.remove(instanceId);
   }
 
-  /* TODO: Add Comment
-   * 
-   */
+  // Add instance to the instances hashmap.
   public void addInstance(IBMCloudInstance instance) {
     instances.putIfAbsent(instance.getInstanceId(), instance);
   }
@@ -94,8 +88,7 @@ public class IBMCloudImage implements CloudImage {
     return instances.get(instanceId);
   }
 
-  /* Get the agent pool id set for cloud image.
-   */
+  // Get the agent pool id set for cloud image.
   @Nullable
   @Override
   public Integer getAgentPoolId() {
@@ -107,8 +100,7 @@ public class IBMCloudImage implements CloudImage {
     return myCurrentError;
   }
 
-  /* Method will start new instance
-   */
+  // Method will start new instance
   @NotNull
   public IBMCloudInstance startNewInstance(@NotNull final CloudInstanceUserData data) {
     if (canStartNewInstance()) {
@@ -117,15 +109,13 @@ public class IBMCloudImage implements CloudImage {
     return null;
   }
 
-  /* Check whether TC server can start new instance by checking the max count set by user.
-   */
+  // Check whether TC server can start new instance by checking the max count set by user.
   protected boolean canStartNewInstance() {
-    // maxInstances == 0 means infinite instances.
+    // maxInstances == 0 means user can start infinite instances.
     return getMaxInstances() == 0 || instances.size() < getMaxInstances();
   }
 
-  /* TODO: Add Comment
-   */
+  // Create a new instance using CloudInstanceUserData.
   protected IBMCloudInstance createInstance(CloudInstanceUserData data) {
     IBMCloudInstance instance = new IBMCloudInstance(details, data, ibmClient);
     try {
@@ -144,9 +134,7 @@ public class IBMCloudImage implements CloudImage {
     return instance;
   }
 
-  /* TODO: Add Comment
-   * 
-   */
+  // Set credentials for ibmClient.
   public void setCredentials(String username, String apiKey) {
     ibmClient = new RestApiClient().withCredentials(username, apiKey);
   }

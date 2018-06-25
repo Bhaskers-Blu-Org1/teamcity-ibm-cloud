@@ -8,9 +8,11 @@ package ibm.buildServer.clouds.ibm;
 import com.softlayer.api.ApiClient;
 import com.softlayer.api.service.Location;
 import com.softlayer.api.service.virtual.Guest;
+import com.softlayer.api.service.virtual.guest.block.device.Template;
 import com.softlayer.api.service.virtual.guest.block.device.template.Group;
 import com.softlayer.api.service.virtual.guest.network.Component;
 import com.softlayer.api.service.virtual.guest.SupplementalCreateObjectOptions;
+import com.softlayer.api.service.virtual.disk.Image;
 
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.base.connector.CloudAsyncTaskExecutor;
@@ -30,8 +32,7 @@ import java.io.IOException;
 
 import com.intellij.openapi.diagnostic.Logger;
 
-public class IBMCloudInstance implements CloudInstance
-{
+public class IBMCloudInstance implements CloudInstance {
   private InstanceStatus myStatus;
   private ScheduledExecutorService executor;
   // id, name, and hostname are set in the setName() method.
@@ -49,8 +50,7 @@ public class IBMCloudInstance implements CloudInstance
   private CloudErrorInfo myCurrentError = null;
   private boolean metadataSet = false;
 
-  public IBMCloudInstance(IBMCloudImageDetails details, CloudInstanceUserData data,
-      ApiClient ibmClient) {
+  public IBMCloudInstance(IBMCloudImageDetails details, CloudInstanceUserData data, ApiClient ibmClient) {
     this(details, data, ibmClient, new Guest(), new Date());
     // Setting VsiTemplate.
     Group blockDevice = new Group();
@@ -61,6 +61,7 @@ public class IBMCloudInstance implements CloudInstance
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
 
+    // Setting Network.
     Component networkComponent = new Component();
     networkComponent.setMaxSpeed(Long.valueOf(details.getNetwork()));
     guest.getNetworkComponents().add(networkComponent);
@@ -70,24 +71,28 @@ public class IBMCloudInstance implements CloudInstance
     guest.setDomain(details.getDomainName());
     guest.setHourlyBillingFlag(details.getVsiBilling());
     
-    /* If CustomizeMachineType = true: Set RAM, CPU & Disk Type.
+    /* If CustomizeMachineType = true: Set RAM, CPU, Disk Type & Disk Size.
      * Else:  Set Flavor List.
      */
-    if(details.getCustomizeMachineType()) {
-     	guest.setStartCpus(details.getMaxCores());
-	    guest.setMaxMemory(details.getMaxMemory());
-	    guest.setLocalDiskFlag(details.getLocalDiskFlag());
-    }
-    else {
-	    SupplementalCreateObjectOptions supplementObject = new SupplementalCreateObjectOptions(); 
-	    supplementObject.setFlavorKeyName(details.getFlavorList());
-	    guest.setSupplementalCreateObjectOptions(supplementObject);
+    if (details.getCustomizeMachineType()) {
+      guest.setStartCpus(details.getMaxCores());
+      guest.setMaxMemory(details.getMaxMemory());
+      guest.setLocalDiskFlag(details.getLocalDiskFlag());
+	    
+      // Disk Size
+      Template template = new Template();
+      Image diskImage = new Image();
+      diskImage.setCapacity(Long.valueOf(details.getDiskSize()));
+      template.setDiskImage(diskImage);
+      blockDevice.getBlockDevices().add(template);
+    } else {
+      SupplementalCreateObjectOptions supplementObject = new SupplementalCreateObjectOptions(); 
+      supplementObject.setFlavorKeyName(details.getFlavorList());
+      guest.setSupplementalCreateObjectOptions(supplementObject);
     }
 
   }
 
-  /* TODO: Add Comment
-   */
   public IBMCloudInstance(IBMCloudImageDetails details, CloudInstanceUserData data,
       ApiClient ibmClient, Guest guest, Date dateTime) {
     this.guest = guest;
@@ -99,6 +104,7 @@ public class IBMCloudInstance implements CloudInstance
     executor = Executors.newSingleThreadScheduledExecutor();
   }
 
+  // Instance name is set in the format of hostname_Id.
   public void setName() {
     id = guest.getId().toString();
     hostname = guest.getHostname();
@@ -131,8 +137,8 @@ public class IBMCloudInstance implements CloudInstance
     return name;
   }
 
+  // Get IP address using SoftLayer API.
   public String getNetworkIdentity() {
-    // Get IP address using SoftLayer API.
     try {
       return guest.getPrimaryIpAddress();
     } catch (Exception e) {
@@ -152,6 +158,10 @@ public class IBMCloudInstance implements CloudInstance
     myStatus = status;
   }
 
+  /* containsAgent(): called by TC server. It is responsible for finding the linkage to show hyperlink on instance
+   *  name after it is connected to agent.
+   * @see jetbrains.buildServer.clouds.CloudInstance#containsAgent(jetbrains.buildServer.serverSide.AgentDescription)
+   */
   public boolean containsAgent(AgentDescription agent) {
     if(name == null) {
       LOG.warn("SoftLayer instance name has not been set.");
@@ -161,17 +171,11 @@ public class IBMCloudInstance implements CloudInstance
   }
 
   public CloudErrorInfo getErrorInfo() {
-	  return myCurrentError;
+    return myCurrentError;
   }
 
-  /* TODO: Add Comment
-   */
+  // start(): called by IBMCloudImage. Start a vsi.
   public void start() {
-    if(ibmClient != null) {
-      // println statements are for printing to screen during test as logging has
-      // not been implemented in automated unit tests.
-      System.out.println(ibmClient);
-    }
     try {
       guest = Guest.service(ibmClient).createObject(guest);
       setName();
@@ -180,8 +184,7 @@ public class IBMCloudInstance implements CloudInstance
       myStatus = InstanceStatus.SCHEDULED_TO_START;
       myCurrentError = null;
       writeInstanceId();
-    } catch (Exception e) {
-    	  // Any exception related to softlayer api or start of VSI will be caught here. 
+    } catch (Exception e) { 
       System.out.println("Error: " + e);
       LOG.warn("IBMCloudInstance Error: " + e);
       myStatus = InstanceStatus.ERROR;
@@ -191,8 +194,7 @@ public class IBMCloudInstance implements CloudInstance
     }
   }
 
-  /* TODO: Add Comment
-   */
+  // writeInstanceId(): called in start(). Write instance Id into a file.
   private void writeInstanceId() {
     try {
       File file = new File(image.TEAMCITY_INSTANCES);
@@ -207,40 +209,41 @@ public class IBMCloudInstance implements CloudInstance
     }
   }
 
-  /* TODO: Add Comment
+  /* terminate(): called by IBMCloudClient. It will create a new thread for IBMTerminateInstaceTask to make sure 
+   * instance is terminated.
    */
   public void terminate() {
-	  myStatus = InstanceStatus.SCHEDULED_TO_STOP;
+    myStatus = InstanceStatus.SCHEDULED_TO_STOP;
     CloudAsyncTaskExecutor executor = new CloudAsyncTaskExecutor("Async tasks for terminating vsi");
-	  IBMTerminateInstanceTask task = new IBMTerminateInstanceTask(this);
-	  executor.submit("terminate vsi", new Runnable() {
-	      public void run() {
-	        try {
-	          task.run();
-	          executor.scheduleWithFixedDelay("Terminate instance", task, taskDelayTime, 
-              taskDelayTime, TimeUnit.MILLISECONDS);
-	        } catch (Exception e) {
-	            LOG.warn("IBMCloudInstance Error: " + e);
-	            // catch exception with stacktraces message. On TC server UI, this exception will show up on Agents->Cloud tab.
-	            myCurrentError = new CloudErrorInfo("Failed to stop cloud instance with id: " + id , e.getMessage(), e);
-	        } finally {
+    IBMTerminateInstanceTask task = new IBMTerminateInstanceTask(this);
+    executor.submit("terminate vsi", new Runnable() {
+      public void run() {
+        try {
+          task.run();
+          executor.scheduleWithFixedDelay("Terminate instance", task, taskDelayTime, taskDelayTime, 
+              TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+          LOG.warn("IBMCloudInstance Error: " + e);
+          // catch exception with stacktraces message. On TC server UI, this exception will show up on Agents->Cloud tab.
+          myCurrentError = new CloudErrorInfo("Failed to stop cloud instance with id: " + id , e.getMessage(), e);
+        } finally {
 	          
-	        }
-	      }
-	    });
+        }
+      }
+    });
   }
 
-  /* TODO: Add Comment
-   */
+  // Check if metadata of the instance is set.
   public boolean metadataIsSet() {
     return metadataSet;
   }
 
-  /* TODO: Add Comment
+  /* setMetadata(): called by IBMUpdateInstancesTask when instance is RUNNING.
+   * Serialize CloudInstanceUserData, and set as SoftLayer user metadata.
+   * Add two configuration parameters: instance name and image name.
    */
   public void setMetadata() {
     try {
-      // Serialize CloudInstanceUserData and set as SoftLayer user metadata.
       List<String> userDataList = new ArrayList<String>();
       userData.addAgentConfigurationParameter("name", name);
       userData.addAgentConfigurationParameter("IMAGE_NAME", getImageName());

@@ -51,14 +51,14 @@ public class IBMCloudClient implements CloudClientEx {
    * Only new Cloud images are added to HashMap.
    * */
   public void addImage(IBMCloudImage image) {
-    if(ibmClient == null) {
+    if (ibmClient == null) {
       ibmClient = image.ibmClient;
     }
-	  if (!images.containsKey(image.getName())) {
-		  images.put(image.getName(), image);
-	  } else {
-		  images.get(image.getName()).setDetails(image.getDetails());
-	  }   
+    if (!images.containsKey(image.getName())) {
+      images.put(image.getName(), image);
+    } else {
+      images.get(image.getName()).setDetails(image.getDetails());
+    }   
   }
 
   public boolean isInitialized() {
@@ -77,41 +77,36 @@ public class IBMCloudClient implements CloudClientEx {
     return myCurrentError;
   }
 
-  // TODO: Add Comment
+  // Check if the image can start new instance.
   public boolean canStartNewInstance(@NotNull final CloudImage baseImage) {
     IBMCloudImage image = (IBMCloudImage) baseImage;
     return image.canStartNewInstance();
   }
 
-  //TODO: Add Comment
+  // Get agent name.
   public String generateAgentName(AgentDescription agentDescription) {
     return agentDescription.getConfigurationParameters().get("name");
   }
 
-  /* TC server will call this method to start instance on new images added to HashMap.
-   * */
+  // TC server will call this method to start instance on new images added to HashMap.
   public CloudInstance startNewInstance(CloudImage image, CloudInstanceUserData data) {
-	  
-	  CloudInstance cloudInstance = null;
-	  try {
-		  cloudInstance = ((IBMCloudImage) image).startNewInstance(data);
-		  myCurrentError = null;
-	  }
-	  catch(Exception e) {
-		  // Catch exception from IBMCloudImage.On TC server UI, this exception will show up on Cloud Profile tab.
-		  myCurrentError = new CloudErrorInfo("Failed to start cloud client ", e.getMessage(), e);
-	  }
-	  return cloudInstance;
+    CloudInstance cloudInstance = null;
+    try {
+      cloudInstance = ((IBMCloudImage) image).startNewInstance(data);
+      myCurrentError = null;
+    } catch(Exception e) {
+      // Catch exception from IBMCloudImage.On TC server UI, this exception will show up on Cloud Profile tab.
+      myCurrentError = new CloudErrorInfo("Failed to start cloud client ", e.getMessage(), e);
+    }
+    return cloudInstance;
   }
 
-  //TODO: Add Comment
+  // Called by TC server. This method is for showing hyperlink on instance name, if it returns the correct instance.
   @Nullable
   public IBMCloudInstance findInstanceByAgent(@NotNull final AgentDescription agentDescription) {
-    final String instanceName = agentDescription.getConfigurationParameters()
-        .get("INSTANCE_NAME");
+    final String instanceName = agentDescription.getConfigurationParameters().get("INSTANCE_NAME");
     if(instanceName == null) return null;
-    IBMCloudImage image = images.get(agentDescription.getConfigurationParameters()
-        .get("IMAGE_NAME"));
+    IBMCloudImage image = images.get(agentDescription.getConfigurationParameters().get("IMAGE_NAME"));
     if (image != null) {
       // Instance name is set in the format of hostname_instanceID.
       String instanceID = instanceName.split("_")[1];
@@ -130,7 +125,7 @@ public class IBMCloudClient implements CloudClientEx {
   }
 
   /*  Start() method is called on client object in IBMCloudClientFactory.java,
-   *  when new cloud profile is created.
+   *  when new cloud profile is created. It will create an updateInstanceTask.
    * */
   public void start() {
     executor.submit("Client start", new Runnable() {
@@ -146,7 +141,7 @@ public class IBMCloudClient implements CloudClientEx {
     });
   }
 
-  // TODO: Add Comment
+  // Dispose the executor of updateInstanceTask.
   public void dispose() {
     executor.dispose();
   }
