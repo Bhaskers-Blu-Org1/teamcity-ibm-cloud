@@ -32,7 +32,6 @@ public class IBMUpdateInstancesTask implements Runnable {
 
   public void run() {
     Logger LOG = Loggers.SERVER;
-    LOG.info("IBMUpdateInstancesTask is running.");
     InstanceStatus newStatus;
     InstanceStatus currentStatus;
     Status vsiStatus;

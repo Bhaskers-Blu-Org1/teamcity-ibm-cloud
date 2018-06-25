@@ -5,9 +5,7 @@
 
 package ibm.buildServer.clouds.ibm;
 
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.clouds.*;
-import jetbrains.buildServer.log.Loggers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +27,6 @@ public class IBMCloudImage implements CloudImage
   public ApiClient ibmClient;
   private CloudErrorInfo myCurrentError = null;
 
-  private final static Logger LOG = Loggers.SERVER;
   public final static String TEAMCITY_INSTANCES = "teamcity_instances";
   public IBMCloudImage(IBMCloudImageDetails details) {
     this.details = details;

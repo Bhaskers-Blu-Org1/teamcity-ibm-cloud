@@ -164,11 +164,13 @@ public class IBMCloudInstance implements CloudInstance
   }
 
   public boolean containsAgent(AgentDescription agent) {
-    if(name == null) {
-      LOG.warn("SoftLayer instance name has not been set.");
+    if(name == null || agent == null 
+        || agent.getConfigurationParameters().get("INSTANCE_NAME") == null) {
       return false;
     }
-    return agent.getConfigurationParameters().get("INSTANCE_NAME").equals(name);
+    String instanceNameFromAgent
+      = agent.getConfigurationParameters().get("INSTANCE_NAME");
+    return instanceNameFromAgent.equals(name);
   }
 
   public CloudErrorInfo getErrorInfo() {

@@ -102,7 +102,6 @@ public class IBMCloudClient implements CloudClientEx {
   public IBMCloudInstance findInstanceByAgent(@NotNull final AgentDescription agentDescription) {
     final String instanceName = agentDescription.getConfigurationParameters()
     		.get("INSTANCE_NAME");
-    
     if(instanceName == null) {
       return null;
     }
