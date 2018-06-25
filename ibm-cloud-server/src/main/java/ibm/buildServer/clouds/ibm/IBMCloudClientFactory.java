@@ -91,7 +91,7 @@ public class IBMCloudClientFactory implements CloudClientFactory {
         client.retrieveRunningInstances();
       }
       client.start();
-    } else {                                                            
+    } else {
       // Restart updateInstancesTask when user updates images.
       client.restartUpdateInstancesTask(params);
     }

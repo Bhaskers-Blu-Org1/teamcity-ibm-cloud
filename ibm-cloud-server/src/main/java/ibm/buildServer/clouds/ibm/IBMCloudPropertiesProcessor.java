@@ -1,19 +1,19 @@
 package ibm.buildServer.clouds.ibm;
 
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
+import org.jetbrains.annotations.NotNull;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.clouds.server.CloudManagerBase;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 
 public class IBMCloudPropertiesProcessor implements PropertiesProcessor {
-  @NotNull
+  @NotNull 
   private final CloudManagerBase myCloudManager;
 	
-  public IBMCloudPropertiesProcessor(@NotNull final CloudManagerBase cloudManager) {
+  public IBMCloudPropertiesProcessor(@NotNull final CloudManagerBase cloudManager){
     myCloudManager = cloudManager;
   }
 

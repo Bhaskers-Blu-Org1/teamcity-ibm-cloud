@@ -156,14 +156,16 @@ public class IBMCloudClient implements CloudClientEx {
     }
   }
   
-  // TODO: Add Comment
+  // Called by IBMCloudClientFactory when a cloud profile is updated.
   public void restartUpdateInstancesTask(CloudClientParameters params) {
     dispose();
     executor = new CloudAsyncTaskExecutor("Async tasks for cloud " + params.getProfileDescription());
     start();
   }
 
-  // TODO: Add Comment
+  /* Called by connectRunningInstances(). If the vsi does not have metadata, terminate it; otherwise create 
+   * an instance object and connect it to the image.
+   */
   private void checkMetadata(Guest vsi, IBMCloudImage image) {
     
     if(vsi.getUserData() == null || vsi.getUserData().size() == 0) {
@@ -183,9 +185,10 @@ public class IBMCloudClient implements CloudClientEx {
         }
       });
     } else { 
-      // Create an instance object and connect it to this image.
-      // getUserData() returns a list; the first element in that list is the
-      // user data. It is a UserData object, getValue() returns a string.
+      /* Create an instance object and connect it to this image.
+       * getUserData() returns a list; the first element in that list is the
+       * user data. It is a UserData object, getValue() returns a string.
+       */
       String metadata = vsi.getUserData().get(0).getValue();
       LOG.info("Metadata: " + metadata);
       CloudInstanceUserData data = CloudInstanceUserData.deserialize(metadata);
@@ -202,7 +205,7 @@ public class IBMCloudClient implements CloudClientEx {
     }
   }
 
-  //TODO: Add Comment
+  // Called by retrieveRunningInstances(). Find the matching Guest from the list of Guest.
   private void connectRunningInstances(List<Guest> instances, IBMCloudImage image) {
     
     File file = new File(image.TEAMCITY_INSTANCES);
@@ -219,6 +222,9 @@ public class IBMCloudClient implements CloudClientEx {
       }
     }
     String agentName = image.getDetails().getAgentName();
+    /* Iterate the list of Guest. If its Id and hostname match the saved values, this Guest is the vsi before 
+     * restarting the server, and then check its metadata.
+     */
     for(Guest instance : instances) {
       if(teamcityInstances.contains(instance.getId().toString())
           && instance.getHostname().equals(agentName)) {
@@ -227,7 +233,7 @@ public class IBMCloudClient implements CloudClientEx {
     }
   }
 
-  //TODO: Add Comment
+  // Called by IBMCloudClientFactory. Get a list of Guest from ibmClient, and use them to retrieve instances.
   public void retrieveRunningInstances() {
     Account.Service accountService = Account.service(ibmClient);
     accountService.setMask("mask[userData]");
