@@ -16,7 +16,10 @@ import jetbrains.buildServer.clouds.CloudInstanceUserData;
 
 import com.softlayer.api.*;
 
-// Callded by Spring. Retrieve metadata, and use it to set agent name, url in build agent configuration.
+
+/**
+ * Called by Spring. Retrieve metadata, and use it to set agent name, url in build agent configuration.
+ */
 public class IBMMetadataReader {
   private Logger LOG = Loggers.AGENT;
   private BuildAgentConfigurationEx configuration;
@@ -33,7 +36,10 @@ public class IBMMetadataReader {
     });
   }
 
-  // Retrieve metadata from RestApiClient, and pass it to updateConfiguration() to deserialize.
+  /**
+   * Retrieves metadata from <a href="https://github.com/softlayer/softlayer-java/blob/master/src/main/java/com/softlayer/api/RestApiClient.java">RestApiClient</a> and passes it to #updateConfiguration(String) to deserialize.
+   * @see <a href="https://softlayer.github.io/reference/services/SoftLayer_Resource_Metadata/getUserMetadata/">getUserMetadata()</a>
+   */
   private void fetchConfiguration() {
     try {
       String privateEndPoint = "https://api.service.softlayer.com/rest/v3/";
@@ -46,8 +52,10 @@ public class IBMMetadataReader {
     }
   }
 
-  /* Retrieve agent name, image name, url from deserialized CloudInstanceUserData, 
+  /**
+   * Retrieve agent name, image name, url from deserialized CloudInstanceUserData, 
    * and set those values in build agent configuration.
+   * @param metadata The instance metadata as a serialized string.
    */
   private void updateConfiguration(String metadata) {
     try {
