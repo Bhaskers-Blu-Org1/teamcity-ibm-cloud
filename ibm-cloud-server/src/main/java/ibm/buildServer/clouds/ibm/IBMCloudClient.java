@@ -101,11 +101,11 @@ public class IBMCloudClient implements CloudClientEx {
   @Nullable
   public IBMCloudInstance findInstanceByAgent(@NotNull final AgentDescription agentDescription) {
     final String instanceName = agentDescription.getConfigurationParameters()
-    		.get("INSTANCE_NAME");
+    		.get("instance.name");
     if(instanceName == null) {
       return null;
     }
-    IBMCloudImage image = images.get(agentDescription.getConfigurationParameters().get("IMAGE_NAME"));
+    IBMCloudImage image = images.get(agentDescription.getConfigurationParameters().get("image.name"));
     if (image != null) {
     	//Instance name is set in the format of hostname_instanceID.
         String instanceID = instanceName.split("_")[1];
@@ -186,7 +186,7 @@ public class IBMCloudClient implements CloudClientEx {
       String metadata = vsi.getUserData().get(0).getValue();
       LOG.info("Metadata: " + metadata);
       CloudInstanceUserData data = CloudInstanceUserData.deserialize(metadata);
-      String metadataImageName = data.getAgentConfigurationParameter("IMAGE_NAME");
+      String metadataImageName = data.getAgentConfigurationParameter("image.name");
       LOG.info("Checking metadata image name " + metadataImageName
           + " against TeamCity image name " + image.getName());
       if(metadataImageName.equals(image.getName())) {
