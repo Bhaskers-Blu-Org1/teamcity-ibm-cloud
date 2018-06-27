@@ -165,11 +165,11 @@ public class IBMCloudInstance implements CloudInstance
 
   public boolean containsAgent(AgentDescription agent) {
     if(name == null || agent == null 
-        || agent.getConfigurationParameters().get("instance.name") == null) {
+        || agent.getConfigurationParameters().get("ibm.instance.name") == null) {
       return false;
     }
     String instanceNameFromAgent
-      = agent.getConfigurationParameters().get("instance.name");
+      = agent.getConfigurationParameters().get("ibm.instance.name");
     return instanceNameFromAgent.equals(name);
   }
 
@@ -250,8 +250,8 @@ public class IBMCloudInstance implements CloudInstance
     try {
       // Serialize CloudInstanceUserData and set as SoftLayer user metadata.
       List<String> userDataList = new ArrayList<String>();
-      userData.addAgentConfigurationParameter("instance.name", name);
-      userData.addAgentConfigurationParameter("image.name", getImageName());
+      userData.addAgentConfigurationParameter("ibm.instance.name", name);
+      userData.addAgentConfigurationParameter("ibm.image.name", getImageName());
       userDataList.add(userData.serialize());
       Long virtualGuestId = new Long(getInstanceId());
       Guest.Service virtualGuestService = Guest.service(ibmClient,
