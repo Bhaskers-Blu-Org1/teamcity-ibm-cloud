@@ -87,7 +87,7 @@ public class IBMCloudClient implements CloudClientEx {
   }
 
   /**
-   * @param imageID a String representation of a sequential integer, for example
+   * @param imageId a String representation of a sequential integer, for example
    *                "0" or "1".
    * @return the IBMCloudImage associated with this ID.
    */
@@ -173,7 +173,6 @@ public class IBMCloudClient implements CloudClientEx {
 
   /**
    * TC server will call this method to terminate running instances. 
-   * @see jetbrains.buildServer.clouds.CloudClientEx#terminateInstance(jetbrains.buildServer.clouds.CloudInstance)
    */
   public void terminateInstance(@NotNull final CloudInstance baseInstance) {
     IBMCloudInstance instance = (IBMCloudInstance) baseInstance;
@@ -313,7 +312,7 @@ public class IBMCloudClient implements CloudClientEx {
    * Called by IBMCloudClientFactory. Get a List of VSIs from the SoftLayer API and
    * reconnect the ones we recognize as started by this server.
    * @see #ibmClient
-   * @see #connectRunningInstances(List<Guest>, IBMCloudImage)
+   * @see #connectRunningInstances(List, IBMCloudImage)
    * @see <a href="https://softlayer.github.io/java/RetrieveMetadata.java/">RetrieveMetadata</a>
    */
   public void retrieveRunningInstances() {
