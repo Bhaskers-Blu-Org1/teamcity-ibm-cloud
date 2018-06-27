@@ -33,7 +33,6 @@ public class IBMUpdateInstancesTask implements Runnable {
   // Called by IBMCloudClient. Upate the status of all instances of a cloud profile. It runs every minute.
   public void run() {
     Logger LOG = Loggers.SERVER;
-    LOG.info("IBMUpdateInstancesTask is running.");
     InstanceStatus newStatus;
     InstanceStatus currentStatus;
     Status vsiStatus;

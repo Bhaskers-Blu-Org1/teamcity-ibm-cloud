@@ -74,21 +74,22 @@ public class IBMCloudInstance implements CloudInstance {
     /* If CustomizeMachineType = true: Set RAM, CPU, Disk Type & Disk Size.
      * Else:  Set Flavor List.
      */
-    if (details.getCustomizeMachineType()) {
-      guest.setStartCpus(details.getMaxCores());
-      guest.setMaxMemory(details.getMaxMemory());
-      guest.setLocalDiskFlag(details.getLocalDiskFlag());
+    if(details.getCustomizeMachineType()) {
+     	guest.setStartCpus(details.getMaxCores());
+	    guest.setMaxMemory(details.getMaxMemory());
+	    guest.setLocalDiskFlag(details.getLocalDiskFlag());
 	    
-      // Disk Size
-      Template template = new Template();
-      Image diskImage = new Image();
-      diskImage.setCapacity(Long.valueOf(details.getDiskSize()));
-      template.setDiskImage(diskImage);
-      blockDevice.getBlockDevices().add(template);
-    } else {
-      SupplementalCreateObjectOptions supplementObject = new SupplementalCreateObjectOptions(); 
-      supplementObject.setFlavorKeyName(details.getFlavorList());
-      guest.setSupplementalCreateObjectOptions(supplementObject);
+	    // Disk Size
+	    Template template = new Template();
+	    Image diskImage = new Image();
+	    diskImage.setCapacity(Long.valueOf(details.getDiskSize()));
+	    template.setDiskImage(diskImage);
+	    blockDevice.getBlockDevices().add(template);
+    }
+    else {
+	    SupplementalCreateObjectOptions supplementObject = new SupplementalCreateObjectOptions(); 
+	    supplementObject.setFlavorKeyName(details.getFlavorList());
+	    guest.setSupplementalCreateObjectOptions(supplementObject);
     }
 
   }
@@ -163,11 +164,13 @@ public class IBMCloudInstance implements CloudInstance {
    * @see jetbrains.buildServer.clouds.CloudInstance#containsAgent(jetbrains.buildServer.serverSide.AgentDescription)
    */
   public boolean containsAgent(AgentDescription agent) {
-    if(name == null) {
-      LOG.warn("SoftLayer instance name has not been set.");
+    if(name == null || agent == null 
+        || agent.getConfigurationParameters().get("INSTANCE_NAME") == null) {
       return false;
     }
-    return agent.getConfigurationParameters().get("INSTANCE_NAME").equals(name);
+    String instanceNameFromAgent
+      = agent.getConfigurationParameters().get("INSTANCE_NAME");
+    return instanceNameFromAgent.equals(name);
   }
 
   public CloudErrorInfo getErrorInfo() {

@@ -84,10 +84,10 @@ public class IBMCloudClientFactory implements CloudClientFactory {
       client.addImage(image);
       clientHasImage = true;
     }
-    
-    if (createdNewClient) {
+    if(createdNewClient) {
       // Only retrieve instances when client is created for the first time.
-      if (clientHasImage) {
+      if(clientHasImage) {
+        LOG.info("Checking for running instances on each image for " + clientId);
         client.retrieveRunningInstances();
       }
       client.start();

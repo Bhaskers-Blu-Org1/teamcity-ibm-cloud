@@ -3,7 +3,7 @@ package ibm.buildServer.clouds.ibm;
 import jetbrains.buildServer.clouds.CloudImageParameters;
 
 public class IBMCloudConstants {
-	
+
   public static final String DISPLAY_NAME = "IBM Cloud";
   public static final String CLOUD_CODE = "IBMSL";
 
@@ -26,17 +26,15 @@ public class IBMCloudConstants {
   public static final String MAX_MEMORY = "IBMSL_maxMemory";
   public static final String MAX_CORES = "IBMSL_maxCores";
   public static final String DISK_TYPE = "IBMSL_diskType";
+  public static final String DISK_SIZE = "IBMSL_diskSize";
   public static final String NETWORK = "IBMSL_network";
   public static final String DOMAIN_NAME = "IBMSL_domainName";
   public static final String VSI_BILLING = "IBMSL_vsiBilling";
   public static final String MAXIMUM_INSTANCES = "IBMSL_maximumInstances";
-	
   public static final String PROFILE_ID = "profileId";
   public static final String SOURCE_ID = "source-id";
-	
   public static final String SECURE_API_KEY = "secure:" + API_KEY;
 
-	
   public String getUsername() {
     return USER_NAME;
   }
@@ -64,11 +62,11 @@ public class IBMCloudConstants {
   public String getCustomizeMachineType() {
     return CUSTOMIZE_MACHINE_TYPE;
   }
-			
+
   public String getFlavorList() {
     return FLAVOR_LIST;
   }
-		
+
   public String getMaxMemory() {
     return MAX_MEMORY;
   }
@@ -88,7 +86,7 @@ public class IBMCloudConstants {
   public String getDomainName() {
     return DOMAIN_NAME;
   }
-	
+
   public String getVsiBillingType() {
     return VSI_BILLING;
   }
@@ -99,5 +97,9 @@ public class IBMCloudConstants {
 
   public String getMaximumInstances() {
     return MAXIMUM_INSTANCES;
+  }
+
+  public String getDiskSize() {
+    return DISK_SIZE;
   }
 }
