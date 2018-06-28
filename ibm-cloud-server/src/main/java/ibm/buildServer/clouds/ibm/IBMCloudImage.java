@@ -33,6 +33,7 @@ public class IBMCloudImage implements CloudImage {
   private IBMCloudImageDetails details;
   private final Map<String, IBMCloudInstance> instances = new ConcurrentHashMap<>();
   private CloudErrorInfo myCurrentError = null;
+  public ApiClient ibmClient;
 
   /**
    * A string used to identify a persistent file where instances are identified.
@@ -120,7 +121,7 @@ public class IBMCloudImage implements CloudImage {
    * Method will start new instance
    * @param data An object of CloudInstanceUserData provided by the TeamCity core.
    * @see #canStartNewInstance()
-   * @see createNewInstance(CloudInstanceUserData)
+   * @see #createInstance(CloudInstanceUserData)
    */
   public IBMCloudInstance startNewInstance(@NotNull final CloudInstanceUserData data) {
     if (canStartNewInstance()) {
@@ -140,8 +141,6 @@ public class IBMCloudImage implements CloudImage {
   /**
    * Create a new instance using CloudInstanceUserData. Called by #startNewInstance.
    * @see IBMCloudInstance#start()
-   * @throws e from IBMCloudInstance, thrown to file IBMCloudClient. On TC server
-   *           UI, this exception will show up on Agents->Cloud tab.
    */
   protected IBMCloudInstance createInstance(CloudInstanceUserData data) {
     IBMCloudInstance instance = new IBMCloudInstance(details, data, ibmClient);
