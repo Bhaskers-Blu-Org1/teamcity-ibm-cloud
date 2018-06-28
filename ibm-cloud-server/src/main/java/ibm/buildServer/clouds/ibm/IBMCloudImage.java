@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.softlayer.api.*;
 
+//TODO: Is this import statement necessary? It's the same package.
 import ibm.buildServer.clouds.ibm.IBMCloudImageDetails;
 
 import java.util.Collection;
@@ -23,14 +24,22 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * Represents a TeamCity cloud image.
+ */
 public class IBMCloudImage implements CloudImage {
 
   private IBMCloudImageDetails details;
   private final Map<String, IBMCloudInstance> instances = new ConcurrentHashMap<>();
   private CloudErrorInfo myCurrentError = null;
 
+  /**
+   * A string used to identify a persistent file where instances are identified.
+   */
   public final static String TEAMCITY_INSTANCES = "teamcity_instances";
 
+  //TODO: Where does details come from?
   public IBMCloudImage(IBMCloudImageDetails details) {
     this.details = details;
   }
@@ -64,18 +73,26 @@ public class IBMCloudImage implements CloudImage {
     return details.getMaxInstances();
   }
 
-  // Return a collecton of instances of the image.
+  /**
+   * @return a collecton of instances of the image.
+   */
   @NotNull
   public Collection<IBMCloudInstance> getInstances() {
     return Collections.unmodifiableCollection(instances.values());
   }
 
-  // Remove the instance with instanceId.
+  /**
+   * Remove the instance with instanceId from the hashmap.
+   * @param instanceId an 8-digit numeric string representing a VSI ID.
+   * @see <a href="https://softlayer.github.io/reference/datatypes/SoftLayer_Virtual_Guest/#id">Guest</a>
+   */
   public void removeInstance(String instanceId) {
     instances.remove(instanceId);
   }
 
-  // Add instance to the instances hashmap.
+  /**
+   * Add instance to the instances hashmap.
+   */
   public void addInstance(IBMCloudInstance instance) {
     instances.putIfAbsent(instance.getInstanceId(), instance);
   }
@@ -85,7 +102,9 @@ public class IBMCloudImage implements CloudImage {
     return instances.get(instanceId);
   }
 
-  // Get the agent pool id set for cloud image.
+  /**
+   * Get the agent pool id set for cloud image.
+   */
   @Nullable
   @Override
   public Integer getAgentPoolId() {
@@ -97,8 +116,12 @@ public class IBMCloudImage implements CloudImage {
     return myCurrentError;
   }
 
-  // Method will start new instance
-  @NotNull
+  /**
+   * Method will start new instance
+   * @param data An object of CloudInstanceUserData provided by the TeamCity core.
+   * @see #canStartNewInstance()
+   * @see createNewInstance(CloudInstanceUserData)
+   */
   public IBMCloudInstance startNewInstance(@NotNull final CloudInstanceUserData data) {
     if (canStartNewInstance()) {
       return createInstance(data);
@@ -106,13 +129,20 @@ public class IBMCloudImage implements CloudImage {
     return null;
   }
 
-  // Check whether TC server can start new instance by checking the max count set by user.
+  /**
+   * Check whether TC server can start new instance by checking the max count set 
+   * by user. maxInstances == 0 means user can start infinite instances.
+   */
   protected boolean canStartNewInstance() {
-    // maxInstances == 0 means user can start infinite instances.
     return getMaxInstances() == 0 || instances.size() < getMaxInstances();
   }
 
-  // Create a new instance using CloudInstanceUserData.
+  /**
+   * Create a new instance using CloudInstanceUserData. Called by #startNewInstance.
+   * @see IBMCloudInstance#start()
+   * @throws e from IBMCloudInstance, thrown to file IBMCloudClient. On TC server
+   *           UI, this exception will show up on Agents->Cloud tab.
+   */
   protected IBMCloudInstance createInstance(CloudInstanceUserData data) {
     IBMCloudInstance instance = new IBMCloudInstance(details, data, ibmClient);
     try {
@@ -122,16 +152,15 @@ public class IBMCloudImage implements CloudImage {
       myCurrentError = null;
     } catch (Exception e) {
       
-      /* Exception from IBMCloudInstance, thrown to file IBMCloudClient. 
-       * On TC server UI, this exception will show up on Agents->Cloud tab.
-       */
       myCurrentError = new CloudErrorInfo("Failed to start cloud image: ", e.getMessage(), e);
       throw e;
     }
     return instance;
   }
 
-  // Set credentials for ibmClient.
+  /**
+   * Set credentials for ibmClient.
+   */
   public void setCredentials(String username, String apiKey) {
     ibmClient = new RestApiClient().withCredentials(username, apiKey);
   }
