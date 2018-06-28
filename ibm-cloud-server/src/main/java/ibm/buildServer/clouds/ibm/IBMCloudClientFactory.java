@@ -25,43 +25,55 @@ import org.jetbrains.annotations.Nullable;
 
 import com.intellij.openapi.diagnostic.Logger;
 
+
+/**
+ * A Spring bean that builds the cloud profiles.
+ */
 public class IBMCloudClientFactory implements CloudClientFactory {
-	
-  /* 1) pluginDescriptor: USed for setting plugin resource paths like: settings page path. 
-   * 2) LOG: TC server log. "<TC root path>/logs/teamcity-server.log" 
-   * 3) clients: HashMap to keep track of the created cloud profiles, HashMap Key = ProjectId + ProfileId.
+  /**
+   * used for setting plugin resource paths like: settings page path. 
    */
   private PluginDescriptor pluginDescriptor;
+  /**
+   * Set path to plugin's settings page using pluginDescriptor.
+   */
   private final String settingPagePath;
-  @NotNull
   private final CloudManagerBase myCloudManager;
+  /**
+   * TC server log. "<TC root path>/logs/teamcity-server.log" 
+   */
   private final static Logger LOG = Loggers.SERVER;
+  /**
+   * HashMap to keep track of the created cloud profiles, HashMap Key = ProjectId
+   * + ProfileId.
+   */
   private final Map<String, IBMCloudClient> clients = new ConcurrentHashMap<>();
 
-  /* Constructor. 
-   * 1) cloudRegistrar: Used to register plugin in cloud using,'IBMCloudClientFactory' object. 
-   * 2) settingPagePath: Set path to plugin's settings page using pluginDescriptor.
+  /**
+   * @param cloudRegistrar Used to register plugin in cloud using IBMCloudClientFactory 
+   *                       object. 
    */
   public IBMCloudClientFactory (@NotNull CloudRegistrar cloudRegistrar,
-      @NotNull final CloudManagerBase cloudManager, @NotNull final PluginDescriptor pluginDescriptor) {
-
+      @NotNull final CloudManagerBase cloudManager,
+      @NotNull final PluginDescriptor pluginDescriptor) {
     cloudRegistrar.registerCloudFactory(this);
-    settingPagePath = pluginDescriptor.getPluginResourcesPath(IBMCloudConstants.SETTINGS_HTML_PAGE);
+    settingPagePath = pluginDescriptor.getPluginResourcesPath(
+        IBMCloudConstants.SETTINGS_HTML_PAGE);
     myCloudManager = cloudManager;
   }
 
-  /* 1) createNewClient(): called when you create/edit new cloud profile. 
-   *    And, when cloud profile is created/edited, this function will be called for all existing cloud profiles too. 
-   * 2) [line: 70] Check HashMap to match existing cloud profiles and add new cloud profiles to HashMap. 
-   *    And create new IBMCloudClient object for each cloud profile.
-   * 3) [line: 84] Adding all images to their cloud profile object 'client'. 
-   * 
-   * @return just created new client instance.
+  /**
+   * called when you create/edit new cloud profile. When cloud profile is created/edited,
+   * this function will be called for all existing cloud profiles too. Check HashMap
+   * to match existing cloud profiles and add new cloud profiles to HashMap. Create
+   * new IBMCloudClient object for each cloud profile. Only check for new instances
+   * if we created a new client and that client has images. Restart updateInstancesTask
+   * when the user updates images.
+   * @return just created new client instance with all images added to it.
    */
   @NotNull
   public IBMCloudClient createNewClient(@NotNull CloudState state, 
       @NotNull CloudClientParameters params) {
-    
     String clientId = state.getProjectId() + state.getProfileId();
     IBMCloudClient client;
     boolean createdNewClient = false;
@@ -77,7 +89,8 @@ public class IBMCloudClientFactory implements CloudClientFactory {
     for (IBMCloudImageDetails imageDetails : parseImageData(params)) {
       
       // Unit Test: Print to the screen during test.
-      System.out.println("creating image for " + params.getParameter(IBMCloudConstants.USER_NAME)); 
+      System.out.println("creating image for "
+          + params.getParameter(IBMCloudConstants.USER_NAME)); 
       IBMCloudImage image = new IBMCloudImage(imageDetails);
       image.setCredentials(params.getParameter(IBMCloudConstants.USER_NAME), 
           params.getParameter(IBMCloudConstants.API_KEY));
@@ -85,23 +98,24 @@ public class IBMCloudClientFactory implements CloudClientFactory {
       clientHasImage = true;
     }
     if(createdNewClient) {
-      // Only retrieve instances when client is created for the first time.
       if(clientHasImage) {
         LOG.info("Checking for running instances on each image for " + clientId);
         client.retrieveRunningInstances();
       }
       client.start();
     } else {
-      // Restart updateInstancesTask when user updates images.
       client.restartUpdateInstancesTask(params);
     }
     return client;
   }
 
-  /* Gets list of all cloud images defined in corresponding cloud profile.
-   * */
-  public Collection<IBMCloudImageDetails> parseImageData(@NotNull final CloudClientParameters params) {
-    return params.getCloudImages().stream().map(IBMCloudImageDetails::new).collect(Collectors.toList());
+  /**
+   * Gets list of all cloud images defined in corresponding cloud profile.
+   */
+  public Collection<IBMCloudImageDetails> parseImageData(
+      @NotNull final CloudClientParameters params) {
+    return params.getCloudImages().stream().map(IBMCloudImageDetails::new)
+      .collect(Collectors.toList());
   }
 
   @NotNull
