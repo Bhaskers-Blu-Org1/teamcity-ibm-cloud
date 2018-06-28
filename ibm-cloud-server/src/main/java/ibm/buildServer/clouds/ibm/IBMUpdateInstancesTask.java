@@ -21,7 +21,9 @@ import java.util.*;
 
 public class IBMUpdateInstancesTask implements Runnable {
   private IBMCloudClient client;
-  //use a hashset to store the instanceIDs that user clicked stop
+  /**
+   * use a hashset to store the instanceIDs that user clicked stop
+   */
   private Set<String> clickedStopInstances;
   private String currentInstanceId;
 
@@ -30,7 +32,11 @@ public class IBMUpdateInstancesTask implements Runnable {
     clickedStopInstances = new HashSet<>();
   }
 
-  // Called by IBMCloudClient. Upate the status of all instances of a cloud profile. It runs every minute.
+  /**
+   * Called by IBMCloudClient. Upate the status of all instances of a cloud profile.
+   * Update instance user metadata when disk is mounted. It runs every minute.
+   * @see <a href="https://github.com/softlayer/softlayer-java/blob/master/examples/src/main/java/com/softlayer/api/example/OrderVirtualServer.java">OrderVirtualServer</a>
+   */
   public void run() {
     Logger LOG = Loggers.SERVER;
     InstanceStatus newStatus;
@@ -50,7 +56,6 @@ public class IBMUpdateInstancesTask implements Runnable {
           newStatus = InstanceStatus.STOPPED;
         } else {
           try {
-            // This logic is modeled on https://github.com/softlayer/softlayer-java/blob/master/examples/src/main/java/com/softlayer/api/example/OrderVirtualServer.java
             service = instance.guest.asService(instance.ibmClient);
             service.withMask().status().name();
             service.withMask().powerState().name();
@@ -60,8 +65,8 @@ public class IBMUpdateInstancesTask implements Runnable {
             vsiStatus = guest.getStatus();
             vsiState = guest.getPowerState();
             vsiTransaction = guest.getActiveTransaction();
-            // Update instance user metadata when disk is mounted.
-            if(vsiState != null && vsiState.getName().equals("Running") && !instance.metadataIsSet()) {
+            if(vsiState != null && vsiState.getName().equals("Running")
+                && !instance.metadataIsSet()) {
               instance.setMetadata();
             }
             newStatus = teamcityStatus(vsiStatus, vsiState, vsiTransaction, currentStatus);
@@ -82,12 +87,17 @@ public class IBMUpdateInstancesTask implements Runnable {
     }
   }
 
-  // If instance status is STOPPED or ERROR, the instance will be removed from image.
+  /**
+   * If instance status is STOPPED or ERROR, the instance will be removed from image.
+   */
   public boolean removable(InstanceStatus status) {
     return status == InstanceStatus.ERROR || status == InstanceStatus.STOPPED;
   }
 
-  // Update instance status based on vsiStatus, vsiState and vsiTransaction.
+  /**
+   * Update instance status based on vsiStatus, vsiState and vsiTransaction.
+   * If user clicks stop we set the status SCHEDULED_TO_STOP
+   */
   private InstanceStatus teamcityStatus(Status vsiStatus, State vsiState,
       Transaction vsiTransaction, InstanceStatus currentStatus) {
     if (vsiStatus == null) {
@@ -115,7 +125,6 @@ public class IBMUpdateInstancesTask implements Runnable {
     if (vsiStatus != null && vsiStatus.getName().equals("Disconnected")) {
       return InstanceStatus.STOPPED;
     }
-    // If user clicks stop, we just show the status SCHEDULED_TO_STOP
     if (clickedStopInstances.contains(currentInstanceId)) {
       return InstanceStatus.SCHEDULED_TO_STOP;
     }
@@ -129,14 +138,16 @@ public class IBMUpdateInstancesTask implements Runnable {
   }
   
   public void setClickedStop(String instanceId) {
-	  clickedStopInstances.add(instanceId);
+    clickedStopInstances.add(instanceId);
   }
   
+  /**
+   * Check whether the instance is already removed from SL.
+   * If yes, we don't call SL api to update status, in order to avoid unnecessary
+   * ObjectNotFound exception.
+   */
   private boolean checkStopped(IBMCloudInstance instance) {
     InstanceStatus currentStatus = instance.getStatus();
-    /* Check whether the instance is already removed from SL.
-     * If yes, we don't call SL api to update status, in order to avoid unnecessary ObjectNotFound exception.
-     */
     if (currentStatus == InstanceStatus.SCHEDULED_TO_STOP
         || currentStatus == InstanceStatus.STOPPING) {
       Account.Service accountService = Account.service(instance.ibmClient);
