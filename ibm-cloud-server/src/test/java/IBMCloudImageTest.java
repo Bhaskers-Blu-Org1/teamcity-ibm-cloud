@@ -52,11 +52,10 @@ class IBMCloudImageTest {
   
   @AfterEach
   public void terminateInstances() {
-    IBMCloudInstance instance;
-	for(instance : instances) {
+	for(IBMCloudInstance instance : instances) {
 	  instance.terminate();
 	}
-    for(instance : image.getInstances()) {
+    for(IBMCloudInstance instance : image.getInstances()) {
       instance.terminate();
     }
     client.terminateAllInstances();
