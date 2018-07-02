@@ -208,7 +208,9 @@ public class IBMCloudInstance implements CloudInstance
       file.createNewFile();
       FileWriter fw = new FileWriter(file, true);
       PrintWriter writer = new PrintWriter(fw);
-      writer.write(getName());
+      //instanceInfo has information of profileId, imageId and vsiId: "IBMSL-10 0 51234567"
+      String instanceInfo = userData.getProfileId() + " " + getImageName() + " " + id;
+      writer.write(instanceInfo);
       writer.close();
       fw.close();
     } catch (IOException e) {
