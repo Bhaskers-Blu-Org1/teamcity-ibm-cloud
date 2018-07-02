@@ -55,6 +55,15 @@ class IBMCloudInstanceTest {
     instance = new IBMCloudInstance(details, instanceData, ibmClient);
   }
 
+  @AfterEach
+  public void terminateInstances() {
+    instance.terminate();
+    for(IBMCloudInstance instanceFromImage : image.getInstances()) {
+      instanceFromImage.terminate();
+    }
+    client.terminateAllInstances();
+  }
+
   @Test
   @DisplayName("Test getting and setting an image in an instance.")
   public void testGetImage() {

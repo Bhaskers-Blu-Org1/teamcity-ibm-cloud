@@ -59,11 +59,7 @@ class IBMCloudClientTest {
 
   @AfterEach
   public void cancelVSIs() {
-    for(IBMCloudImage clientImage : client.getImages()) {
-      for(IBMCloudInstance instance : clientImage.getInstances()) {
-        client.terminateInstance(instance);
-      }
-    }
+    client.terminateAllInstances();
   }
 
   @Test
