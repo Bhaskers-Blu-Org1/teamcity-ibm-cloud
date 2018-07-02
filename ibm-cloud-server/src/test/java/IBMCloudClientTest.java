@@ -57,6 +57,15 @@ class IBMCloudClientTest {
     client.addImage(image);
   }
 
+  @AfterEach
+  public void cancelVSIs() {
+    for(IBMCloudImage clientImage : client.getImages()) {
+      for(IBMCloudInstance instance : clientImage.getInstances()) {
+        client.terminateInstance(instance);
+      }
+    }
+  }
+
   @Test
   @DisplayName("Test if we can add & retrieve images")
   public void addImageTest() {
