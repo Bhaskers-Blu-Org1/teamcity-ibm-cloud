@@ -49,6 +49,7 @@ public class IBMCloudClientFactory implements CloudClientFactory {
 		  client = clients.get(clientId);
 	  } else {
 		  client = new IBMCloudClient(params);
+		  client.setProfileId(state.getProfileId());
 		  clients.put(clientId, client);
 		  createdNewClient = true;
 	  }
