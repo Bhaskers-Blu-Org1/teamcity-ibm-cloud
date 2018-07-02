@@ -102,11 +102,11 @@ public class IBMCloudClient implements CloudClientEx {
   @Nullable
   public IBMCloudInstance findInstanceByAgent(@NotNull final AgentDescription agentDescription) {
     final String instanceName = agentDescription.getConfigurationParameters()
-    		.get("INSTANCE_NAME");
+    		.get("ibm.instance.name");
     if(instanceName == null) {
       return null;
     }
-    IBMCloudImage image = images.get(agentDescription.getConfigurationParameters().get("IMAGE_NAME"));
+    IBMCloudImage image = images.get(agentDescription.getConfigurationParameters().get("ibm.image.name"));
     if (image != null) {
     	//Instance name is set in the format of hostname_instanceID.
         String instanceID = instanceName.split("_")[1];

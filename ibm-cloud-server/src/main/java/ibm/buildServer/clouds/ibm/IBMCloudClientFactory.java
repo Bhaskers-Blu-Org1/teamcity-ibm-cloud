@@ -133,6 +133,6 @@ public class IBMCloudClientFactory implements CloudClientFactory {
   * @return true if this agent could be an instance of that cloud type
   */
   public boolean canBeAgentOfType(@NotNull AgentDescription description) {
-	return description.getConfigurationParameters().containsKey("INSTANCE_NAME");
+	return description.getConfigurationParameters().containsKey("ibm.instance.name");
   }
 }
