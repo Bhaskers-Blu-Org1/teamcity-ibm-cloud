@@ -59,6 +59,7 @@ public class IBMCloudClient implements CloudClientEx {
    * Time in milliseconds.
    */
   int taskDelayTime = 60 * 1000;
+  private String profileId;
 
   public IBMCloudClient(CloudClientParameters params) {
     executor = new CloudAsyncTaskExecutor(
@@ -158,12 +159,12 @@ public class IBMCloudClient implements CloudClientEx {
   public IBMCloudInstance findInstanceByAgent(
       @NotNull final AgentDescription agentDescription) {
     final String instanceName
-      = agentDescription.getConfigurationParameters().get("INSTANCE_NAME");
+      = agentDescription.getConfigurationParameters().get("ibm.instance.name");
     if(instanceName == null) {
       return null;
     }
-    IBMCloudImage image
-      = images.get(agentDescription.getConfigurationParameters().get("IMAGE_NAME"));
+    IBMCloudImage image = images.get(
+        agentDescription.getConfigurationParameters().get("ibm.image.name"));
     if (image != null) {
       String instanceID = instanceName.split("_")[1];
       return image.findInstanceById(instanceID);
@@ -263,22 +264,19 @@ public class IBMCloudClient implements CloudClientEx {
     } else { 
       String metadata = vsi.getUserData().get(0).getValue();
       CloudInstanceUserData data = CloudInstanceUserData.deserialize(metadata);
-      String metadataImageName = data.getAgentConfigurationParameter("IMAGE_NAME");
-      if(metadataImageName.equals(image.getName())) {
-        IBMCloudInstance teamcityInstance = new IBMCloudInstance(
-            image.getDetails(), data, ibmClient, vsi,
-            vsi.getProvisionDate().getTime());
-        teamcityInstance.setName();
-        teamcityInstance.setImage(image);
-        image.addInstance(teamcityInstance);
-      }
+      IBMCloudInstance teamcityInstance = new IBMCloudInstance(image.getDetails(),
+          data, ibmClient, vsi, vsi.getProvisionDate().getTime());
+      teamcityInstance.setName();
+      teamcityInstance.setImage(image);
+      image.addInstance(teamcityInstance);
     }
   }
 
   /**
    * Called by #retrieveRunningInstances(). Finds running VSIs that were started
    * using a certain IBMCloudImage object. Also checks a persistent file on the server
-   * to make sure that the instance was started by this server.
+   * to make sure that the instance was started by this server. 
+   * instanceInfo has information of profileId, imageId and vsiId: "IBMSL-10 0 51234567"
    * @see #checkMetadata(IBMCloudInstance, IBMCloudImage)
    * @see IBMCloudImage#getDetails()
    * @param instances a java.util.List of com.softlayer.api.service.virtual.Guest
@@ -299,11 +297,13 @@ public class IBMCloudClient implements CloudClientEx {
         LOG.error("IBMCloudClient error: " + e);
       }
     }
-    String agentName = image.getDetails().getAgentName();
-    for(Guest instance : instances) {
-      if(teamcityInstances.contains(instance.getId().toString())
-          && instance.getHostname().equals(agentName)) {
-        checkMetadata(instance, image);
+    String clientAndImage = profileId + " " + image.getName() + " ";
+    if (teamcityInstances.contains(clientAndImage)) {
+      for(Guest instance : instances) {
+        String instanceInfo = clientAndImage + instance.getId().toString();
+        if(teamcityInstances.contains(instanceInfo)) {
+          checkMetadata(instance, image);
+        }
       }
     }
   }
@@ -326,5 +326,9 @@ public class IBMCloudClient implements CloudClientEx {
     } catch (Exception e) {
       LOG.error("Unable to retrieve the SoftLayer metadata information. " + e);
     }
+  }
+
+  public void setProfileId(String profileId) {
+    this.profileId = profileId;
   }
 }
