@@ -62,35 +62,4 @@ class IBMCloudImageTest {
     String message = "Max instance does not match.";
     Assertions.assertEquals(image.getMaxInstances(), 0, message);
   }
-  
-  @Test
-  @DisplayName("Test 0 max instance means you can add infinity.")
-  public void testEmptyMaxInstancesMeansInfinity() {
-	String message = "Instance should not be null";
-    FakeCloudInstance instance;
-    for (int i = 0; i < 2; i++) {
-      instance = new FakeCloudInstance(details, instanceData, image.ibmClient);
-      instance.setId(String.valueOf(i));
-      image.addInstance(instance)
-    }
-    Assertions.assertTrue(image.canStartNewInstance());
-  }
-  
-  @Test
-  @DisplayName("Test setting max instances.")
-  public void testSetMaxInstances() {
-    details.setMaxInstances(1);
-    Assertions.assertTrue(image.canStartNewInstance());
-    FakeCloudInstance instance = new FakeCloudInstance(details, instanceData,
-        image.ibmClient);
-    instance.setId("1");
-    image.addInstance(instance);
-    instance = new FakeCloudInstance(details, instanceData, image.ibmClient);
-    instance.setId("2");
-    Assertions.assertFalse(image.canStartNewInstance());
-    details.setMaxInstances(2);
-    Assertions.assertTrue(image.canStartNewInstance());
-    image.addInstance(instance);
-    Assertions.assertFalse(image.canStartNewInstance());
-  }
 }
