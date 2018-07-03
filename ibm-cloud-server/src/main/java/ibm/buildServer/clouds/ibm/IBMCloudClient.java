@@ -35,6 +35,7 @@ public class IBMCloudClient implements CloudClientEx {
   private CloudErrorInfo myCurrentError = null;
   private IBMUpdateInstancesTask updateInstancesTask;
   private ApiClient ibmClient;
+  private String profileId;
 
   public IBMCloudClient(CloudClientParameters params) {
     executor = new CloudAsyncTaskExecutor("Async tasks for cloud " + params.getProfileDescription());
@@ -101,11 +102,11 @@ public class IBMCloudClient implements CloudClientEx {
   @Nullable
   public IBMCloudInstance findInstanceByAgent(@NotNull final AgentDescription agentDescription) {
     final String instanceName = agentDescription.getConfigurationParameters()
-    		.get("INSTANCE_NAME");
+    		.get("ibm.instance.name");
     if(instanceName == null) {
       return null;
     }
-    IBMCloudImage image = images.get(agentDescription.getConfigurationParameters().get("IMAGE_NAME"));
+    IBMCloudImage image = images.get(agentDescription.getConfigurationParameters().get("ibm.image.name"));
     if (image != null) {
     	//Instance name is set in the format of hostname_instanceID.
         String instanceID = instanceName.split("_")[1];
@@ -192,23 +193,16 @@ public class IBMCloudClient implements CloudClientEx {
       // getUserData() returns a list; the first element in that list is the
       // user data. It is a UserData object, getValue() returns a string.
       String metadata = vsi.getUserData().get(0).getValue();
-      LOG.info("Metadata: " + metadata);
       CloudInstanceUserData data = CloudInstanceUserData.deserialize(metadata);
-      String metadataImageName = data.getAgentConfigurationParameter("IMAGE_NAME");
-      LOG.info("Checking metadata image name " + metadataImageName
-          + " against TeamCity image name " + image.getName());
-      if(metadataImageName.equals(image.getName())) {
-        LOG.info("They match.");
-        IBMCloudInstance teamcityInstance = new IBMCloudInstance(
+      IBMCloudInstance teamcityInstance = new IBMCloudInstance(
             image.getDetails(),
             data,
             ibmClient,
             vsi,
             vsi.getProvisionDate().getTime());
-        teamcityInstance.setName();
-        teamcityInstance.setImage(image);
-        image.addInstance(teamcityInstance);
-      }
+      teamcityInstance.setName();
+      teamcityInstance.setImage(image);
+      image.addInstance(teamcityInstance);
     }
   }
 
@@ -226,14 +220,14 @@ public class IBMCloudClient implements CloudClientEx {
         LOG.error("IBMCloudClient error: " + e);
       }
     }
-    String agentName = image.getDetails().getAgentName();
-    LOG.info("Trying to find SoftLayer instances that match " + agentName);
-    for(Guest instance : instances) {
-      if(teamcityInstances.contains(instance.getId().toString())
-          && instance.getHostname().equals(agentName)) {
-        LOG.info(instance.getHostname() + " matches " + agentName
-            + " for VSI ID " + instance.getId());
-        checkMetadata(instance, image);
+    String clientAndImage = profileId + " " + image.getName() + " ";
+    if (teamcityInstances.contains(clientAndImage)) {
+      for(Guest instance : instances) {
+        //instanceInfo has information of profileId, imageId and vsiId: "IBMSL-10 0 51234567"
+        String instanceInfo = clientAndImage + instance.getId().toString();
+        if(teamcityInstances.contains(instanceInfo)) {
+          checkMetadata(instance, image);
+        }
       }
     }
   }
@@ -249,5 +243,9 @@ public class IBMCloudClient implements CloudClientEx {
     } catch (Exception e) {
       LOG.error("Unable to retrieve the SoftLayer metadata information. " + e);
     }
+  }
+
+  public void setProfileId(String profileId) {
+    this.profileId = profileId;
   }
 }

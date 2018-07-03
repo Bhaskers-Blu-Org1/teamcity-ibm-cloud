@@ -49,6 +49,7 @@ public class IBMCloudClientFactory implements CloudClientFactory {
 		  client = clients.get(clientId);
 	  } else {
 		  client = new IBMCloudClient(params);
+		  client.setProfileId(state.getProfileId());
 		  clients.put(clientId, client);
 		  createdNewClient = true;
 	  }
@@ -132,6 +133,6 @@ public class IBMCloudClientFactory implements CloudClientFactory {
   * @return true if this agent could be an instance of that cloud type
   */
   public boolean canBeAgentOfType(@NotNull AgentDescription description) {
-	return description.getConfigurationParameters().containsKey("INSTANCE_NAME");
+	return description.getConfigurationParameters().containsKey("ibm.instance.name");
   }
 }

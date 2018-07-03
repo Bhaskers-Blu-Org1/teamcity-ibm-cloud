@@ -165,11 +165,11 @@ public class IBMCloudInstance implements CloudInstance
 
   public boolean containsAgent(AgentDescription agent) {
     if(name == null || agent == null 
-        || agent.getConfigurationParameters().get("INSTANCE_NAME") == null) {
+        || agent.getConfigurationParameters().get("ibm.instance.name") == null) {
       return false;
     }
     String instanceNameFromAgent
-      = agent.getConfigurationParameters().get("INSTANCE_NAME");
+      = agent.getConfigurationParameters().get("ibm.instance.name");
     return instanceNameFromAgent.equals(name);
   }
 
@@ -208,7 +208,9 @@ public class IBMCloudInstance implements CloudInstance
       file.createNewFile();
       FileWriter fw = new FileWriter(file, true);
       PrintWriter writer = new PrintWriter(fw);
-      writer.write(getName());
+      //instanceInfo has information of profileId, imageId and vsiId: "IBMSL-10 0 51234567"
+      String instanceInfo = userData.getProfileId() + " " + getImageName() + " " + id;
+      writer.write(instanceInfo);
       writer.close();
       fw.close();
     } catch (IOException e) {
@@ -250,8 +252,8 @@ public class IBMCloudInstance implements CloudInstance
     try {
       // Serialize CloudInstanceUserData and set as SoftLayer user metadata.
       List<String> userDataList = new ArrayList<String>();
-      userData.addAgentConfigurationParameter("name", name);
-      userData.addAgentConfigurationParameter("IMAGE_NAME", getImageName());
+      userData.addAgentConfigurationParameter("ibm.instance.name", name);
+      userData.addAgentConfigurationParameter("ibm.image.name", getImageName());
       userDataList.add(userData.serialize());
       Long virtualGuestId = new Long(getInstanceId());
       Guest.Service virtualGuestService = Guest.service(ibmClient,
