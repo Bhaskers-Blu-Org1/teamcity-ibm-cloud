@@ -6,7 +6,6 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import ibm.buildServer.clouds.ibm.IBMCloudClient;
@@ -46,21 +45,10 @@ class IBMCloudImageTest {
         parameters.getCloudImages().iterator().next());
     image = new IBMCloudImage(details);
     image.setCredentials(
-    		System.getenv("IBM_CLOUD_USER"), System.getenv("IBM_CLOUD_API"));
+        System.getenv("IBM_CLOUD_USER"), System.getenv("IBM_CLOUD_API"));
     instances = new ArrayList<>();
   }
   
-  @AfterEach
-  public void terminateInstances() {
-	for(IBMCloudInstance instance : instances) {
-	  instance.terminate();
-	}
-    for(IBMCloudInstance instance : image.getInstances()) {
-      instance.terminate();
-    }
-    client.terminateAllInstances();
-  }
-
   @Test
   @DisplayName("Test getId")
   public void testGetId() {
@@ -79,28 +67,30 @@ class IBMCloudImageTest {
   @DisplayName("Test 0 max instance means you can add infinity.")
   public void testEmptyMaxInstancesMeansInfinity() {
 	String message = "Instance should not be null";
+    FakeCloudInstance instance;
     for (int i = 0; i < 2; i++) {
-    	IBMCloudInstance instance = image.startNewInstance(instanceData);
-        Assertions.assertNotNull(instance, message);
-        instances.add(instance);
+      instance = new FakeCloudInstance(details, instanceData, image.ibmClient);
+      instance.setId(String.valueOf(i));
+      image.addInstance(instance)
     }
+    Assertions.assertTrue(image.canStartNewInstance());
   }
   
   @Test
   @DisplayName("Test setting max instances.")
   public void testSetMaxInstances() {
-    String message = "Instance should not be null";
     details.setMaxInstances(1);
-    IBMCloudInstance instance = image.startNewInstance(instanceData);
-    Assertions.assertNotNull(instance, message);
-    instances.add(instance);
-    instance = image.startNewInstance(instanceData);
-    Assertions.assertNull(instance, "Max instance should be 1.");
+    Assertions.assertTrue(image.canStartNewInstance());
+    FakeCloudInstance instance = new FakeCloudInstance(details, instanceData,
+        image.ibmClient);
+    instance.setId("1");
+    image.addInstance(instance);
+    instance = new FakeCloudInstance(details, instanceData, image.ibmClient);
+    instance.setId("2");
+    Assertions.assertFalse(image.canStartNewInstance());
     details.setMaxInstances(2);
-    instance = image.startNewInstance(instanceData);
-    Assertions.assertNotNull(instance, message);
-    instances.add(instance);
-    instance = image.startNewInstance(instanceData);
-    Assertions.assertNull(instance, "Max instance should be 2.");
+    Assertions.assertTrue(image.canStartNewInstance());
+    image.addInstance(instance);
+    Assertions.assertFalse(image.canStartNewInstance());
   }
 }

@@ -6,7 +6,6 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import ibm.buildServer.clouds.ibm.IBMCloudClient;
@@ -53,15 +52,6 @@ class IBMCloudInstanceTest {
         parameters.getCloudImages().iterator().next());
     image = new IBMCloudImage(details);
     instance = new IBMCloudInstance(details, instanceData, ibmClient);
-  }
-
-  @AfterEach
-  public void terminateInstances() {
-    instance.terminate();
-    for(IBMCloudInstance instanceFromImage : image.getInstances()) {
-      instanceFromImage.terminate();
-    }
-    client.terminateAllInstances();
   }
 
   @Test

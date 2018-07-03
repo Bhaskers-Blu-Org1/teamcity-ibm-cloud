@@ -121,14 +121,6 @@ public class IBMCloudClient implements CloudClientEx {
     instance.terminate(); 
   }
 
-  public void terminateAllInstances() {
-    for(IBMCloudImage image : getImages()) {
-      for(IBMCloudInstance instance : image.getInstances()) {
-        terminateInstance(instance);
-      }
-    }
-  }
-
   public void start() {
     executor.submit("Client start", new Runnable() {
       public void run() {

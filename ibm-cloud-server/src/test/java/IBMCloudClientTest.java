@@ -6,7 +6,6 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import ibm.buildServer.clouds.ibm.IBMCloudClient;
@@ -55,11 +54,6 @@ class IBMCloudClientTest {
     image.setCredentials(
         System.getenv("IBM_CLOUD_USER"), System.getenv("IBM_CLOUD_API"));
     client.addImage(image);
-  }
-
-  @AfterEach
-  public void cancelVSIs() {
-    client.terminateAllInstances();
   }
 
   @Test
