@@ -11,57 +11,63 @@ import com.softlayer.api.service.provisioning.version1.Transaction;
 import com.softlayer.api.service.virtual.Guest;
 import com.softlayer.api.ApiClient;
 
-import jetbrains.buildServer.clouds.InstanceStatus;
 import jetbrains.buildServer.log.Loggers;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collections;
 
 import com.intellij.openapi.diagnostic.Logger;
 
-public class IBMTerminateInstanceTask implements Runnable {
+/**
+ * Called by IBMCloudClientFactory. Use a concurrenthashmap to keep track of 
+ * the terminating Guests with active transactions.
+ */
+public class IBMTerminateInstanceTask implements Runnable{
   private final static Logger LOG = Loggers.SERVER;
-  private boolean deleted = false;
-  private IBMCloudInstance instance;
-  private ApiClient ibmClient;
-  private String name;
-  private Guest vsi;
+  private static ApiClient ibmClient;
+  private static Map<String, Guest> guests;
 	
-  //Called by IBMCloudInstance. Check active transactions of the instance to make sure vsi gets cancelled properly.
-  public IBMTerminateInstanceTask(IBMCloudInstance instance) {
-    this(instance.ibmClient, instance.getName(), instance.guest);
-    this.instance = instance;
+  public IBMTerminateInstanceTask() {
+    guests = new ConcurrentHashMap<>();
   }
 
-  public IBMTerminateInstanceTask(ApiClient client, String instanceName, Guest guest) {
-    ibmClient = client;
-    name = instanceName;
-    vsi = guest;
-  }
-
-  // A thread checks vsiTransaction every minute. Vsi will be cancelled until there's no active transactions.
+  /** 
+   * Iterate the map. If Guest has no active transactions, terminate it, and remove it from the map.
+   */
   @Override
   public void run() {
-    if (ibmClient == null) {
+    if (ibmClient  == null) {
       return;
     }
-    Transaction vsiTransaction;
-    Guest.Service service = vsi.asService(ibmClient);
-    Guest guest;
-    service.withMask().activeTransaction();
-    service.withMask().activeTransaction().transactionStatus().friendlyName();
-    guest = service.getObject();
-    vsiTransaction = guest.getActiveTransaction();
-
-    if (vsiTransaction == null && !deleted) {
-      try {
-        service.deleteObject();
-        deleted = true;
-      } catch (Exception e) {
-        LOG.warn("Error: " + e);
-        if (instance != null) {
-          instance.setStatus(InstanceStatus.ERROR_CANNOT_STOP);
+    Map<String, Guest> view = Collections.unmodifiableMap(guests);
+    for (Map.Entry<String, Guest> entry : view.entrySet()) {
+      String vsiId = entry.getKey();
+      Guest guest = entry.getValue();
+      Guest.Service service = guest.asService(ibmClient);
+      service.withMask().activeTransaction();
+      service.withMask().activeTransaction().transactionStatus().friendlyName();
+      Transaction vsiTransaction = service.getObject().getActiveTransaction();
+      if (vsiTransaction == null) {
+        try {
+          service.deleteObject();
+          guests.remove(vsiId);
+          LOG.info(vsiId + " already terminated");
+        } catch (Exception e) {
+          LOG.warn("Error: " + e);
         }
-        throw e;
       }
     }
   }
 
+  /**
+   * Called by IBMCloudClient.checkMetaData() and IBMCloudInstance.terminate(). Add Guest to map.
+   * @param vsiId
+   * @param guest
+   * @param apiClient
+   */
+  public static void add(String vsiId, Guest guest, ApiClient apiClient) {
+    ibmClient = apiClient;
+    guests.put(vsiId, guest);
+  }
 }
