@@ -13,9 +13,11 @@ package ibm.buildServer.clouds.ibm;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
 
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.server.CloudManagerBase;
+import jetbrains.buildServer.clouds.base.connector.CloudAsyncTaskExecutor;
 import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.log.Loggers;
@@ -38,6 +40,8 @@ public class IBMCloudClientFactory implements CloudClientFactory {
    * Set path to plugin's settings page using pluginDescriptor.
    */
   private final String settingPagePath;
+  private CloudAsyncTaskExecutor executor;
+  private int taskDelayTime = 60 * 1000;
   private final CloudManagerBase myCloudManager;
   /**
    * TC server log. "<TC root path>/logs/teamcity-server.log" 
@@ -60,6 +64,7 @@ public class IBMCloudClientFactory implements CloudClientFactory {
     settingPagePath = pluginDescriptor.getPluginResourcesPath(
         IBMCloudConstants.SETTINGS_HTML_PAGE);
     myCloudManager = cloudManager;
+    startTerminateInstanceTask();
   }
 
   /**
@@ -172,5 +177,24 @@ public class IBMCloudClientFactory implements CloudClientFactory {
    */
   public boolean canBeAgentOfType(@NotNull AgentDescription description) {
     return description.getConfigurationParameters().containsKey("ibm.instance.name");
+  }
+
+  /**
+   * Start a thread for IBMTerminateInstanceTask.
+   */
+  private void startTerminateInstanceTask() {
+    executor = new CloudAsyncTaskExecutor("TerminateInstanceTask");
+    IBMTerminateInstanceTask task = new IBMTerminateInstanceTask();
+    executor.submit("terminate instance", new Runnable() {
+      public void run() {
+        try {
+          task.run();
+          executor.scheduleWithFixedDelay("Terminate instance",
+            task, taskDelayTime, taskDelayTime, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+          LOG.warn("IBMCloudClientFactory error: " + e);
+        }
+      }
+    });
   }
 }

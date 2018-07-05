@@ -21,15 +21,9 @@ import java.util.*;
 
 public class IBMUpdateInstancesTask implements Runnable {
   private IBMCloudClient client;
-  /**
-   * use a hashset to store the instanceIDs that user clicked stop
-   */
-  private Set<String> clickedStopInstances;
-  private String currentInstanceId;
 
   public IBMUpdateInstancesTask(IBMCloudClient client) {
     this.client = client;
-    clickedStopInstances = new HashSet<>();
   }
 
   /**
@@ -50,7 +44,6 @@ public class IBMUpdateInstancesTask implements Runnable {
     for(IBMCloudImage image : client.getImages()) {
       for(IBMCloudInstance instance : image.getInstances()) {
         currentStatus = instance.getStatus();
-        currentInstanceId = instance.getInstanceId();
         boolean isStopped = checkStopped(instance);
         if (isStopped) {
           newStatus = InstanceStatus.STOPPED;
@@ -76,12 +69,11 @@ public class IBMUpdateInstancesTask implements Runnable {
             newStatus = InstanceStatus.ERROR;
           }
         }
-        message = "New status for " + currentInstanceId + " is " + newStatus.getName();
+        message = "New status for " + instance.getInstanceId() + " is " + newStatus.getName();
         System.out.println(message);
         instance.setStatus(newStatus);
         if(removable(instance.getStatus())) {
           image.removeInstance(instance.getInstanceId());
-          clickedStopInstances.remove(instance.getInstanceId());
         }
       }
     }
@@ -125,7 +117,7 @@ public class IBMUpdateInstancesTask implements Runnable {
     if (vsiStatus != null && vsiStatus.getName().equals("Disconnected")) {
       return InstanceStatus.STOPPED;
     }
-    if (clickedStopInstances.contains(currentInstanceId)) {
+    if (currentStatus == InstanceStatus.SCHEDULED_TO_STOP) {
       return InstanceStatus.SCHEDULED_TO_STOP;
     }
     if(vsiState != null && vsiState.getName().equals("Halted")) {
@@ -136,11 +128,7 @@ public class IBMUpdateInstancesTask implements Runnable {
     }
     return currentStatus;
   }
-  
-  public void setClickedStop(String instanceId) {
-    clickedStopInstances.add(instanceId);
-  }
-  
+
   /**
    * Check whether the instance is already removed from SL.
    * If yes, we don't call SL api to update status, in order to avoid unnecessary

@@ -6,7 +6,6 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import ibm.buildServer.clouds.ibm.IBMCloudClient;
@@ -33,7 +32,8 @@ class IBMCloudClientTest {
   private IBMCloudClient client;
   private IBMCloudImage image;
   private IBMCloudImageDetails details;
-  private AgentDescription agentDescription;
+  private IBMCloudInstance instance;
+  private FakeAgentDescription agentDescription;
   private CloudInstanceUserData instanceData;
 
   @BeforeEach
@@ -96,8 +96,12 @@ class IBMCloudClientTest {
   @DisplayName("Test start and terminate.")
   public void testStartAndTerminate() {
     String message;
-    CloudInstance instance = client.startNewInstance(image, instanceData);
+    instance = (IBMCloudInstance) client.startNewInstance(image, instanceData);
     Assertions.assertNotNull(instance, "instance is null");
+    testContainsAgentWithNullInstanceName();
+    testContainsAgentWithDifferentNames();
+    testContainsAgentWithSameName();
+    testContainsAgentWithNullAgent();
     client.start();
     System.out.println("Started instance " + instance.getName());
     Assertions.assertNotNull(instance.getStatus(), "Status is null.");
@@ -163,5 +167,41 @@ class IBMCloudClientTest {
       System.out.println("Unable to retrieve metadata unformation. " + e.getMessage());
     }
     return output;
+  }
+
+  /**
+   * The following 4 tests need a started instance. Therefore they are put here instead of IBMCloudInstanceTest.
+   * Test: containsAgent returns false when INSTANCE_NAME is null.
+   */
+  private void testContainsAgentWithNullInstanceName() {
+    String message = "containsAgent should return false when INSTANCE_NAME is null.";
+    Assertions.assertFalse(instance.containsAgent(agentDescription), message);
+  }
+
+  /**
+   * Test: containsAgent returns false when INSTANCE_NAME and name are different.
+   */
+  private void testContainsAgentWithDifferentNames() {
+    String message = "containsAgent should return false when INSTANCE_NAME and name are different.";
+    agentDescription.addParameter("ibm.instance.name", "fake-name");
+    Assertions.assertFalse(instance.containsAgent(agentDescription), message);
+  }
+
+  /**
+   * Test: containsAgent returns true when INSTANCE_NAME and name are same.
+   */
+  private void testContainsAgentWithSameName() {
+    String message = "containsAgent should return true when INSTANCE_NAME and name are same.";
+    agentDescription.addParameter("ibm.instance.name", instance.getName());
+    Assertions.assertTrue(instance.containsAgent(agentDescription), message);
+  }
+
+  /**
+   * Test: containsAgent returns false when agent is null.
+   */
+  private void testContainsAgentWithNullAgent() {
+    String message = "containsAgent should return false when agent is null.";
+    AgentDescription NullAgentDescription = null;
+    Assertions.assertFalse(instance.containsAgent(NullAgentDescription), message);
   }
 }
