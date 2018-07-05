@@ -6,7 +6,6 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import ibm.buildServer.clouds.ibm.IBMCloudClient;
@@ -46,17 +45,10 @@ class IBMCloudImageTest {
         parameters.getCloudImages().iterator().next());
     image = new IBMCloudImage(details);
     image.setCredentials(
-    		System.getenv("IBM_CLOUD_USER"), System.getenv("IBM_CLOUD_API"));
+        System.getenv("IBM_CLOUD_USER"), System.getenv("IBM_CLOUD_API"));
     instances = new ArrayList<>();
   }
   
-  @AfterEach
-  public void terminateInstances() {
-	  for (IBMCloudInstance instance : instances) {
-		  instance.terminate();
-	  }
-  }
-
   @Test
   @DisplayName("Test getId")
   public void testGetId() {
@@ -69,34 +61,5 @@ class IBMCloudImageTest {
   public void testEmptyMaxInstanceEqualsZero() {
     String message = "Max instance does not match.";
     Assertions.assertEquals(image.getMaxInstances(), 0, message);
-  }
-  
-  @Test
-  @DisplayName("Test 0 max instance means you can add infinity.")
-  public void testEmptyMaxInstancesMeansInfinity() {
-	String message = "Instance should not be null";
-    for (int i = 0; i < 2; i++) {
-    	IBMCloudInstance instance = image.startNewInstance(instanceData);
-        Assertions.assertNotNull(instance, message);
-        instances.add(instance);
-    }
-  }
-  
-  @Test
-  @DisplayName("Test setting max instances.")
-  public void testSetMaxInstances() {
-    String message = "Instance should not be null";
-    details.setMaxInstances(1);
-    IBMCloudInstance instance = image.startNewInstance(instanceData);
-    Assertions.assertNotNull(instance, message);
-    instances.add(instance);
-    instance = image.startNewInstance(instanceData);
-    Assertions.assertNull(instance, "Max instance should be 1.");
-    details.setMaxInstances(2);
-    instance = image.startNewInstance(instanceData);
-    Assertions.assertNotNull(instance, message);
-    instances.add(instance);
-    instance = image.startNewInstance(instanceData);
-    Assertions.assertNull(instance, "Max instance should be 2.");
   }
 }
