@@ -37,7 +37,7 @@ public class IBMTerminateInstanceTask implements Runnable{
    */
   @Override
   public void run() {
-    if (ibmClient  == null) {
+    if (ibmClient == null) {
       return;
     }
     Map<String, Guest> view = Collections.unmodifiableMap(guests);

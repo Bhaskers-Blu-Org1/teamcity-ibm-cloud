@@ -48,7 +48,7 @@ class IBMCloudImageTest {
         System.getenv("IBM_CLOUD_USER"), System.getenv("IBM_CLOUD_API"));
     instances = new ArrayList<>();
   }
-
+  
   @Test
   @DisplayName("Test getId")
   public void testGetId() {
