@@ -30,3 +30,7 @@ dependencies {
 
 agentPlugin.baseName = 'teamcity-ibm'
 
+javadoc {
+  exclude 'ibm/buildServer/clouds/ibm/Metadata.java'
+  source = sourceSets.main.allJava
+}

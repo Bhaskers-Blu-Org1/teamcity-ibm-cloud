@@ -53,6 +53,7 @@
 
 <div class="buttonsWrapper">
     <div class="imagesTableWrapper hidden">
+    		<!-- Cloud Image table -->
         <table id="ibmImagesTable" class="settings imagesTable hidden">
             <tbody>
             <tr>
@@ -73,6 +74,7 @@
     <forms:addButton title="Add image" id="showAddImageDialogButton">Add image</forms:addButton>
 </div>
 
+<!-- Add Cloud Image Dialog Box -->
 <bs:dialog dialogId="ibmImageDialog" title="Add IBM Cloud Image" closeCommand="BS.IBMCloud.ImageDialog.close()"
            dialogClass="ibmImageDialog" titleId="ibmImageDialogTitle">
     <table class="runnerFormTable paramsTable">
@@ -394,6 +396,7 @@
     
 </bs:dialog>
 
+<!-- Delete cloud image dialog box -->
 <bs:dialog dialogId="ibmDeleteImageDialog" title="Delete IBM Cloud Image" closeCommand="BS.IBMCloud.DeleteImageDialog.close()"
            dialogClass="ibmDeleteImageDialog" titleId="ibmDeleteImageDialogTitle">
 
@@ -412,7 +415,7 @@
 				url : "<c:url value="${teamcityPluginResourcesPath}ibm-cloud-settings.js"/>",
 				dataType : "script",
 				success : function() {
-
+					// Initializing the ibm-cloud-settings.js variables. 
 					BS.IBMCloud.ProfileSettingsForm.checkConnectionUrl = '<c:url value="${ibmCheckConnectionController}"/>';
 					BS.IBMCloud.ProfileSettingsForm.propertiesBeanVsiTemplate = '<c:out value="${propertiesBean.properties[cons.vsiTemplateList]}" />';
 					BS.IBMCloud.ProfileSettingsForm.propertiesBeanDatacenter = '<c:out value="${propertiesBean.properties[cons.datacenterList]}" />';

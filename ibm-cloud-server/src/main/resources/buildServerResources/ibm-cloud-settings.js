@@ -2,7 +2,7 @@ if (!BS) BS = {};
 if (!BS.IBMCloud) BS.IBMCloud = {};
 
 if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend(BS.PluginPropertiesForm, {
-
+	// Global variables
     checkConnectionUrl: '',
     propertiesBeanVsiTemplate: '',
     propertiesBeanDatacenter: '',
@@ -13,6 +13,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
     _dataKeys: [ 'IBMSL_vsiTemplate', 'IBMSL_datacenter', 'IBMSL_agentName', 'IBMSL_domainName', 'IBMSL_customizeMachineType', 'IBMSL_flavorList', 'IBMSL_maxMemory', 'IBMSL_maxCores', 'IBMSL_diskType', 'IBMSL_diskSize','IBMSL_network', 'IBMSL_vsiBilling', 'agent_pool_id', 'IBMSL_maximumInstances'],
     
     templates: {
+    		// Template for cloud image table row.
         imagesTableRow: $j('<tr class="imagesTableRow">\
         		<td class="IBMSL_vsiTemplate"></td>\
         		<td class="IBMSL_datacenter"></td>\
@@ -46,6 +47,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         },
 
         _errors: {
+        		// Validation error messages
         	 	agentNameBadParam: 'Not a valid Agent Name',
         		domainNameBadParam: 'Not a valid Domain Name',
             required: 'This field cannot be blank',
@@ -120,8 +122,8 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
     },
     
     _toggleActionImageButton: function (enable) {
+    		
     		// Toggle the edit/delete button on image table rows.
-    	
         if(enable) {
 	        	this.$imagesTable.find('tr').each(function() {
 	    			$j(this).find('.edit .editVmImageLink').removeClass('disableActionButton');
@@ -172,7 +174,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         		this.checkConnection();
         }.bind(this));
         
-        
+        // On Change event for fields.
         this.$IBMSL_vsiTemplate.on('change', function (e, value) {
             if(value !== undefined) this.$IBMSL_vsiTemplate.val(value);
             this.checkCloudImageEdited(this._image['IBMSL_vsiTemplate'], this.$IBMSL_vsiTemplate.val());
@@ -309,6 +311,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
 
 
     _toggleImagesTable: function () {
+    		// Toggle the cloud image table. If no image present hide else show.
         var toggle = !!this._imagesDataLength;
         this.$imagesTableWrapper.removeClass('hidden');
         this.$emptyImagesListMessage.toggleClass('hidden', toggle);
@@ -316,11 +319,10 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
     },
     
     _renderImageRow: function (props, id) {
+    		
     		//This function creates each row of cloud image table and appends.
-    	
         var $row = this.templates.imagesTableRow.clone().attr('data-image-id', id);
         $row.attr('src-id', props['source-id']);
-        
         var defaults = this.defaults;
 
         this._dataKeys.forEach(function (className) {
@@ -404,9 +406,9 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
     },
     
     showEditImageDialog: function ($elem) {
-    		//opens the edit image dialog box
-    	
-    		// EditImage button is clicked, set variable isEditImageOrAddImageClicked to true. 
+    		/* Opens the edit image dialog box
+    		 * EditImage button is clicked, set variable 'isEditImageOrAddImageClicked' to true. 
+    		 */
     		this.isEditImageOrAddImageClicked = true;
     		this.hasCloudImageEdited = false;
     		$j('#imageChangeMesssage').addClass('hidden');
@@ -483,7 +485,6 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
     validateOptions: function (options){
     		
     		//validates cloud image parameters
-    	
         var isValid = true;
 
         var validators = {
@@ -614,7 +615,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
            }.bind(this),
             	   
            IBMSL_vsiBilling : function () {
-         			  var IBMSL_vsiBilling = this._image['IBMSL_vsiBilling'];
+        	   			var IBMSL_vsiBilling = this._image['IBMSL_vsiBilling'];
                     if (!IBMSL_vsiBilling || IBMSL_vsiBilling === '' || IBMSL_vsiBilling === undefined) {
  	                    this.addOptionError('notSelected', 'IBMSL_vsiBilling');
  	                    isValid = false;
@@ -631,14 +632,14 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
            }.bind(this),
             	 
            IBMSL_maximumInstances : function () {
-        	   var IBMSL_maximumInstances = this._image['IBMSL_maximumInstances'];
-        	// RegExp checks positive integer or whitespace
-        	   var maximumInstancesRegExp = new RegExp(/^(\s*|[1-9]\d*)$/,'g');
-        	   if (IBMSL_maximumInstances && IBMSL_maximumInstances != undefined
-        			   && !maximumInstancesRegExp.test(IBMSL_maximumInstances)) {
-        		   this.addOptionError('maximumInstances', 'IBMSL_maximumInstances');
-        		   isValid = false;
-        	   }
+		        	   var IBMSL_maximumInstances = this._image['IBMSL_maximumInstances'];
+		        	   // RegExp checks positive integer or whitespace
+		        	   var maximumInstancesRegExp = new RegExp(/^(\s*|[1-9]\d*)$/,'g');
+		        	   if (IBMSL_maximumInstances && IBMSL_maximumInstances != undefined
+		        			   && !maximumInstancesRegExp.test(IBMSL_maximumInstances)) {
+		        		   this.addOptionError('maximumInstances', 'IBMSL_maximumInstances');
+		        		   isValid = false;
+		        	   }
            }.bind(this)
 
         };
@@ -657,6 +658,8 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
     },
 
     addOptionError: function (errorKey, optionName) {
+    		
+    		// Print validation error message to fields.
         var html;
 
         if (errorKey && optionName) {
@@ -684,6 +687,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
     },
 
     clearOptionsErrors: function (options) {
+    		// Clear the options validation  errors.
         (options || this._dataKeys).forEach(function (optionName) {
             this.clearErrors(optionName);
         }.bind(this));
@@ -711,7 +715,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
     },
 
     generateNewImageId: function () {
-      // Returns sequetial IDs. TODO: Consider changing so it returns random IDs.
+    		// Returns sequetial IDs. TODO: Consider changing so it returns random IDs.
         if($j.isEmptyObject(this.imagesData)) return 0;
         else return Math.max.apply(Math, $j.map(this.imagesData, function callback(currentValue) {
             return currentValue['source-id'];
@@ -729,7 +733,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
     
     editImage: function (id) {
     		// Handles edit request on cloud image row.
-       // this._image['source-id'] = id;
+    		// this._image['source-id'] = id;
 
     		$j('#imageChangeMesssage').addClass('hidden');
         if(this.hasCloudImageEdited) {
@@ -847,10 +851,9 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
 	            // Check for any Softlayer api error encountered
 	            $err = $response.find('error');
 	            if ($err.length) {
-	            		
 	            	 	$response.find('error').each(function(){
 	 	             	//$fetchOptions.text($j(this).text());
-	            	 	$fetchOptions.text("Invalid Credentials: Try entering valid Username and API.");
+	            	 		$fetchOptions.text("Invalid Credentials: Try entering valid Username and API.");
 	            	 	});
 	            }
 	            else

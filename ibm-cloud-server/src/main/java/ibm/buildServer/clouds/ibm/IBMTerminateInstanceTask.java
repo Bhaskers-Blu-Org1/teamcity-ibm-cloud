@@ -16,53 +16,52 @@ import jetbrains.buildServer.log.Loggers;
 
 import com.intellij.openapi.diagnostic.Logger;
 
-public class IBMTerminateInstanceTask implements Runnable{
-	private final static Logger LOG = Loggers.SERVER;
-	private boolean deleted = false;
-    private IBMCloudInstance instance;
-    private ApiClient ibmClient;
-    private String name;
-    private Guest vsi;
+public class IBMTerminateInstanceTask implements Runnable {
+  private final static Logger LOG = Loggers.SERVER;
+  private boolean deleted = false;
+  private IBMCloudInstance instance;
+  private ApiClient ibmClient;
+  private String name;
+  private Guest vsi;
 	
-	public IBMTerminateInstanceTask(IBMCloudInstance instance) {
-      this(instance.ibmClient, instance.getName(), instance.guest);
-	  this.instance = instance;
-	}
+  //Called by IBMCloudInstance. Check active transactions of the instance to make sure vsi gets cancelled properly.
+  public IBMTerminateInstanceTask(IBMCloudInstance instance) {
+    this(instance.ibmClient, instance.getName(), instance.guest);
+    this.instance = instance;
+  }
 
-    public IBMTerminateInstanceTask(ApiClient client, String instanceName,
-        Guest guest) {
-      ibmClient = client;
-      name = instanceName;
-      vsi = guest;
+  public IBMTerminateInstanceTask(ApiClient client, String instanceName, Guest guest) {
+    ibmClient = client;
+    name = instanceName;
+    vsi = guest;
+  }
+
+  // A thread checks vsiTransaction every minute. Vsi will be cancelled until there's no active transactions.
+  @Override
+  public void run() {
+    if (ibmClient == null) {
+      return;
     }
+    Transaction vsiTransaction;
+    Guest.Service service = vsi.asService(ibmClient);
+    Guest guest;
+    service.withMask().activeTransaction();
+    service.withMask().activeTransaction().transactionStatus().friendlyName();
+    guest = service.getObject();
+    vsiTransaction = guest.getActiveTransaction();
 
-	@Override
-	public void run() {
-		if (ibmClient  == null) {
-			return;
-		}
-		Transaction vsiTransaction;
-	    Guest.Service service = vsi.asService(ibmClient);
-	    Guest guest;
-	    service.withMask().activeTransaction();
-        service.withMask().activeTransaction().transactionStatus().friendlyName();
-        guest = service.getObject();
-        vsiTransaction = guest.getActiveTransaction();
-
-		if (vsiTransaction == null && !deleted) {
-		    LOG.info("Cancelling VSI " + name);
-		    try {
-		      service.deleteObject();
-		      deleted = true;
-		      LOG.info("Instance already terminated");
-		    } catch (Exception e) {
-		      LOG.warn("Error: " + e);
-              if(instance != null) {
-		        instance.setStatus(InstanceStatus.ERROR_CANNOT_STOP);
-              }
-		      throw e;
-		    }
-		}
-	}
+    if (vsiTransaction == null && !deleted) {
+      try {
+        service.deleteObject();
+        deleted = true;
+      } catch (Exception e) {
+        LOG.warn("Error: " + e);
+        if (instance != null) {
+          instance.setStatus(InstanceStatus.ERROR_CANNOT_STOP);
+        }
+        throw e;
+      }
+    }
+  }
 
 }
