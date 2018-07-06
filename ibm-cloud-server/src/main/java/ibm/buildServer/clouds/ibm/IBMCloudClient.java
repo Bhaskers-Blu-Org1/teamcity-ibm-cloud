@@ -177,7 +177,6 @@ public class IBMCloudClient implements CloudClientEx {
    */
   public void terminateInstance(@NotNull final CloudInstance baseInstance) {
     IBMCloudInstance instance = (IBMCloudInstance) baseInstance;
-    updateInstancesTask.setClickedStop(instance.getInstanceId());
     instance.terminate(); 
   }
 
@@ -245,22 +244,7 @@ public class IBMCloudClient implements CloudClientEx {
     
     if(vsi.getUserData() == null || vsi.getUserData().size() == 0) {
       // Terminate this instance because the metadata was never set.
-      String name = vsi.getHostname() + "_" + vsi.getId().toString();
-      executor = new CloudAsyncTaskExecutor(
-          "Terminating orphan instance " + name);
-      IBMTerminateInstanceTask task = new IBMTerminateInstanceTask(
-          ibmClient, name, vsi);
-      executor.submit("terminate orphan vsi", new Runnable() {
-        public void run() {
-          try {
-            task.run();
-            executor.scheduleWithFixedDelay("Terminate orphan instnace.", task,
-                taskDelayTime, taskDelayTime, TimeUnit.MILLISECONDS);
-          } catch (Exception e) {
-            LOG.warn("IBMCloudClient error: " + e);
-          }
-        }
-      });
+      IBMTerminateInstanceTask.add(vsi.getId().toString(), vsi, ibmClient);
     } else { 
       String metadata = vsi.getUserData().get(0).getValue();
       CloudInstanceUserData data = CloudInstanceUserData.deserialize(metadata);

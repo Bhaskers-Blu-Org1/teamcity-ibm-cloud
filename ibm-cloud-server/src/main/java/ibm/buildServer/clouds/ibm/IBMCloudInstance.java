@@ -13,6 +13,7 @@ import com.softlayer.api.service.virtual.guest.block.device.template.Group;
 import com.softlayer.api.service.virtual.guest.network.Component;
 import com.softlayer.api.service.virtual.guest.SupplementalCreateObjectOptions;
 import com.softlayer.api.service.virtual.disk.Image;
+import com.softlayer.api.service.provisioning.version1.Transaction;
 
 import jetbrains.buildServer.clouds.*;
 import jetbrains.buildServer.clouds.base.connector.CloudAsyncTaskExecutor;
@@ -231,28 +232,28 @@ public class IBMCloudInstance implements CloudInstance {
   }
 
   /**
-   * called by IBMCloudClient. It will create a new thread for IBMTerminateInstaceTask
-   * to make sure instance is terminated.
+   * Called by IBMCloudClient. If active transaction is null, terminate instance directly, 
+   * otherwise add it to IBMTerminateInstanceTask.
    */
   public void terminate() {
     myStatus = InstanceStatus.SCHEDULED_TO_STOP;
-    CloudAsyncTaskExecutor executor
-      = new CloudAsyncTaskExecutor("Async tasks for terminating vsi");
-    IBMTerminateInstanceTask task = new IBMTerminateInstanceTask(this);
-    executor.submit("terminate vsi", new Runnable() {
-      public void run() {
-        try {
-          task.run();
-          executor.scheduleWithFixedDelay("Terminate instance", task,
-              taskDelayTime, taskDelayTime, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-          LOG.warn("IBMCloudInstance Error: " + e);
-          myCurrentError = new CloudErrorInfo(
-              "Failed to stop cloud instance with id: " + id , e.getMessage(),
-              e);
-        }
+    Guest.Service service = guest.asService(ibmClient);
+    service.withMask().activeTransaction();
+    service.withMask().activeTransaction().transactionStatus().friendlyName();
+    Transaction vsiTransaction = service.getObject().getActiveTransaction();
+    if (vsiTransaction == null) {
+      try {
+        service.deleteObject();
+        LOG.info(id + " already terminated");
+      } catch (Exception e) {
+        LOG.warn("Error: " + e);
+        myStatus = InstanceStatus.ERROR_CANNOT_STOP;
+        myCurrentError = new CloudErrorInfo("Failed to stop cloud instance with id: " + id , e.getMessage(), e);
+        IBMTerminateInstanceTask.add(id, guest, ibmClient);
       }
-    });
+    } else {
+      IBMTerminateInstanceTask.add(id, guest, ibmClient);
+    }
   }
 
   /**

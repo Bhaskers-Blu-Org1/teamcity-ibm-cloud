@@ -60,4 +60,8 @@ public class FakeAgentDescription implements AgentDescription {
   public Map<String,String> getDefinedParameters() {
     return getConfigurationParameters();
   }
+  
+  public void addParameter(String key, String value) {
+    parameters.put(key, value);
+  }
 }

@@ -25,7 +25,7 @@ class IBMCloudInstanceTest {
   private IBMCloudClient client;
   private IBMCloudImage image;
   private IBMCloudImageDetails details;
-  private AgentDescription agentDescription;
+  private FakeAgentDescription agentDescription;
   private CloudInstanceUserData instanceData;
   private ApiClient ibmClient;
   private IBMCloudInstance instance;
@@ -85,8 +85,8 @@ class IBMCloudInstanceTest {
   }
 
   @Test
-  @DisplayName("Expect containsAgent to return false because we're using the fake agent")
-  public void testContainsAgent() {
+  @DisplayName("Test containsAgent returns false when name is null. Instance is not started, so name is null.")
+  public void testContainsAgentWithNullName() {
     Assertions.assertFalse(instance.containsAgent(agentDescription));
   }
 }
