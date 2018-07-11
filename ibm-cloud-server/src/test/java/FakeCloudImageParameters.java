@@ -31,7 +31,7 @@ public class FakeCloudImageParameters extends CloudImageParameters {
     parameters.put(IBMCloudConstants.VSI_BILLING, "{\"type\":\"Hourly\", \"value\":\"true\"}");
     parameters.put(
             IBMCloudConstants.VSI_TEMPLATE_LIST,
-            "{\"type\":\"TC-buildAgent-autoAuth-Apr9\", \"value\":\"aaad7259-06ff-453b-bedc-e425661fa151\"}");
+            "{\"name\":\"TC-buildAgent-autoAuth-Apr9\", \"value\":\"aaad7259-06ff-453b-bedc-e425661fa151\"}");
     parameters.put(IBMCloudConstants.PROFILE_ID, "fake-profile");
     parameters.put(IBMCloudConstants.SOURCE_ID, "fake-source-id");
     parameters.put(IBMCloudConstants.MAXIMUM_INSTANCES, "");

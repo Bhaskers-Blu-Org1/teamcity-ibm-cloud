@@ -716,7 +716,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
 
     generateNewImageId: function () {
     		// Returns sequetial IDs. TODO: Consider changing so it returns random IDs.
-        if($j.isEmptyObject(this.imagesData)) return 0;
+        if($j.isEmptyObject(this.imagesData)) return 1;
         else return Math.max.apply(Math, $j.map(this.imagesData, function callback(currentValue) {
             return currentValue['source-id'];
         })) + 1;

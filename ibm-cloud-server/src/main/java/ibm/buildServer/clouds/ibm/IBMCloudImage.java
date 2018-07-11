@@ -61,7 +61,7 @@ public class IBMCloudImage implements CloudImage {
 
   @NotNull
   public String getName() {
-    return details.getSourceId();
+    return details.getName();
   }
   
   @NotNull

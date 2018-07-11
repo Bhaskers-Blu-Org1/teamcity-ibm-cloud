@@ -217,12 +217,15 @@ public class IBMCloudInstance implements CloudInstance {
    */
   private void writeInstanceId() {
     try {
+      // file @ /root/TeamCity/bin
       File file = new File(image.TEAMCITY_INSTANCES);
       file.createNewFile();
       FileWriter fw = new FileWriter(file, true);
       PrintWriter writer = new PrintWriter(fw);
-      //instanceInfo has information of profileId, imageId and vsiId: "IBMSL-10 0 51234567"
-      String instanceInfo = userData.getProfileId() + " " + getImageName() + " " + id;
+      /* instanceInfo has information of profileId, imageId and vsiId: "IBMSL-10 0 51234567"
+       * instanceInfo and clientAndImage (from IBMCloudClient.java) should match
+       */
+      String instanceInfo = userData.getProfileId() + " " + getImageId() + " " + id;
       writer.write(instanceInfo);
       writer.close();
       fw.close();
@@ -272,7 +275,8 @@ public class IBMCloudInstance implements CloudInstance {
     try {
       List<String> userDataList = new ArrayList<String>();
       userData.addAgentConfigurationParameter("ibm.instance.name", name);
-      userData.addAgentConfigurationParameter("ibm.image.name", getImageName());
+      //ibm.image.name needs to be same as images hashmap key in IBMCloudClient.java
+      userData.addAgentConfigurationParameter("ibm.image.name", getImageId());
       userDataList.add(userData.serialize());
       Long virtualGuestId = new Long(getInstanceId());
       Guest.Service virtualGuestService = Guest.service(ibmClient, virtualGuestId);
