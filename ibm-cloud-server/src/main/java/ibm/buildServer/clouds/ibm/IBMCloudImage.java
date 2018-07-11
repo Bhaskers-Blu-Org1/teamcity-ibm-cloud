@@ -132,10 +132,10 @@ public class IBMCloudImage implements CloudImage {
 
   /**
    * Check whether TC server can start new instance by checking the max count set 
-   * by user. maxInstances == 0 means user can start infinite instances.
+   * by user. maxInstances == -1 means user can start infinite instances.
    */
   protected boolean canStartNewInstance() {
-    return getMaxInstances() == 0 || instances.size() < getMaxInstances();
+    return getMaxInstances() == -1 || instances.size() < getMaxInstances();
   }
 
   /**
