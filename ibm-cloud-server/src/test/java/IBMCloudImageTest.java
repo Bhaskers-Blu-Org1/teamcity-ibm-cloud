@@ -57,9 +57,9 @@ class IBMCloudImageTest {
   }
   
   @Test
-  @DisplayName("Test empty max instance equals 0.")
+  @DisplayName("Test empty max instance equals -1.")
   public void testEmptyMaxInstanceEqualsZero() {
     String message = "Max instance does not match.";
-    Assertions.assertEquals(image.getMaxInstances(), 0, message);
+    Assertions.assertEquals(image.getMaxInstances(), -1, message);
   }
 }

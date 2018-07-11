@@ -52,7 +52,7 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
         		domainNameBadParam: 'Not a valid Domain Name',
             required: 'This field cannot be blank',
             notSelected: 'Something should be selected',
-            maximumInstances: 'Must be a positive integer or leave blank'
+            maximumInstances: 'Must be a non-negative integer or leave blank'
         },
         
     _displayedErrors: {},
@@ -633,8 +633,8 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
             	 
            IBMSL_maximumInstances : function () {
 		        	   var IBMSL_maximumInstances = this._image['IBMSL_maximumInstances'];
-		        	   // RegExp checks positive integer or whitespace
-		        	   var maximumInstancesRegExp = new RegExp(/^(\s*|[1-9]\d*)$/,'g');
+		        	   // RegExp checks non-negative integer or whitespace
+		        	   var maximumInstancesRegExp = new RegExp(/^(\s*|\d*)$/,'g');
 		        	   if (IBMSL_maximumInstances && IBMSL_maximumInstances != undefined
 		        			   && !maximumInstancesRegExp.test(IBMSL_maximumInstances)) {
 		        		   this.addOptionError('maximumInstances', 'IBMSL_maximumInstances');
