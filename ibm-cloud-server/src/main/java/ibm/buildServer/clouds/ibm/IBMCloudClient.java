@@ -164,7 +164,7 @@ public class IBMCloudClient implements CloudClientEx {
       return null;
     }
     IBMCloudImage image = images.get(
-        agentDescription.getConfigurationParameters().get("ibm.image.name"));
+        agentDescription.getConfigurationParameters().get("ibm.image.id"));
     if (image != null) {
       String instanceID = instanceName.split("_")[1];
       return image.findInstanceById(instanceID);

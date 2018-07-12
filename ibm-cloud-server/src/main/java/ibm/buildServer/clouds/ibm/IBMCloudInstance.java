@@ -276,7 +276,7 @@ public class IBMCloudInstance implements CloudInstance {
       List<String> userDataList = new ArrayList<String>();
       userData.addAgentConfigurationParameter("ibm.instance.name", name);
       //ibm.image.name needs to be same as images hashmap key in IBMCloudClient.java
-      userData.addAgentConfigurationParameter("ibm.image.name", getImageId());
+      userData.addAgentConfigurationParameter("ibm.image.id", getImageId());
       userDataList.add(userData.serialize());
       Long virtualGuestId = new Long(getInstanceId());
       Guest.Service virtualGuestService = Guest.service(ibmClient, virtualGuestId);

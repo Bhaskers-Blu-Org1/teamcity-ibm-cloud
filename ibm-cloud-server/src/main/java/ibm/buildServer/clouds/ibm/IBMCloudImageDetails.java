@@ -26,7 +26,8 @@ public class IBMCloudImageDetails{
 
   public IBMCloudImageDetails(@NotNull final CloudImageParameters imageParameters) {
    
-    name = getNameFromJSON(imageParameters.getParameter(IBMCloudConstants.VSI_TEMPLATE_LIST))+"_"+imageParameters.getParameter(IBMCloudConstants.SOURCE_ID);
+    name = getNameFromJSON(imageParameters.getParameter(IBMCloudConstants.VSI_TEMPLATE_LIST))
+        +"_"+imageParameters.getParameter(IBMCloudConstants.SOURCE_ID);
     sourceId = imageParameters.getParameter(IBMCloudConstants.SOURCE_ID);
     profileId = imageParameters.getParameter(IBMCloudConstants.PROFILE_ID);
     vsiTemplate = getValueFromJSON(
