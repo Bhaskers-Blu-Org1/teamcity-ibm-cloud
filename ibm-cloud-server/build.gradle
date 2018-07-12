@@ -16,7 +16,7 @@ teamcity {
 
   server {
     descriptor {
-      name = "teamcity-ibm"
+      name = "cloud-ibm"
       displayName = "IBM Cloud Plugin"
       version = project.version
       vendorName = project.vendorName
