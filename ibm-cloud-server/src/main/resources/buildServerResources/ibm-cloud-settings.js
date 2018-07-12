@@ -530,6 +530,9 @@ if(!BS.IBMCloud.ProfileSettingsForm) BS.IBMCloud.ProfileSettingsForm = OO.extend
             }.bind(this),
                 
             IBMSL_domainName : function () {
+                    if (!this._image['IBMSL_domainName'] || this._image['IBMSL_domainName'] === '' || this._image['IBMSL_domainName'] === undefined) {
+                      this._image['IBMSL_domainName'] = 'default.com';
+                    }
                     var IBMSL_domainName = this._image['IBMSL_domainName'];
                     /* domainRegExp1 checks:
                     	* 1) Each alphanumeric string separated by a period is considered a label. The last label, the TLD (top level domain).
