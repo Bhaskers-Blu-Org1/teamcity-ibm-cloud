@@ -49,7 +49,7 @@ public class IBMCloudImageDetails{
       maxInstances = Long.parseLong(
           imageParameters.getParameter(IBMCloudConstants.MAXIMUM_INSTANCES));
     } catch(Exception e) {
-      maxInstances = 0;
+      maxInstances = -1;
     }
     agentPoolId = imageParameters.getAgentPoolId();
   }
