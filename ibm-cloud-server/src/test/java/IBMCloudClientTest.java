@@ -88,8 +88,8 @@ class IBMCloudClientTest {
   @DisplayName("Test generateAgentName")
   public void testGenerateAgentName() {
     String name = client.generateAgentName(agentDescription);
-    String message = "generateAgentName did not return the expected name.";
-    Assertions.assertEquals(name, "fake-agent-name", message);
+    String message = "generateAgentName should return null.";
+    Assertions.assertNull(name, message);
   }
 
   @Test

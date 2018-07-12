@@ -22,7 +22,6 @@ public class FakeAgentDescription implements AgentDescription {
     parameters = new HashMap<String,String>();
     runTypes = new ArrayList<RunType>();
     plugins = new ArrayList<String>();
-    parameters.put("name","fake-agent-name");
   }
 
   public Map<String,String> getAvailableParameters() {
