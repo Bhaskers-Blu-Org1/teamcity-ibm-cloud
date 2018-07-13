@@ -71,12 +71,12 @@ public class IBMMetadataReader {
           + " on server URL "
           + data.getServerAddress());
       String agentName = data.getAgentConfigurationParameter("ibm.instance.name");
-      String imageName = data.getAgentConfigurationParameter("ibm.image.name");
+      String imageName = data.getAgentConfigurationParameter("ibm.image.id");
       configuration.setServerUrl(data.getServerAddress());
       configuration.setName(agentName);
       configuration.addConfigurationParameter("name", agentName);
       configuration.addConfigurationParameter("ibm.instance.name", agentName);
-      configuration.addConfigurationParameter("ibm.image.name", imageName);
+      configuration.addConfigurationParameter("ibm.image.id", imageName);
     } catch (Exception e) {
       LOG.warn("IBMMetadataReader error in updateConfiguration(): " + e);
     }

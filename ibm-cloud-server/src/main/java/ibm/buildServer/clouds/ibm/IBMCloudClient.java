@@ -76,11 +76,11 @@ public class IBMCloudClient implements CloudClientEx {
     if (ibmClient == null) {
       ibmClient = image.ibmClient;
     }
-    if (!images.containsKey(image.getName())) {
-      images.put(image.getName(), image);
+    if (!images.containsKey(image.getId())) {
+      images.put(image.getId(), image);
     } else {
-      images.get(image.getName()).setDetails(image.getDetails());
-    }   
+      images.get(image.getId()).setDetails(image.getDetails());
+    } 
   }
 
   public boolean isInitialized() {
@@ -164,7 +164,7 @@ public class IBMCloudClient implements CloudClientEx {
       return null;
     }
     IBMCloudImage image = images.get(
-        agentDescription.getConfigurationParameters().get("ibm.image.name"));
+        agentDescription.getConfigurationParameters().get("ibm.image.id"));
     if (image != null) {
       String instanceID = instanceName.split("_")[1];
       return image.findInstanceById(instanceID);
@@ -281,7 +281,7 @@ public class IBMCloudClient implements CloudClientEx {
         LOG.error("IBMCloudClient error: " + e);
       }
     }
-    String clientAndImage = profileId + " " + image.getName() + " ";
+    String clientAndImage = profileId + " " + image.getId() + " ";
     if (teamcityInstances.contains(clientAndImage)) {
       for(Guest instance : instances) {
         String instanceInfo = clientAndImage + instance.getId().toString();
