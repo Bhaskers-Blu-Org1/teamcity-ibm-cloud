@@ -214,6 +214,9 @@ public class IBMCloudInstance implements CloudInstance {
 
   /**
    * called in #start(). Write instance Id into a file.
+   * file @ /root/TeamCity/bin
+   * instanceInfo has information of profileId, imageId and vsiId: "IBMSL-10 0 51234567"
+   * instanceInfo and clientAndImage (from IBMCloudClient.java) should match
    */
   private void writeInstanceId() {
     try {
@@ -221,8 +224,7 @@ public class IBMCloudInstance implements CloudInstance {
       file.createNewFile();
       FileWriter fw = new FileWriter(file, true);
       PrintWriter writer = new PrintWriter(fw);
-      //instanceInfo has information of profileId, imageId and vsiId: "IBMSL-10 0 51234567"
-      String instanceInfo = userData.getProfileId() + " " + getImageName() + " " + id;
+      String instanceInfo = userData.getProfileId() + " " + getImageId() + " " + id;
       writer.write(instanceInfo);
       writer.close();
       fw.close();
@@ -266,13 +268,14 @@ public class IBMCloudInstance implements CloudInstance {
   /**
    * called by IBMUpdateInstancesTask when instance is RUNNING.
    * Serialize CloudInstanceUserData, and set as SoftLayer user metadata.
-   * Add two configuration parameters: instance name and image name.
+   * Add two configuration parameters: instance name and image id.
+   * Configuration parameter: 'ibm.image.id' needs to be same as images hashmap key in IBMCloudClient.java
    */
   public void setMetadata() {
     try {
       List<String> userDataList = new ArrayList<String>();
       userData.addAgentConfigurationParameter("ibm.instance.name", name);
-      userData.addAgentConfigurationParameter("ibm.image.name", getImageName());
+      userData.addAgentConfigurationParameter("ibm.image.id", getImageId());
       userDataList.add(userData.serialize());
       Long virtualGuestId = new Long(getInstanceId());
       Guest.Service virtualGuestService = Guest.service(ibmClient, virtualGuestId);

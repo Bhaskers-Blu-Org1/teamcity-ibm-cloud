@@ -126,10 +126,10 @@
 		
 	    <!-- Domain row -->
 		<tr>
-			<th><label for="${cons.domainName}">Domain Name:<l:star /></label></th>
+			<th><label for="${cons.domainName}">Domain Name:</label></th>
 			<td>
 				<div style="white-space: nowrap">
-					<input data-id="${cons.domainName}" id="${cons.domainName}" name="${cons.domainName}" value="${propertiesBean.properties[cons.domainName]}" class="longField" type="text">
+					<input data-id="${cons.domainName}" id="${cons.domainName}" placeholder= "default.com" name="${cons.domainName}" value="${propertiesBean.properties[cons.domainName]}" class="longField" type="text">
 				</div>
 				<span class="error option-error option-error_${cons.domainName}"></span>
 				<div class="smallNoteAttention">

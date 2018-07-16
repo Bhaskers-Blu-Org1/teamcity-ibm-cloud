@@ -7,6 +7,7 @@ import ibm.buildServer.clouds.ibm.IBMCloudConstants;
 
 public class IBMCloudImageDetails{
   private String sourceId = null;
+  private String name = null;
   private String profileId;
   private String vsiTemplate;
   private String datacenter;
@@ -24,6 +25,9 @@ public class IBMCloudImageDetails{
   private int agentPoolId;
 
   public IBMCloudImageDetails(@NotNull final CloudImageParameters imageParameters) {
+   
+    name = getNameFromJSON(imageParameters.getParameter(IBMCloudConstants.VSI_TEMPLATE_LIST))
+        +"_"+imageParameters.getParameter(IBMCloudConstants.SOURCE_ID);
     sourceId = imageParameters.getParameter(IBMCloudConstants.SOURCE_ID);
     profileId = imageParameters.getParameter(IBMCloudConstants.PROFILE_ID);
     vsiTemplate = getValueFromJSON(
@@ -55,7 +59,21 @@ public class IBMCloudImageDetails{
     String value = jsonObject.getString("value");
     return value;
   }
+  
+  public String getNameFromJSON(String jsonString) {
+    JSONObject jsonObject = new JSONObject(jsonString);
+    String value = jsonObject.getString("name");
+    return value;
+  }
+  
+  public String getName() {
+    return name;
+  }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+  
   public String getSourceId() {
     return sourceId;
   }
