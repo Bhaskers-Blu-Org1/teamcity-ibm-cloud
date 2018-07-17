@@ -118,11 +118,11 @@ public class IBMCloudClient implements CloudClientEx {
   /**
    * Get agent name.
    * @param agentDescription An object that represents a build agent.
-   * @return the value associated with the key "name" in the map returned by
+   * @return the value associated with the key "ibm.instance.name" in the map returned by
    *         AgentDescription#getConfigurationParameters
    */
   public String generateAgentName(AgentDescription agentDescription) {
-    return agentDescription.getConfigurationParameters().get("name");
+    return agentDescription.getConfigurationParameters().get("ibm.instance.name");
   }
 
   /**
@@ -158,8 +158,7 @@ public class IBMCloudClient implements CloudClientEx {
   @Nullable
   public IBMCloudInstance findInstanceByAgent(
       @NotNull final AgentDescription agentDescription) {
-    final String instanceName
-      = agentDescription.getConfigurationParameters().get("ibm.instance.name");
+    final String instanceName = generateAgentName(agentDescription);
     if(instanceName == null) {
       return null;
     }

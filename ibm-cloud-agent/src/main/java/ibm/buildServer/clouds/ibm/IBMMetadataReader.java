@@ -74,7 +74,6 @@ public class IBMMetadataReader {
       String imageName = data.getAgentConfigurationParameter("ibm.image.id");
       configuration.setServerUrl(data.getServerAddress());
       configuration.setName(agentName);
-      configuration.addConfigurationParameter("name", agentName);
       configuration.addConfigurationParameter("ibm.instance.name", agentName);
       configuration.addConfigurationParameter("ibm.image.id", imageName);
     } catch (Exception e) {
