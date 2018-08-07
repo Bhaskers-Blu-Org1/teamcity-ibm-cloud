@@ -46,7 +46,7 @@ public class IBMMetadataReader {
       ApiClient client = new RestApiClient(privateEndPoint);
       Metadata.Service metadataService = Metadata.service(client);
       String metadata = metadataService.getUserMetadata();
-      updateConfiguration(metadata);
+      updateConfiguration(metadata, metadataService);
     } catch (Exception e) {
       LOG.warn("IBMMetadataReader error in fetchConfiguration(): " + e);
     }
@@ -55,9 +55,11 @@ public class IBMMetadataReader {
   /**
    * Retrieve agent name, image name, url from deserialized CloudInstanceUserData, 
    * and set those values in build agent configuration.
+   * We have even set some instance's parameters to agent's system properties section.
+   * 
    * @param metadata The instance metadata as a serialized string.
    */
-  private void updateConfiguration(String metadata) {
+  private void updateConfiguration(String metadata, Metadata.Service metadataService) {
     try {
       CloudInstanceUserData data = CloudInstanceUserData.deserialize(metadata);
       if(data == null) {
@@ -72,10 +74,26 @@ public class IBMMetadataReader {
           + data.getServerAddress());
       String agentName = data.getAgentConfigurationParameter("ibm.instance.name");
       String imageName = data.getAgentConfigurationParameter("ibm.image.id");
+      String systemConfig = data.getAgentConfigurationParameter("ibm.system.config");
+      String vsiTemplateGlobalId = data.getAgentConfigurationParameter("ibm.image.guid");
+      String localHostname = metadataService.getHostname();
+      String publicHostname = localHostname + "." + metadataService.getDomain();
+      String instanceId = metadataService.getId().toString();
+      String publicIp = metadataService.getPrimaryIpAddress();
+      String localIp = metadataService.getPrimaryBackendIpAddress();
+      
       configuration.setServerUrl(data.getServerAddress());
       configuration.setName(agentName);
       configuration.addConfigurationParameter("ibm.instance.name", agentName);
       configuration.addConfigurationParameter("ibm.image.id", imageName);
+      configuration.addSystemProperty("ibm.image.guid", vsiTemplateGlobalId);
+      configuration.addSystemProperty("ibm.instance.id", instanceId);
+      configuration.addSystemProperty("ibm.local.hostname", localHostname);
+      configuration.addSystemProperty("ibm.local.ipv4", localIp);
+      configuration.addSystemProperty("ibm.public.hostname", publicHostname);
+      configuration.addSystemProperty("ibm.public.ipv4", publicIp);
+      configuration.addSystemProperty("ibm.system.config", systemConfig);
+      
     } catch (Exception e) {
       LOG.warn("IBMMetadataReader error in updateConfiguration(): " + e);
     }
