@@ -71,11 +71,12 @@ public class IBMCloudInstance implements CloudInstance {
   /**
    * Used to create a new TeamCity instance and a new VSI. If CustomizeMachineType = true:
    * Set RAM, CPU, Disk Type & Disk Size. Else:  Set Flavor List.
+   * Set vsiTemplateGlobalId, systemConfig for setting parameter in metadata
    */
   public IBMCloudInstance(IBMCloudImageDetails details,
       CloudInstanceUserData data, ApiClient ibmClient) {
     this(details, data, ibmClient, new Guest(), new Date());
-    this.vsiTemplateGlobalId = details.getVsiTemplate(); // used for setting parameter in metadata
+    this.vsiTemplateGlobalId = details.getVsiTemplate(); 
     Group blockDevice = new Group();
     blockDevice.setGlobalIdentifier(this.vsiTemplateGlobalId);
     guest.setBlockDeviceTemplateGroup(blockDevice);
@@ -96,7 +97,6 @@ public class IBMCloudInstance implements CloudInstance {
       diskImage.setCapacity(Long.valueOf(details.getDiskSize()));
       template.setDiskImage(diskImage);
       blockDevice.getBlockDevices().add(template);
-      // For setting parameter in metadata
       String diskFlagToValueConversion = ((details.getLocalDiskFlag())? "LOCAL" : "SAN");
       this.systemConfig = "Ram: " + details.getMaxMemory() + ", CPU: " + 
       details.getMaxCores() + ", Disk Size: " + details.getDiskSize() + " " + diskFlagToValueConversion;
