@@ -99,7 +99,7 @@ public class IBMCloudInstance implements CloudInstance {
       blockDevice.getBlockDevices().add(template);
       String diskFlagToValueConversion = ((details.getLocalDiskFlag())? "LOCAL" : "SAN");
       this.systemConfig = "Ram: " + details.getMaxMemory() + ", CPU: " + 
-      details.getMaxCores() + ", Disk Size: " + details.getDiskSize() + " " + diskFlagToValueConversion;
+      details.getMaxCores();
      
     } else {
       SupplementalCreateObjectOptions supplementObject = new SupplementalCreateObjectOptions(); 
