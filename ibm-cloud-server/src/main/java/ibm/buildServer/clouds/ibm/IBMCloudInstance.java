@@ -49,6 +49,8 @@ public class IBMCloudInstance implements CloudInstance {
    * Set in #setName()
    */
   private String hostname;
+  private String vsiTemplateGlobalId = "";
+  private String systemConfig = "";
   /**
    * Set in IBMCloudImage#setImage()
    */
@@ -69,12 +71,14 @@ public class IBMCloudInstance implements CloudInstance {
   /**
    * Used to create a new TeamCity instance and a new VSI. If CustomizeMachineType = true:
    * Set RAM, CPU, Disk Type & Disk Size. Else:  Set Flavor List.
+   * Set vsiTemplateGlobalId, systemConfig for setting parameter in metadata
    */
   public IBMCloudInstance(IBMCloudImageDetails details,
       CloudInstanceUserData data, ApiClient ibmClient) {
     this(details, data, ibmClient, new Guest(), new Date());
+    this.vsiTemplateGlobalId = details.getVsiTemplate(); 
     Group blockDevice = new Group();
-    blockDevice.setGlobalIdentifier(details.getVsiTemplate());
+    blockDevice.setGlobalIdentifier(this.vsiTemplateGlobalId);
     guest.setBlockDeviceTemplateGroup(blockDevice);
     guest.setDatacenter(new Location());
     guest.getDatacenter().setName(details.getDatacenter());
@@ -93,10 +97,15 @@ public class IBMCloudInstance implements CloudInstance {
       diskImage.setCapacity(Long.valueOf(details.getDiskSize()));
       template.setDiskImage(diskImage);
       blockDevice.getBlockDevices().add(template);
+      String diskFlagToValueConversion = ((details.getLocalDiskFlag())? "LOCAL" : "SAN");
+      this.systemConfig = "Ram: " + details.getMaxMemory() + ", CPU: " + 
+      details.getMaxCores();
+     
     } else {
       SupplementalCreateObjectOptions supplementObject = new SupplementalCreateObjectOptions(); 
       supplementObject.setFlavorKeyName(details.getFlavorList());
       guest.setSupplementalCreateObjectOptions(supplementObject);
+      this.systemConfig = details.getFlavorList();
     }
   }
 
@@ -268,7 +277,7 @@ public class IBMCloudInstance implements CloudInstance {
   /**
    * called by IBMUpdateInstancesTask when instance is RUNNING.
    * Serialize CloudInstanceUserData, and set as SoftLayer user metadata.
-   * Add two configuration parameters: instance name and image id.
+   * Add 4 configuration parameters: instance name, image id, VSI template global identifier and customize/flavor list value.
    * Configuration parameter: 'ibm.image.id' needs to be same as images hashmap key in IBMCloudClient.java
    */
   public void setMetadata() {
@@ -276,6 +285,8 @@ public class IBMCloudInstance implements CloudInstance {
       List<String> userDataList = new ArrayList<String>();
       userData.addAgentConfigurationParameter("ibm.instance.name", name);
       userData.addAgentConfigurationParameter("ibm.image.id", getImageId());
+      userData.addAgentConfigurationParameter("ibm.system.config", systemConfig);
+      userData.addAgentConfigurationParameter("ibm.image.guid", vsiTemplateGlobalId);
       userDataList.add(userData.serialize());
       Long virtualGuestId = new Long(getInstanceId());
       Guest.Service virtualGuestService = Guest.service(ibmClient, virtualGuestId);
