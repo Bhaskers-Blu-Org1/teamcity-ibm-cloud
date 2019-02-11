@@ -1,13 +1,33 @@
-## repo-template
-The purpose of this project is to provide  a template for new open source repositories.
+## TeamCity IBM Cloud plugin
 
-This repository contains some example best practices for open source repositories, including [LICENSE](LICENSE) file, boilerplate [README.md](README.md),  [CONTRIBUTING.md](CONTRIBUTING.md), and [MAINTAINERS.md](MAINTAINERS.md) files. These may be copied into a new or existing project to make it easier for developers not on a project team to collaborate.
+This plugin allows TeamCity users to manage and run builds on IBM Cloud VSIs.
 
-**NOTE: While this boilerplate project uses the Apache 2.0 license, when
-establishing a new repo using this template, please use the
-license that was approved for your project.**
+To get the latest version of the plugin, clone this repo locally and build it using [Gradle](https://gradle.org). Gradle can be installed using [Homebrew](https://brew.sh):
 
-**NOTE: This repository has been configured with the DCO bot. When you set up
-a new repository that uses the Apache license, you should use the DCO to manage
-contributions. The DCO bot will help enforce that. Please contact one of the
-IBM GH Org stewards.**
+```
+$ brew install gradle
+```
+
+After you've cloned this repo and installed Gradle, run it in the repo's root directory.
+
+```
+$ gradle build
+```
+
+Automated tests will be run. To silence some verbose output, you can do
+
+```
+$ gradle build | grep -v Attempt
+```
+
+Gradle will create a zip file in `./ibm-cloud-agent/build/distributions`.
+
+```
+$ cd ibm-cloud-agent/build/distributions
+```
+
+The zip file can be uploaded to the TeamCity server to install the plugin.
+
+Detailed user documentation can be found [here](https://ibm.box.com/s/gxrj20cy71swn2ymh9ph0fjlwgb1wl4k).
+
+We welcome and encourage community contributions to this project. Check out [CONTRIBUTING.md](CONTRIBUTING.md) for information about how to contribute.
