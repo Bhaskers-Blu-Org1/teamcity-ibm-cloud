@@ -59,7 +59,7 @@ dependencies {
   )
 }
 
-serverPlugin.baseName = 'teamcity-ibm'
+serverPlugin.baseName = 'ibm-cloud'
 
 test {
   testLogging {

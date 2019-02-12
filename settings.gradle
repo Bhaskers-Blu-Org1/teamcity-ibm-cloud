@@ -1,4 +1,4 @@
-rootProject.name = 'teamcity-ibm'
+rootProject.name = 'ibm-cloud'
 
 include 'ibm-cloud-agent'
 include 'ibm-cloud-server'

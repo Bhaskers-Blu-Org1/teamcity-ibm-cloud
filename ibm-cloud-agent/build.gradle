@@ -28,7 +28,7 @@ dependencies {
   compile "com.softlayer.api:softlayer-api-client:0.2.5"
 }
 
-agentPlugin.baseName = 'teamcity-ibm'
+agentPlugin.baseName = 'ibm-cloud'
 
 javadoc {
   exclude 'ibm/buildServer/clouds/ibm/Metadata.java'
