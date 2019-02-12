@@ -20,7 +20,7 @@ Automated tests will be run. To silence some verbose output, you can do
 $ gradle build | grep -v Attempt
 ```
 
-Gradle will create a zip file in `./ibm-cloud-agent/build/distributions`.
+Gradle will create a zip file in `./ibm-cloud-server/build/distributions`.
 
 ```
 $ cd ibm-cloud-agent/build/distributions
