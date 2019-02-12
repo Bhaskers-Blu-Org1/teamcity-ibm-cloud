@@ -14,14 +14,14 @@ cannot be accepted at all!**
 
 ### Proposing new features
 
-If you would like to implement a new feature, please **FIXME** [raise an issue](https://github.com/ibm/repo-template/issues)
+If you would like to implement a new feature, please [raise an issue](https://github.com/ibm/teamcity-ibm-cloud/issues)
 before sending a pull request so the feature can be discussed. This is to avoid
 you wasting your valuable time working on a feature that the project developers
 are not interested in accepting into the code base.
 
 ### Fixing bugs
 
-If you would like to fix a bug, please **FIXME** [raise an issue](https://github.ibm.com/chrisfer/social-coding/issues) before sending a
+If you would like to fix a bug, please [raise an issue](https://github.com/ibm/teamcity-ibm-cloud/issues) before sending a
 pull request so it can be tracked.
 
 ### Merge approval
@@ -69,16 +69,6 @@ git commit -s
 ```
 
 ## Communication
-**FIXME** Please feel free to connect with us on our [Slack channel](link).
+Questions can be sent to scottwn@ibm.com
 
-## Setup
-**FIXME** Please add any special setup instructions for your project to help the developer
-become productive quickly.
-
-## Testing
-**FIXME** Please provide information that helps the developer test any changes they make
-before submitting.
-
-## Coding style guidelines
-**FIXME** Optional, but recommended: please share any specific style guidelines you might
-have for your project.
+Those internal to IBM can connect in the [#teamcity-opensource channel in the WCP workspace](https://ibm-cloudplatform.slack.com/archives/CG4PBLUSY/p1549990000001300).
