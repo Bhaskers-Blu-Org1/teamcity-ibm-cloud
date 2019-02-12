@@ -21,12 +21,12 @@ teamcity {
   server {
     descriptor {
       name = "cloud-ibm"
-      displayName = "IBM Cloud Plugin"
+      displayName = "IBM Cloud"
       version = project.version
       vendorName = project.vendorName
       vendorUrl = "http://ibm.com"
       description = "TeamCity IBM Cloud Server Plugin"
-      downloadUrl = "https://github.ibm.com/StrategicOnboarding/teamcity-softlayer/"
+      downloadUrl = "https://github.com/IBM/teamcity-ibm-cloud"
       email = "scottwn@ibm.com"
       useSeparateClassloader = false
       minimumBuild = "40000"
