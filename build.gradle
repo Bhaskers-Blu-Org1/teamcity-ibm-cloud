@@ -3,7 +3,7 @@ plugins {
 }
 
 ext {
-  vendorName = "IBM Global Cloud Acceleration Team"
+  vendorName = "IBM-GCAT"
   teamcityVersion = findProperty("teamcityVersion") ?: "2017.2"
 }
 
